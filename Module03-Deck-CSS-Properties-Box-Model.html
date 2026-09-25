@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSS Properties and the Box Model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#F5F7F8; --card:#FFFFFF; --sunk:#EDF2F3;
+    --ink:#12181C; --ink-2:#3D4A52; --ink-3:#6B7C86;
+    --line:#DCE3E6; --line-soft:#E9EEF0;
+    --accent:#0E6E68; --accent-soft:#DCEEEC;
+    --amber:#A85A11; --amber-soft:#F7E9D8;
+    --blue:#1F5FA8;  --blue-s:#E0EAF7;
+    --plum:#7A3E86;  --plum-s:#F1E5F4;
+    --red:#B03A2E;   --red-s:#FBE6E3;
+    --green:#1E7A4C; --green-s:#DDF0E5;
+    --code-bg:#101820; --code-ink:#D7E3E6;
+    --shadow:0 1px 2px rgba(18,24,28,.06), 0 8px 24px rgba(18,24,28,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#0D1418; --card:#141D22; --sunk:#101A1F;
+      --ink:#E8EFF1; --ink-2:#AEBEC5; --ink-3:#7E9099;
+      --line:#26343B; --line-soft:#1D282E;
+      --accent:#5CC8BE; --accent-soft:#12312F;
+      --amber:#E0A15C; --amber-soft:#2E2213;
+      --blue:#79B4EE;  --blue-s:#14263A;
+      --plum:#CE9ED9;  --plum-s:#2C1D31;
+      --red:#E88070;   --red-s:#331714;
+      --green:#5FC98C; --green-s:#0F2C1D;
+      --code-bg:#070C0F; --code-ink:#D7E3E6;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0D1418; --card:#141D22; --sunk:#101A1F;
+    --ink:#E8EFF1; --ink-2:#AEBEC5; --ink-3:#7E9099;
+    --line:#26343B; --line-soft:#1D282E;
+    --accent:#5CC8BE; --accent-soft:#12312F;
+    --amber:#E0A15C; --amber-soft:#2E2213;
+    --blue:#79B4EE;  --blue-s:#14263A;
+    --plum:#CE9ED9;  --plum-s:#2C1D31;
+    --red:#E88070;   --red-s:#331714;
+    --green:#5FC98C; --green-s:#0F2C1D;
+    --code-bg:#070C0F; --code-ink:#D7E3E6;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--paper); color:var(--ink); margin:0;
+    font-family:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:"Archivo","IBM Plex Sans",system-ui,sans-serif;text-wrap:balance;margin:0;letter-spacing:-.02em}
+  p{margin:0}
+  svg{max-width:100%;height:auto;display:block}
+  code,.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+
+  .deck{max-width:1180px;margin:0 auto;padding:0 20px 96px}
+  .slide{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--shadow);padding:clamp(24px,3.2vw,48px);margin:24px 0;
+    min-height:clamp(420px,74vh,730px);display:flex;flex-direction:column;gap:20px;
+  }
+  .slide.hidden{display:none}
+
+  .eyebrow{
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
+  .slide h2{font-size:clamp(25px,3.3vw,40px);font-weight:800;line-height:1.12}
+  .sub{color:var(--ink-2);font-size:clamp(15px,1.35vw,18px);max-width:66ch}
+  .sub b{color:var(--ink);font-weight:600}
+  .grow{flex:1}
+
+  .title-slide{justify-content:center;gap:24px;position:relative;overflow:hidden}
+  .title-slide h1{font-size:clamp(36px,6vw,74px);font-weight:800;line-height:1.03}
+  .title-slide h1 .thin{display:block;font-weight:600;color:var(--ink-3);font-size:.36em;margin-bottom:.55em}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{font-family:"IBM Plex Mono",monospace;font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);color:var(--ink-2);background:var(--paper)}
+  .chip b{color:var(--accent);font-weight:600}
+
+  .grid{display:grid;gap:15px}
+  .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  @media (max-width:860px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+  .card{border:1px solid var(--line);border-radius:10px;padding:17px;background:var(--paper);display:flex;flex-direction:column;gap:7px}
+  .card h3{font-size:16.5px;font-weight:700}
+  .card p{color:var(--ink-2);font-size:14.5px}
+  .card .tag{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+  .card.b{background:var(--blue-s);border-color:var(--blue)} .card.b .tag{color:var(--blue)}
+  .card.g{background:var(--green-s);border-color:var(--green)} .card.g .tag{color:var(--green)}
+  .card.p{background:var(--plum-s);border-color:var(--plum)} .card.p .tag{color:var(--plum)}
+  .card.a{background:var(--amber-soft);border-color:var(--amber)} .card.a .tag{color:var(--amber)}
+  .card.r{background:var(--red-s);border-color:var(--red)} .card.r .tag{color:var(--red)}
+
+  ul.clean{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:11px}
+  ul.clean li{display:flex;gap:11px;font-size:clamp(14.5px,1.35vw,17px);color:var(--ink-2);line-height:1.45}
+  ul.clean li b{color:var(--ink);font-weight:600}
+  ul.clean li::before{content:"";flex:none;width:7px;height:7px;margin-top:.55em;border-radius:2px;background:var(--accent);transform:rotate(45deg)}
+
+  pre{margin:0;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:16px 18px;overflow-x:auto;font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.68;border:1px solid var(--line)}
+  pre .c{color:#7E9099;font-style:italic}
+  pre .t{color:#7FD1C7}
+  pre .a{color:#9FC6E8}
+  pre .s{color:#E0A15C}
+  pre .hl{background:rgba(224,161,92,.16);display:inline-block;width:100%}
+  .fname{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);letter-spacing:.05em;margin-bottom:7px;display:block}
+
+  .callout{border-left:3px solid var(--amber);background:var(--amber-soft);padding:13px 17px;border-radius:0 8px 8px 0;color:var(--ink-2);font-size:15px}
+  .callout b{color:var(--ink)}
+  .callout.q{border-left-color:var(--plum);background:var(--plum-s)}
+  .callout.g{border-left-color:var(--green);background:var(--green-s)}
+
+  .scroll-x{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:14.5px}
+  th{text-align:left;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);padding:0 12px 9px 0;border-bottom:1px solid var(--line);font-weight:600;white-space:nowrap}
+  td{padding:9px 12px 9px 0;border-bottom:1px solid var(--line-soft);color:var(--ink-2);vertical-align:top}
+  td:first-child{color:var(--ink);font-weight:600;white-space:nowrap}
+  td code,th code{color:var(--accent)}
+
+  .navbar{
+    position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);
+    border-top:1px solid var(--line);display:flex;align-items:center;gap:13px;
+    padding:10px max(20px, calc(50vw - 590px));box-shadow:0 -6px 18px -12px rgba(0,0,0,.4);
+  }
+  .navbar button{font-family:"IBM Plex Mono",monospace;font-size:12.5px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:7px 13px;cursor:pointer}
+  .navbar button:hover{border-color:var(--accent);color:var(--accent)}
+  .navbar button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .counter{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+  .bar{flex:1;height:3px;background:var(--line-soft);border-radius:2px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s ease}
+  .navbar .hint{font-size:12px;color:var(--ink-3)}
+  @media (max-width:700px){.navbar .hint{display:none}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+  @media print{
+    .navbar{display:none}
+    .slide{page-break-after:always;box-shadow:none;min-height:0}
+    .slide.hidden{display:flex}
+  }
+
+  /* ---- additions for CSS properties / box model ---- */
+  .swatchrow{display:flex;gap:9px;flex-wrap:wrap}
+  .sw{flex:1;min-width:92px;border-radius:9px;border:1px solid var(--line);overflow:hidden;background:var(--card)}
+  .sw .fill{height:52px}
+  .sw .nm{font-family:"IBM Plex Mono",monospace;font-size:10.5px;padding:7px 9px;color:var(--ink-2);line-height:1.35}
+  .sw .nm b{display:block;color:var(--ink);font-size:11.5px}
+
+  .demo{border:1px dashed var(--accent);border-radius:10px;padding:16px 18px;background:var(--card);position:relative}
+  .demo::before{content:"LIVE ON THIS SLIDE";position:absolute;top:-9px;left:16px;background:var(--accent);color:var(--card);
+    font-family:"IBM Plex Mono",monospace;font-size:9px;letter-spacing:.13em;padding:2px 9px;border-radius:5px;font-weight:600}
+
+  .scale li{display:flex;align-items:baseline;gap:14px;padding:5px 0;border-bottom:1px solid var(--line-soft)}
+  .scale li .v{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);width:88px;flex:none}
+  .scale li .t{color:var(--ink);font-weight:700;line-height:1.1}
+  ul.scale{list-style:none;margin:0;padding:0}
+
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:5px 16px;font-size:14.5px;align-items:baseline}
+  .kv dt{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--accent);font-weight:600;white-space:nowrap}
+  .kv dd{margin:0;color:var(--ink-2)}
+
+  .clock{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+  @media (max-width:860px){.clock{grid-template-columns:repeat(2,1fr)}}
+  .cl{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)}
+  .cl .h{font-family:"IBM Plex Mono",monospace;font-size:12px;padding:8px 11px;background:var(--sunk);color:var(--ink);border-bottom:1px solid var(--line);font-weight:600}
+  .cl .b{padding:11px;display:grid;place-items:center}
+  .cl .cap{font-size:12.5px;color:var(--ink-2);padding:0 11px 11px;text-align:center}
+
+  .big-num{font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:clamp(26px,3.6vw,46px);color:var(--accent);line-height:1}
+  .eq{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:"IBM Plex Mono",monospace;font-size:clamp(14px,1.6vw,20px);font-weight:600}
+  .eq .op{color:var(--ink-3)}
+  .eq .pill{padding:6px 12px;border-radius:8px;border:2px solid}
+  .eq .pc{background:var(--blue-s);border-color:var(--blue);color:var(--blue)}
+  .eq .pp{background:var(--green-s);border-color:var(--green);color:var(--green)}
+  .eq .pb{background:var(--sunk);border-color:var(--ink-2);color:var(--ink)}
+  .eq .pt{background:var(--amber-soft);border-color:var(--amber);color:var(--amber)}
+</style>
+</head>
+<body>
+
+<main class="deck" id="deck">
+
+<!-- 1 -->
+<section class="slide title-slide">
+  <div class="eyebrow">Module 03</div>
+  <h1><span class="thin">CSS properties · the box model · shorthand</span>Everything is a box</h1>
+  <p class="sub">CSS has more than five hundred properties. You will use about sixty of them every day for the rest of your career. <b>This module covers those sixty, then the single model that explains why every layout you have ever fought with behaved the way it did.</b></p>
+  <div class="chips">
+    <span class="chip"><b>01</b>&nbsp; The industry property set</span>
+    <span class="chip"><b>02</b>&nbsp; Box model anatomy</span>
+    <span class="chip"><b>03</b>&nbsp; Margin collapse</span>
+    <span class="chip"><b>04</b>&nbsp; Shorthand rules</span>
+  </div>
+  <div class="grow"></div>
+</section>
+
+<!-- 2 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Properties</div>
+  <h2>You do not learn five hundred properties. You learn eight families.</h2>
+  <p class="sub">Every property answers one of eight questions about an element. Once you know which family a problem belongs to, the property name is a search away — and you stop guessing.</p>
+  <div class="grid g4">
+    <div class="card b"><span class="tag">Family 01</span><h3>Text</h3><p>What do the letters look like?</p></div>
+    <div class="card p"><span class="tag">Family 02</span><h3>Colour</h3><p>What colour is it, in front and behind?</p></div>
+    <div class="card g"><span class="tag">Family 03</span><h3>Box</h3><p>How big is it, and what space surrounds it?</p></div>
+    <div class="card a"><span class="tag">Family 04</span><h3>Border</h3><p>What is drawn at its edge?</p></div>
+  </div>
+  <div class="grid g4">
+    <div class="card"><span class="tag">Family 05</span><h3>Display</h3><p>Does it sit in a line, in a column, or in a grid?</p></div>
+    <div class="card"><span class="tag">Family 06</span><h3>Position</h3><p>Where is it, relative to what?</p></div>
+    <div class="card"><span class="tag">Family 07</span><h3>Overflow</h3><p>What happens when content does not fit?</p></div>
+    <div class="card"><span class="tag">Family 08</span><h3>Motion</h3><p>How does it change over time?</p></div>
+  </div>
+  <div class="callout"><b>Say this to the room:</b> when something looks wrong, name the family first. "The spacing is wrong" is family 03. "The wrong thing is on top" is family 06. You have just cut five hundred properties down to about eight.</div>
+</section>
+
+<!-- 3 -->
+<section class="slide">
+  <div class="eyebrow">Family 01 · Text</div>
+  <h2>Six properties do ninety percent of typography</h2>
+  <div class="grid g2">
+    <div>
+      <dl class="kv">
+        <dt>font-family</dt><dd>The typeface, with fallbacks — always end the list with a generic family.</dd>
+        <dt>font-size</dt><dd>Use <code>rem</code>, not <code>px</code>, so the user's browser setting still works.</dd>
+        <dt>font-weight</dt><dd><code>400</code> normal, <code>600</code> semibold, <code>700</code> bold. Numbers, not <code>bolder</code>.</dd>
+        <dt>line-height</dt><dd>Unitless. <code>1.5</code> for body, <code>1.1</code> for headings. A unit here breaks inheritance.</dd>
+        <dt>color</dt><dd>The text colour. Note the American spelling — there is no <code>colour</code>.</dd>
+        <dt>text-align</dt><dd><code>left</code>, <code>center</code>, <code>right</code>. Never <code>justify</code> on the web — it creates rivers.</dd>
+      </dl>
+      <div class="callout" style="margin-top:14px"><b>The line-height trap:</b> <code>line-height: 24px</code> inherits the literal 24px into children, no matter how small their text becomes. <code>line-height: 1.5</code> inherits the ratio. Always use the ratio.</div>
+    </div>
+    <div>
+      <span class="fname">A type scale that looks designed</span>
+      <div class="demo">
+        <ul class="scale">
+          <li><span class="v">3rem / 1.05</span><span class="t" style="font-size:2.3rem">Display</span></li>
+          <li><span class="v">2rem / 1.1</span><span class="t" style="font-size:1.7rem">Heading 1</span></li>
+          <li><span class="v">1.5rem / 1.2</span><span class="t" style="font-size:1.35rem">Heading 2</span></li>
+          <li><span class="v">1.125rem / 1.4</span><span class="t" style="font-size:1.05rem">Lead paragraph</span></li>
+          <li><span class="v">1rem / 1.6</span><span class="t" style="font-size:1rem;font-weight:400">Body text sits here</span></li>
+          <li><span class="v">0.875rem / 1.5</span><span class="t" style="font-size:.85rem;font-weight:400;color:var(--ink-3)">Caption and small print</span></li>
+        </ul>
+      </div>
+      <p class="sub" style="margin-top:12px;font-size:14px">Each step is roughly 1.25&times; the one below it. Pick a ratio once, and every heading in the product lines up for free.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="slide">
+  <div class="eyebrow">Family 01 · Text</div>
+  <h2>The polish layer</h2>
+  <div class="grid g3">
+    <div class="card">
+      <span class="tag">letter-spacing</span>
+      <p style="font-size:19px;color:var(--ink);letter-spacing:-.03em;font-weight:700">Tighten big headings</p>
+      <p style="font-size:12.5px;color:var(--ink);letter-spacing:.16em;text-transform:uppercase;font-weight:600">Open up small caps</p>
+      <p>Negative on large type, positive on small uppercase. Never on body text.</p>
+    </div>
+    <div class="card">
+      <span class="tag">text-transform</span>
+      <p style="text-transform:uppercase;color:var(--ink);font-weight:600">uppercase</p>
+      <p style="text-transform:capitalize;color:var(--ink);font-weight:600">capitalize each word</p>
+      <p>Changes appearance only. The underlying text stays as typed — which is what a screen reader and a copy-paste get.</p>
+    </div>
+    <div class="card">
+      <span class="tag">text-decoration</span>
+      <p><a href="#" onclick="return false" style="text-decoration:underline;text-underline-offset:3px">underline with offset</a></p>
+      <p style="text-decoration:line-through;color:var(--ink-3)">line-through</p>
+      <p>Use <code>text-underline-offset</code> to stop the line cutting through descenders.</p>
+    </div>
+  </div>
+  <div class="grid g3">
+    <div class="card">
+      <span class="tag">white-space</span>
+      <pre style="font-size:11.5px">white-space: nowrap;</pre>
+      <p>Stops text wrapping. The usual cause of a table column that will not behave.</p>
+    </div>
+    <div class="card">
+      <span class="tag">text-overflow</span>
+      <div style="max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink);font-weight:600">This sentence is deliberately far too long to fit in this card</div>
+      <p>Needs all three: <code>overflow:hidden</code>, <code>white-space:nowrap</code>, <code>text-overflow:ellipsis</code>. One alone does nothing.</p>
+    </div>
+    <div class="card">
+      <span class="tag">text-wrap</span>
+      <p style="text-wrap:balance;color:var(--ink);font-weight:600">A headline that balances its lines instead of leaving one orphan word</p>
+      <p><code>balance</code> on headings, <code>pretty</code> on paragraphs. Two words that make typography look professional.</p>
+    </div>
+  </div>
+  <div class="callout q"><b>Ask the room:</b> why does <code>text-overflow: ellipsis</code> so often "not work"? Because it only applies to content that is actually overflowing on one line — without <code>nowrap</code> the text simply wraps instead, and nothing ever overflows.</div>
+</section>
+
+<!-- 5 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Properties</div>
+  <h2>The unit decision, settled</h2>
+  <div class="scroll-x">
+    <table>
+      <tr><th>Unit</th><th>Relative to</th><th>Use it for</th><th>Do not use it for</th></tr>
+      <tr><td><code>px</code></td><td>Nothing — absolute</td><td>Borders, shadows, tiny radii</td><td>Font size. It ignores the user's browser setting.</td></tr>
+      <tr><td><code>rem</code></td><td>The root font size (16px by default)</td><td>Font size, spacing, most sizing</td><td>Nothing. This is the default choice.</td></tr>
+      <tr><td><code>em</code></td><td>The <i>current element's</i> font size</td><td>Padding inside a button, so it scales with its own text</td><td>Nested containers — it compounds and runs away.</td></tr>
+      <tr><td><code>%</code></td><td>The parent's size</td><td>Widths inside a layout</td><td>Height, unless the parent has a real height.</td></tr>
+      <tr><td><code>vw</code> <code>vh</code></td><td>The viewport</td><td>Full-screen heroes, <code>min-height:100vh</code></td><td>Font size alone — it stops scaling at the extremes.</td></tr>
+      <tr><td><code>ch</code></td><td>The width of the "0" character</td><td><code>max-width: 65ch</code> — the classic readable line length</td><td>Anything that is not text.</td></tr>
+      <tr><td><code>fr</code></td><td>Free space in a grid</td><td>Grid columns: <code>1fr 2fr</code></td><td>Anywhere outside grid.</td></tr>
+      <tr><td><code>auto</code></td><td>The content, or the free space</td><td><code>margin: 0 auto</code> to centre, <code>width:auto</code></td><td>Nothing — but know which meaning applies where.</td></tr>
+    </table>
+  </div>
+  <div class="grid g2">
+    <div class="card g">
+      <span class="tag">The one that replaced media queries</span>
+      <pre style="font-size:12px"><span class="a">font-size</span>: <span class="t">clamp</span>(<span class="s">1.5rem</span>, <span class="s">4vw</span>, <span class="s">3rem</span>);</pre>
+      <p>Never smaller than 1.5rem, never larger than 3rem, fluid in between. One line replaces three breakpoints.</p>
+    </div>
+    <div class="card a">
+      <span class="tag">The em trap, in numbers</span>
+      <pre style="font-size:12px"><span class="t">.a</span> { <span class="a">font-size</span>: <span class="s">1.2em</span> }  <span class="c">/* 19.2px */</span>
+<span class="t">.a .a</span> { <span class="c">/* inherits, then × 1.2 → 23px */</span> }
+<span class="t">.a .a .a</span> { <span class="c">/* → 27.6px */</span> }</pre>
+      <p>Three levels of nesting and your "1.2em" is now 27.6px. <code>rem</code> never compounds.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="slide">
+  <div class="eyebrow">Family 02 · Colour</div>
+  <h2>Four ways to write the same colour</h2>
+  <div class="swatchrow">
+    <div class="sw"><div class="fill" style="background:#0E6E68"></div><div class="nm"><b>Hex</b>#0E6E68<br>Compact. Unreadable.</div></div>
+    <div class="sw"><div class="fill" style="background:rgb(14 110 104)"></div><div class="nm"><b>RGB</b>rgb(14 110 104)<br>Additive light. Still unreadable.</div></div>
+    <div class="sw"><div class="fill" style="background:hsl(177 77% 24%)"></div><div class="nm"><b>HSL</b>hsl(177 77% 24%)<br>Hue, saturation, lightness.</div></div>
+    <div class="sw"><div class="fill" style="background:hsl(177 77% 24% / .45)"></div><div class="nm"><b>Alpha</b>hsl(… / .45)<br>Transparency on any notation.</div></div>
+  </div>
+  <div class="grid g2">
+    <div>
+      <h3 style="font-size:17px;margin-bottom:8px">Why HSL is the one to teach</h3>
+      <p class="sub" style="font-size:15px">Keep the hue, change the lightness, and you have a whole palette that matches — no design tool required.</p>
+      <div class="demo" style="margin-top:12px">
+        <div class="swatchrow">
+          <div class="sw"><div class="fill" style="background:hsl(177 60% 92%);height:40px"></div><div class="nm">92%</div></div>
+          <div class="sw"><div class="fill" style="background:hsl(177 60% 74%);height:40px"></div><div class="nm">74%</div></div>
+          <div class="sw"><div class="fill" style="background:hsl(177 60% 50%);height:40px"></div><div class="nm">50%</div></div>
+          <div class="sw"><div class="fill" style="background:hsl(177 60% 32%);height:40px"></div><div class="nm">32%</div></div>
+          <div class="sw"><div class="fill" style="background:hsl(177 60% 18%);height:40px"></div><div class="nm">18%</div></div>
+        </div>
+      </div>
+      <p class="sub" style="margin-top:10px;font-size:14px">One hue. One saturation. Five lightness values. That is a usable palette in thirty seconds.</p>
+    </div>
+    <div>
+      <h3 style="font-size:17px;margin-bottom:8px">What the industry actually ships</h3>
+      <pre style="font-size:12px"><span class="c">/* define once, at the root */</span>
+<span class="t">:root</span> {
+  <span class="a">--brand</span>: <span class="s">hsl(177 77% 24%)</span>;
+  <span class="a">--ink</span>:   <span class="s">hsl(200 22% 9%)</span>;
+  <span class="a">--line</span>:  <span class="s">hsl(195 15% 88%)</span>;
+}
+
+<span class="c">/* use everywhere */</span>
+<span class="t">.button</span> { <span class="a">background</span>: <span class="t">var</span>(<span class="s">--brand</span>) }</pre>
+      <div class="callout g" style="margin-top:12px"><b>This is not advanced.</b> Custom properties are how every real codebase handles colour. Change one line at the root and the entire product rebrands.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="slide">
+  <div class="eyebrow">Family 02 · Colour</div>
+  <h2>Backgrounds — one property, seven jobs</h2>
+  <div class="grid g3">
+    <div class="card">
+      <span class="tag">background-color</span>
+      <div style="height:54px;border-radius:7px;background:var(--blue-s);border:1px solid var(--blue)"></div>
+      <p>A flat colour. Paints the padding box, not just behind the text.</p>
+    </div>
+    <div class="card">
+      <span class="tag">linear-gradient</span>
+      <div style="height:54px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--plum))"></div>
+      <p>A gradient is an <i>image</i>, not a colour — so it goes in <code>background-image</code>.</p>
+    </div>
+    <div class="card">
+      <span class="tag">background-size: cover</span>
+      <div style="height:54px;border-radius:7px;background:radial-gradient(circle at 30% 40%,var(--amber-soft),var(--green-s) 70%)"></div>
+      <p><code>cover</code> fills and crops. <code>contain</code> fits and letterboxes. The difference is the whole job.</p>
+    </div>
+  </div>
+  <div class="grid g2">
+    <div>
+      <span class="fname">The shorthand, unpacked</span>
+      <pre style="font-size:12px"><span class="t">.hero</span> {
+  <span class="a">background</span>: <span class="s">#0E6E68</span> <span class="t">url</span>(<span class="s">hero.jpg</span>) <span class="s">center</span> / <span class="s">cover</span> <span class="s">no-repeat</span>;
+}
+
+<span class="c">/* is exactly the same as */</span>
+<span class="t">.hero</span> {
+  <span class="a">background-color</span>:    <span class="s">#0E6E68</span>;
+  <span class="a">background-image</span>:    <span class="t">url</span>(<span class="s">hero.jpg</span>);
+  <span class="a">background-position</span>: <span class="s">center</span>;
+  <span class="a">background-size</span>:     <span class="s">cover</span>;
+  <span class="a">background-repeat</span>:   <span class="s">no-repeat</span>;
+}</pre>
+    </div>
+    <div>
+      <ul class="clean">
+        <li><b>The slash is mandatory.</b> Size can only appear immediately after position, separated by <code>/</code>. Anywhere else it is ignored.</li>
+        <li><b>Set a background-color too.</b> It shows while the image loads, and if the image 404s the text is still readable.</li>
+        <li><b>Decorative images belong in CSS.</b> Content images belong in <code>&lt;img&gt;</code> with an <code>alt</code>. If it carries meaning, it is not a background.</li>
+      </ul>
+      <div class="callout"><b>Interview answer worth having:</b> <code>background</code> is a shorthand, so writing it resets every background-* property you did not mention — including a <code>background-image</code> set earlier in the cascade.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="slide">
+  <div class="eyebrow">Family 04 · Border</div>
+  <h2>Borders, radius, shadow — and the one that is not a border</h2>
+  <div class="grid g4">
+    <div class="card">
+      <span class="tag">border</span>
+      <div style="height:46px;border-radius:6px;border:3px solid var(--accent)"></div>
+      <p><code>width style color</code>. Miss out <code>style</code> and nothing renders — the default is <code>none</code>.</p>
+    </div>
+    <div class="card">
+      <span class="tag">border-radius</span>
+      <div style="height:46px;border-radius:14px;background:var(--accent-soft);border:1px solid var(--accent)"></div>
+      <p><code>50%</code> gives a circle on a square. <code>999px</code> gives a pill on any rectangle.</p>
+    </div>
+    <div class="card">
+      <span class="tag">box-shadow</span>
+      <div style="height:46px;border-radius:8px;background:var(--card);box-shadow:0 2px 4px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.10)"></div>
+      <p>Two shadows — one tight, one wide — read as real depth. One big blurry shadow reads as a smudge.</p>
+    </div>
+    <div class="card a">
+      <span class="tag">outline</span>
+      <div style="height:46px;border-radius:8px;background:var(--card);outline:3px solid var(--amber);outline-offset:2px;border:1px solid var(--line)"></div>
+      <p>Drawn <b>outside</b> the border and takes up <b>no space</b>. This is why it is the focus ring.</p>
+    </div>
+  </div>
+  <div class="grid g2">
+    <div class="card r">
+      <span class="tag">Never do this</span>
+      <pre style="font-size:12px"><span class="t">*:focus</span> { <span class="a">outline</span>: <span class="s">none</span>; }</pre>
+      <p style="margin-top:6px">You have just made the product unusable for every keyboard user — and it is the single most common accessibility failure in the industry.</p>
+    </div>
+    <div class="card g">
+      <span class="tag">Do this instead</span>
+      <pre style="font-size:12px"><span class="t">:focus-visible</span> {
+  <span class="a">outline</span>: <span class="s">3px solid var(--brand)</span>;
+  <span class="a">outline-offset</span>: <span class="s">2px</span>;
+}</pre>
+      <p style="margin-top:6px"><code>:focus-visible</code> shows the ring for keyboard users and hides it for mouse clicks. You get a clean design and an accessible one.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="slide">
+  <div class="eyebrow">Family 05 · Display</div>
+  <h2>display decides the rules everything else plays by</h2>
+  <div class="scroll-x">
+    <table>
+      <tr><th>Value</th><th>Sits</th><th>Respects width / height?</th><th>Vertical margin?</th><th>Typical use</th></tr>
+      <tr><td><code>block</code></td><td>On its own line, full width</td><td>Yes</td><td>Yes</td><td>div, p, section, h1</td></tr>
+      <tr><td><code>inline</code></td><td>In the flow of text</td><td><b>No</b></td><td><b>No</b></td><td>span, a, strong, em</td></tr>
+      <tr><td><code>inline-block</code></td><td>In the flow, but is a box</td><td>Yes</td><td>Yes</td><td>Buttons and chips in a sentence</td></tr>
+      <tr><td><code>flex</code></td><td>Children in one direction</td><td>Yes</td><td>Yes</td><td>Toolbars, rows, cards, nav</td></tr>
+      <tr><td><code>grid</code></td><td>Children in rows and columns</td><td>Yes</td><td>Yes</td><td>Page layout, galleries</td></tr>
+      <tr><td><code>none</code></td><td>Nowhere — removed from the layout</td><td>—</td><td>—</td><td>Hiding things completely</td></tr>
+    </table>
+  </div>
+  <div class="grid g2">
+    <div class="card r">
+      <span class="tag">The bug you will hit this week</span>
+      <pre style="font-size:12px"><span class="t">a</span> { <span class="a">width</span>: <span class="s">200px</span>; <span class="a">padding</span>: <span class="s">20px 0</span>; }</pre>
+      <p style="margin-top:6px"><b>Neither line works.</b> An <code>&lt;a&gt;</code> is inline: width is ignored, and vertical padding overflows the line box without pushing anything apart. Add <code>display:inline-block</code> and both start working.</p>
+    </div>
+    <div class="card">
+      <span class="tag">Three ways to hide — they are not the same</span>
+      <dl class="kv" style="font-size:13.5px">
+        <dt>display:none</dt><dd>Gone. No space, not in the accessibility tree, not read aloud.</dd>
+        <dt>visibility:hidden</dt><dd>Invisible but <b>still occupies its space</b>. The gap stays.</dd>
+        <dt>opacity:0</dt><dd>Invisible, occupies space, and is <b>still clickable</b>. The classic phantom-button bug.</dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="slide">
+  <div class="eyebrow">Family 06 · Position</div>
+  <h2>position — five values, one question each</h2>
+  <div class="scroll-x">
+    <svg viewBox="0 0 940 300" role="img" aria-label="Diagram comparing static, relative, absolute, fixed and sticky positioning">
+      <rect x="14" y="16" width="176" height="268" rx="9" fill="var(--sunk)" stroke="var(--line)" stroke-width="1.5"/>
+      <text x="26" y="40" font-family="IBM Plex Mono, monospace" font-size="12.5" font-weight="600" fill="var(--ink)">static</text>
+      <text x="26" y="60" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--ink-3)">The default.</text>
+      <rect x="30" y="76" width="144" height="42" rx="6" fill="var(--card)" stroke="var(--line)" stroke-width="1.5"/>
+      <rect x="30" y="126" width="144" height="42" rx="6" fill="var(--card)" stroke="var(--line)" stroke-width="1.5"/>
+      <rect x="30" y="176" width="144" height="42" rx="6" fill="var(--card)" stroke="var(--line)" stroke-width="1.5"/>
+      <text x="26" y="248" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--ink-3)">top/left/z-index</text>
+      <text x="26" y="264" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--ink-3)">are all ignored.</text>
+
+      <rect x="202" y="16" width="176" height="268" rx="9" fill="var(--blue-s)" stroke="var(--blue)" stroke-width="1.5"/>
+      <text x="214" y="40" font-family="IBM Plex Mono, monospace" font-size="12.5" font-weight="600" fill="var(--blue)">relative</text>
+      <text x="214" y="60" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--ink-3)">Nudged from itself.</text>
+      <rect x="218" y="76" width="144" height="42" rx="6" fill="var(--card)" stroke="var(--blue)" stroke-width="1.5"/>
+      <rect x="218" y="126" width="144" height="42" rx="6" fill="var(--card)" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="4 4" opacity=".6"/>
+      <rect x="236" y="136" width="144" height="42" rx="6" fill="var(--blue-s)" stroke="var(--blue)" stroke-width="2"/>
+      <text x="248" y="162" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--blue)">top:10 left:18</text>
+      <rect x="218" y="196" width="144" height="42" rx="6" fill="var(--card)" stroke="var(--blue)" stroke-width="1.5"/>
+      <text x="214" y="264" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--ink-3)">Its original space is kept.</text>
+
+      <rect x="390" y="16" width="176" height="268" rx="9" fill="var(--plum-s)" stroke="var(--plum)" stroke-width="1.5"/>
+      <text x="402" y="40" font-family="IBM Plex Mono, monospace" font-size="12.5" font-weight="600" fill="var(--plum)">absolute</text>
+      <text x="402" y="60" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--ink-3)">Out of the flow.</text>
+      <rect x="406" y="76" width="144" height="42" rx="6" fill="var(--card)" stroke="var(--plum)" stroke-width="1.5"/>
+      <rect x="406" y="126" width="144" height="42" rx="6" fill="var(--card)" stroke="var(--plum)" stroke-width="1.5"/>
+      <rect x="470" y="96" width="82" height="36" rx="6" fill="var(--plum-s)" stroke="var(--plum)" stroke-width="2"/>
+      <text x="482" y="119" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--plum)">badge</text>
+      <text x="402" y="232" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--ink-3)">Positioned against the</text>
+      <text x="402" y="248" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--ink-3)">nearest ancestor that is</text>
+      <text x="402" y="264" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--ink-3)">NOT static.</text>
+
+      <rect x="578" y="16" width="176" height="268" rx="9" fill="var(--amber-soft)" stroke="var(--amber)" stroke-width="1.5"/>
+      <text x="590" y="40" font-family="IBM Plex Mono, monospace" font-size="12.5" font-weight="600" fill="var(--amber)">fixed</text>
+      <text x="590" y="60" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--ink-3)">Pinned to the screen.</text>
+      <rect x="594" y="74" width="144" height="34" rx="6" fill="var(--amber-soft)" stroke="var(--amber)" stroke-width="2"/>
+      <text x="606" y="96" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--amber)">sticky header</text>
+      <rect x="594" y="120" width="144" height="38" rx="6" fill="var(--card)" stroke="var(--line)" stroke-width="1.5"/>
+      <rect x="594" y="166" width="144" height="38" rx="6" fill="var(--card)" stroke="var(--line)" stroke-width="1.5"/>
+      <text x="590" y="248" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--ink-3)">Ignores scrolling</text>
+      <text x="590" y="264" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--ink-3)">entirely.</text>
+
+      <rect x="766" y="16" width="160" height="268" rx="9" fill="var(--green-s)" stroke="var(--green)" stroke-width="1.5"/>
+      <text x="778" y="40" font-family="IBM Plex Mono, monospace" font-size="12.5" font-weight="600" fill="var(--green)">sticky</text>
+      <text x="778" y="60" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--ink-3)">Both, in sequence.</text>
+      <rect x="782" y="76" width="128" height="34" rx="6" fill="var(--card)" stroke="var(--line)" stroke-width="1.5"/>
+      <rect x="782" y="118" width="128" height="34" rx="6" fill="var(--green-s)" stroke="var(--green)" stroke-width="2"/>
+      <text x="794" y="140" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--green)">top: 0</text>
+      <rect x="782" y="160" width="128" height="34" rx="6" fill="var(--card)" stroke="var(--line)" stroke-width="1.5"/>
+      <text x="778" y="232" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--ink-3)">Scrolls normally, then</text>
+      <text x="778" y="248" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--ink-3)">sticks. Needs a top/left</text>
+      <text x="778" y="264" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--ink-3)">value or it does nothing.</text>
+    </svg>
+  </div>
+  <div class="callout q"><b>The question that catches everyone:</b> "absolute to what?" — to the nearest ancestor whose <code>position</code> is anything other than <code>static</code>. If there isn't one, it goes all the way up to the page. This is why <code>position:relative</code> on a parent, with no offsets at all, is one of the most-written lines in CSS.</div>
+</section>
+
+<!-- 11 -->
+<section class="slide">
+  <div class="eyebrow">Families 07 &amp; 08</div>
+  <h2>Overflow, motion, and the pointer</h2>
+  <div class="grid g2">
+    <div>
+      <h3 style="font-size:17px;margin-bottom:9px">overflow — what happens when it does not fit</h3>
+      <dl class="kv">
+        <dt>visible</dt><dd>The default. Content spills out and is still visible.</dd>
+        <dt>hidden</dt><dd>Clipped. Also the fix for a child escaping a rounded corner.</dd>
+        <dt>auto</dt><dd>A scrollbar appears <b>only</b> when needed. Almost always the right answer.</dd>
+        <dt>scroll</dt><dd>A scrollbar always, even when it is not needed.</dd>
+        <dt>overflow-x</dt><dd>Wrap a wide table in a container with <code>overflow-x:auto</code> — the page stops scrolling sideways on phones.</dd>
+      </dl>
+      <div class="callout" style="margin-top:12px"><b>Debug trick worth memorising:</b> when a page scrolls sideways on mobile and you cannot find why, add <code>* { outline: 1px solid red }</code> and the guilty element shows itself immediately.</div>
+    </div>
+    <div>
+      <h3 style="font-size:17px;margin-bottom:9px">transition — four values, in order</h3>
+      <pre style="font-size:12px"><span class="a">transition</span>: <span class="s">background-color</span> <span class="s">.2s</span> <span class="s">ease</span> <span class="s">0s</span>;
+              <span class="c">/*  what   how long  curve  delay */</span></pre>
+      <div class="demo" style="margin-top:12px">
+        <p style="font-size:13px;color:var(--ink-2);margin-bottom:10px">Hover both — only one of them eases.</p>
+        <div class="row">
+          <button style="font-family:inherit;font-size:14px;font-weight:600;padding:10px 18px;border-radius:9px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer" onmouseover="this.style.background='var(--accent-soft)';this.style.borderColor='var(--accent)'" onmouseout="this.style.background='var(--card)';this.style.borderColor='var(--line)'">No transition</button>
+          <button style="font-family:inherit;font-size:14px;font-weight:600;padding:10px 18px;border-radius:9px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;transition:background-color .25s ease,border-color .25s ease" onmouseover="this.style.background='var(--accent-soft)';this.style.borderColor='var(--accent)'" onmouseout="this.style.background='var(--card)';this.style.borderColor='var(--line)'">transition: .25s ease</button>
+        </div>
+      </div>
+      <ul class="clean" style="margin-top:14px">
+        <li><b>Never animate <code>all</code>.</b> It transitions properties you did not intend and costs performance. Name them.</li>
+        <li><b>Only <code>transform</code> and <code>opacity</code> are cheap.</b> Animating <code>width</code>, <code>top</code> or <code>margin</code> forces the browser to redo layout on every frame.</li>
+        <li><b><code>cursor:pointer</code> is a hint, not a feature.</b> If it needs a pointer cursor to look clickable, it should probably have been a <code>&lt;button&gt;</code>.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 12 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Reference</div>
+  <h2>The properties you will actually use</h2>
+  <p class="sub">Print this one. It is the working set — everything else you can look up on the day you need it.</p>
+  <div class="scroll-x">
+    <table style="font-size:13px">
+      <tr><th>Family</th><th>Properties</th></tr>
+      <tr><td>Text</td><td><code>font-family</code> <code>font-size</code> <code>font-weight</code> <code>font-style</code> <code>line-height</code> <code>letter-spacing</code> <code>text-align</code> <code>text-transform</code> <code>text-decoration</code> <code>text-overflow</code> <code>text-wrap</code> <code>white-space</code> <code>word-break</code></td></tr>
+      <tr><td>Colour</td><td><code>color</code> <code>background-color</code> <code>background-image</code> <code>background-size</code> <code>background-position</code> <code>background-repeat</code> <code>background</code> <code>opacity</code></td></tr>
+      <tr><td>Box</td><td><code>width</code> <code>height</code> <code>min-width</code> <code>max-width</code> <code>min-height</code> <code>max-height</code> <code>margin</code> <code>padding</code> <code>box-sizing</code></td></tr>
+      <tr><td>Border</td><td><code>border</code> <code>border-width</code> <code>border-style</code> <code>border-color</code> <code>border-radius</code> <code>box-shadow</code> <code>outline</code> <code>outline-offset</code></td></tr>
+      <tr><td>Display</td><td><code>display</code> <code>visibility</code> <code>gap</code> <code>flex-direction</code> <code>justify-content</code> <code>align-items</code> <code>flex-wrap</code> <code>flex</code> <code>grid-template-columns</code> <code>grid-column</code></td></tr>
+      <tr><td>Position</td><td><code>position</code> <code>top</code> <code>right</code> <code>bottom</code> <code>left</code> <code>inset</code> <code>z-index</code></td></tr>
+      <tr><td>Overflow</td><td><code>overflow</code> <code>overflow-x</code> <code>overflow-y</code> <code>object-fit</code> <code>aspect-ratio</code></td></tr>
+      <tr><td>Motion</td><td><code>transition</code> <code>transform</code> <code>animation</code> <code>cursor</code> <code>pointer-events</code> <code>user-select</code></td></tr>
+      <tr><td>Variables</td><td><code>--your-name</code> &nbsp;·&nbsp; read with <code>var(--your-name, fallback)</code></td></tr>
+    </table>
+  </div>
+  <div class="callout g"><b>Fifty-eight properties.</b> That is the whole industry working set. Every senior engineer you will ever meet reaches for roughly this list and looks up the rest.</div>
+</section>
+
+<!-- 13 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · The box model</div>
+  <h2>Every element on every page is four nested rectangles</h2>
+  <div class="scroll-x">
+    <svg viewBox="0 0 940 400" role="img" aria-label="The CSS box model: margin outside border, border around padding, padding around content">
+      <rect x="16" y="16" width="908" height="368" rx="10" fill="var(--amber-soft)" stroke="var(--amber)" stroke-width="2" stroke-dasharray="7 5"/>
+      <text x="34" y="42" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="600" fill="var(--amber)">margin</text>
+      <text x="34" y="62" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink-3)">Space OUTSIDE the element. Always transparent — you cannot colour it.</text>
+
+      <rect x="120" y="86" width="700" height="228" rx="6" fill="var(--sunk)" stroke="var(--ink-2)" stroke-width="7"/>
+      <text x="138" y="112" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="600" fill="var(--ink)">border</text>
+      <text x="138" y="131" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink-3)">The edge itself. Has width, style and colour.</text>
+
+      <rect x="160" y="146" width="620" height="140" rx="5" fill="var(--green-s)" stroke="var(--green)" stroke-width="2"/>
+      <text x="178" y="170" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="600" fill="var(--green)">padding</text>
+      <text x="178" y="188" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink-3)">Space INSIDE, between the border and the content.</text>
+      <text x="178" y="205" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink-3)">Takes the background colour.</text>
+
+      <rect x="300" y="218" width="340" height="52" rx="5" fill="var(--blue-s)" stroke="var(--blue)" stroke-width="2"/>
+      <text x="318" y="242" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="600" fill="var(--blue)">content</text>
+      <text x="318" y="260" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink-3)">Your text, your image. This is what width and height measure.</text>
+
+      <line x1="16" y1="350" x2="924" y2="350" stroke="var(--amber)" stroke-width="1.5"/>
+      <line x1="16" y1="344" x2="16" y2="356" stroke="var(--amber)" stroke-width="2"/>
+      <line x1="924" y1="344" x2="924" y2="356" stroke="var(--amber)" stroke-width="2"/>
+      <rect x="392" y="338" width="156" height="24" rx="5" fill="var(--amber-soft)"/>
+      <text x="470" y="355" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11.5" font-weight="600" fill="var(--amber)">the space it occupies</text>
+
+      <line x1="120" y1="330" x2="820" y2="330" stroke="var(--ink-2)" stroke-width="1.5"/>
+      <line x1="120" y1="324" x2="120" y2="336" stroke="var(--ink-2)" stroke-width="2"/>
+      <line x1="820" y1="324" x2="820" y2="336" stroke="var(--ink-2)" stroke-width="2"/>
+      <rect x="418" y="318" width="104" height="24" rx="5" fill="var(--sunk)"/>
+      <text x="470" y="335" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11.5" font-weight="600" fill="var(--ink)">border box</text>
+    </svg>
+  </div>
+  <div class="grid g2">
+    <div class="callout"><b>The rule that explains most confusion:</b> <code>width</code> measures the <b>content box only</b> by default. Padding and border are added on top of it, not contained within it.</div>
+    <div class="callout q"><b>Why margin has no colour:</b> margin is not part of the element. It is a request for empty space next to it — so there is nothing there to paint. Set a background and you will see it stop at the border.</div>
+  </div>
+</section>
+
+<!-- 14 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · The box model</div>
+  <h2>The arithmetic that surprises everyone</h2>
+  <p class="sub">You asked for a box 300 pixels wide. Measure it on the page and it is 350. Nothing is broken — this is the default box model doing exactly what it was designed to do.</p>
+  <div class="grid g2">
+    <div>
+      <pre><span class="t">.card</span> {
+  <span class="a">width</span>:   <span class="s">300px</span>;
+  <span class="a">padding</span>: <span class="s">20px</span>;
+  <span class="a">border</span>:  <span class="s">5px solid</span>;
+}</pre>
+      <div class="eq" style="margin-top:18px">
+        <span class="pill pc">300</span><span class="op">+</span>
+        <span class="pill pp">20</span><span class="op">+</span>
+        <span class="pill pp">20</span><span class="op">+</span>
+        <span class="pill pb">5</span><span class="op">+</span>
+        <span class="pill pb">5</span>
+      </div>
+      <div class="eq" style="margin-top:12px"><span class="op">=</span> <span class="pill pt">350px on screen</span></div>
+      <p class="sub" style="margin-top:14px;font-size:14px">Content 300. Padding twice — left and right. Border twice — left and right. Margin is not counted here because margin is outside the box, not part of it.</p>
+    </div>
+    <div>
+      <div class="scroll-x">
+        <svg viewBox="0 0 440 250" role="img" aria-label="Measuring bar showing 300px content plus padding and border equals 350px total">
+          <rect x="20" y="40" width="400" height="90" rx="5" fill="var(--sunk)" stroke="var(--ink-2)" stroke-width="10"/>
+          <rect x="45" y="65" width="350" height="40" rx="4" fill="var(--green-s)" stroke="var(--green)" stroke-width="2"/>
+          <rect x="70" y="72" width="300" height="26" rx="3" fill="var(--blue-s)" stroke="var(--blue)" stroke-width="2"/>
+          <text x="220" y="90" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="var(--blue)">content 300</text>
+
+          <line x1="45" y1="150" x2="70" y2="150" stroke="var(--green)" stroke-width="2"/>
+          <text x="57" y="168" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--green)">20</text>
+          <line x1="370" y1="150" x2="395" y2="150" stroke="var(--green)" stroke-width="2"/>
+          <text x="382" y="168" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--green)">20</text>
+          <line x1="20" y1="150" x2="45" y2="150" stroke="var(--ink-2)" stroke-width="2"/>
+          <text x="30" y="185" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-2)">5</text>
+          <line x1="395" y1="150" x2="420" y2="150" stroke="var(--ink-2)" stroke-width="2"/>
+          <text x="410" y="185" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-2)">5</text>
+
+          <line x1="20" y1="212" x2="420" y2="212" stroke="var(--amber)" stroke-width="2"/>
+          <line x1="20" y1="205" x2="20" y2="219" stroke="var(--amber)" stroke-width="2.5"/>
+          <line x1="420" y1="205" x2="420" y2="219" stroke="var(--amber)" stroke-width="2.5"/>
+          <rect x="176" y="199" width="88" height="24" rx="5" fill="var(--amber-soft)"/>
+          <text x="220" y="216" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12.5" font-weight="700" fill="var(--amber)">350px</text>
+        </svg>
+      </div>
+      <div class="callout"><b>Where this bites in real work:</b> four cards at <code>width:25%</code> with any padding at all will not fit on one row — they add up to more than 100%. The whole industry hit this so often that the fix became a universal default.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · The box model</div>
+  <h2>box-sizing: the one line every project starts with</h2>
+  <div class="grid g2">
+    <div class="card r">
+      <span class="tag">content-box · the default</span>
+      <h3>width = content only</h3>
+      <pre style="font-size:12px"><span class="a">width</span>: <span class="s">300px</span>;  <span class="c">/* content */</span>
+<span class="a">padding</span>: <span class="s">20px</span>;
+<span class="a">border</span>: <span class="s">5px solid</span>;
+<span class="c">/* → renders 350px wide */</span></pre>
+      <div style="margin-top:12px;box-sizing:content-box;width:100%;max-width:230px;padding:14px;border:4px solid var(--red);background:var(--red-s);border-radius:7px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--red)">content-box</div>
+      <p style="margin-top:8px">You asked for 300. You got 350. Every calculation you do must now account for padding you may not even have written.</p>
+    </div>
+    <div class="card g">
+      <span class="tag">border-box · what you want</span>
+      <h3>width = the whole visible box</h3>
+      <pre style="font-size:12px"><span class="a">box-sizing</span>: <span class="s">border-box</span>;
+<span class="a">width</span>: <span class="s">300px</span>;  <span class="c">/* total */</span>
+<span class="a">padding</span>: <span class="s">20px</span>;
+<span class="a">border</span>: <span class="s">5px solid</span>;
+<span class="c">/* → renders 300px wide */</span></pre>
+      <div style="margin-top:12px;box-sizing:border-box;width:100%;max-width:230px;padding:14px;border:4px solid var(--green);background:var(--green-s);border-radius:7px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--green)">border-box</div>
+      <p style="margin-top:8px">Padding and border now grow <b>inwards</b>. The content shrinks to 250px and the box stays at 300, exactly as asked.</p>
+    </div>
+  </div>
+  <div>
+    <span class="fname">Put this at the top of every stylesheet you ever write</span>
+    <pre><span class="t">*</span>, <span class="t">*::before</span>, <span class="t">*::after</span> {
+  <span class="a">box-sizing</span>: <span class="s">border-box</span>;
+}</pre>
+  </div>
+  <div class="callout g"><b>Worth saying out loud:</b> this is not a workaround or a hack. Every CSS framework in existence ships this line. The original model was a specification decision from 1996 that the industry quietly voted against — and <code>box-sizing</code> is the vote.</div>
+</section>
+
+<!-- 16 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · The box model</div>
+  <h2>Margin is the odd one out</h2>
+  <div class="grid g3">
+    <div class="card a">
+      <span class="tag">Difference 1</span>
+      <h3>It is outside</h3>
+      <p>Padding is inside the border and takes the background colour. Margin is outside it and is always transparent, whatever you set.</p>
+    </div>
+    <div class="card a">
+      <span class="tag">Difference 2</span>
+      <h3>It can be negative</h3>
+      <p><code>margin-top: -20px</code> pulls the element upward and overlaps what is above it. <code>padding: -20px</code> is simply invalid and ignored.</p>
+    </div>
+    <div class="card a">
+      <span class="tag">Difference 3</span>
+      <h3>It collapses</h3>
+      <p>Two vertical margins meeting each other do not add up. The larger one wins and the smaller disappears. Padding never does this.</p>
+    </div>
+  </div>
+  <div class="grid g2">
+    <div>
+      <h3 style="font-size:17px;margin-bottom:8px">Padding or margin? One question decides it.</h3>
+      <div class="callout q" style="margin-top:0"><b>Should the background stretch to cover this space?</b><br>Yes → <b>padding</b>. &nbsp; No → <b>margin</b>.</div>
+      <div class="demo" style="margin-top:14px">
+        <div style="display:flex;gap:16px;flex-wrap:wrap">
+          <div style="background:var(--green-s);border:2px solid var(--green);border-radius:8px;padding:22px 18px;font-size:13px;font-weight:600;color:var(--green)">padding<br><span style="font-weight:400;font-size:11.5px">colour reaches the edge</span></div>
+          <div style="background:var(--blue-s);border:2px dashed var(--blue);border-radius:8px;font-size:13px;font-weight:600;color:var(--blue);margin:22px 18px">margin<br><span style="font-weight:400;font-size:11.5px">colour stops at the border</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h3 style="font-size:17px;margin-bottom:8px">margin: auto — the centring rule</h3>
+      <pre style="font-size:12px"><span class="t">.page</span> {
+  <span class="a">max-width</span>: <span class="s">1100px</span>;
+  <span class="a">margin</span>: <span class="s">0 auto</span>;   <span class="c">/* ← centred */</span>
+}</pre>
+      <ul class="clean" style="margin-top:12px">
+        <li><b>Horizontal only.</b> <code>margin: auto 0</code> does not centre vertically — auto resolves to zero on the vertical axis.</li>
+        <li><b>The element must have a width.</b> A block element with no width already fills its parent, so there is no free space for auto to split.</li>
+        <li><b>For vertical centring</b> use flexbox: <code>display:flex; align-items:center</code>. That is what it is for.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 17 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · The box model</div>
+  <h2>Margin collapse — three rules, and the bug it causes</h2>
+  <div class="scroll-x">
+    <svg viewBox="0 0 940 210" role="img" aria-label="Diagram showing two adjacent margins of 30 and 20 pixels collapsing into a single 30 pixel gap">
+      <text x="20" y="24" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="var(--red)">What you expect: 30 + 20 = 50</text>
+      <rect x="20" y="36" width="260" height="46" rx="6" fill="var(--blue-s)" stroke="var(--blue)" stroke-width="2"/>
+      <text x="38" y="64" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="var(--blue)">margin-bottom: 30px</text>
+      <rect x="20" y="88" width="260" height="30" rx="4" fill="var(--red-s)" stroke="var(--red)" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <text x="150" y="108" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11.5" font-weight="600" fill="var(--red)">50px gap</text>
+      <rect x="20" y="124" width="260" height="46" rx="6" fill="var(--blue-s)" stroke="var(--blue)" stroke-width="2"/>
+      <text x="38" y="152" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="var(--blue)">margin-top: 20px</text>
+      <text x="150" y="194" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--red)">Wrong.</text>
+
+      <text x="420" y="24" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="var(--green)">What happens: max(30, 20) = 30</text>
+      <rect x="420" y="36" width="260" height="46" rx="6" fill="var(--blue-s)" stroke="var(--blue)" stroke-width="2"/>
+      <text x="438" y="64" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="var(--blue)">margin-bottom: 30px</text>
+      <rect x="420" y="88" width="260" height="20" rx="4" fill="var(--green-s)" stroke="var(--green)" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <text x="550" y="102" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="var(--green)">30px gap</text>
+      <rect x="420" y="114" width="260" height="46" rx="6" fill="var(--blue-s)" stroke="var(--blue)" stroke-width="2"/>
+      <text x="438" y="142" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="var(--blue)">margin-top: 20px</text>
+      <text x="550" y="194" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--green)">The larger one wins. The smaller vanishes.</text>
+
+      <rect x="716" y="36" width="206" height="136" rx="9" fill="var(--amber-soft)" stroke="var(--amber)" stroke-width="1.5"/>
+      <text x="734" y="60" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="var(--amber)">It only ever happens</text>
+      <text x="734" y="82" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink-2)">• vertically — never</text>
+      <text x="742" y="98" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink-2)">left and right</text>
+      <text x="734" y="120" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink-2)">• between margins,</text>
+      <text x="742" y="136" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink-2)">never padding</text>
+      <text x="734" y="158" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink-2)">• never inside flex or grid</text>
+    </svg>
+  </div>
+  <div class="grid g3">
+    <div class="card"><span class="tag">Rule 1 · Adjacent siblings</span><p>Two elements stacked on top of each other. The bottom margin of the first and the top margin of the second merge into one.</p></div>
+    <div class="card"><span class="tag">Rule 2 · Parent and first child</span><p>A parent with no padding or border "leaks" its child's top margin outside itself. The child moves nothing — the <b>parent</b> moves down.</p></div>
+    <div class="card"><span class="tag">Rule 3 · Empty elements</span><p>An element with no content, padding or border collapses its own top and bottom margins into each other.</p></div>
+  </div>
+  <div class="callout"><b>The three ways to stop it:</b> add <code>padding</code> or a <code>border</code> to the parent · give the parent <code>display:flex</code> or <code>grid</code> · use <code>gap</code> instead of margins altogether. <b>In modern work, the answer is almost always <code>gap</code></b> — it never collapses, never leaks, and applies only between items.</div>
+</section>
+
+<!-- 18 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · Shorthand</div>
+  <h2>The clock rule</h2>
+  <p class="sub">Four values go clockwise from the top: <b>top, right, bottom, left</b>. Give fewer, and the missing sides copy the side opposite them. This one rule covers <code>margin</code>, <code>padding</code>, <code>border-width</code>, <code>border-color</code>, <code>border-style</code> and <code>inset</code>.</p>
+  <div class="clock">
+    <div class="cl">
+      <div class="h">padding: 10px</div>
+      <div class="b">
+        <svg viewBox="0 0 150 110" style="max-width:150px" role="img" aria-label="One value applies ten pixels to all four sides">
+          <rect x="18" y="14" width="114" height="82" rx="5" fill="var(--green-s)" stroke="var(--green)" stroke-width="2"/>
+          <rect x="38" y="34" width="74" height="42" rx="4" fill="var(--blue-s)" stroke="var(--blue)" stroke-width="1.5"/>
+          <text x="75" y="27" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--green)">10</text>
+          <text x="75" y="90" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--green)">10</text>
+          <text x="27" y="59" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--green)">10</text>
+          <text x="123" y="59" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--green)">10</text>
+        </svg>
+      </div>
+      <div class="cap"><b>1 value</b> → all four sides</div>
+    </div>
+    <div class="cl">
+      <div class="h">padding: 10px 30px</div>
+      <div class="b">
+        <svg viewBox="0 0 150 110" style="max-width:150px" role="img" aria-label="Two values apply ten to top and bottom, thirty to left and right">
+          <rect x="8" y="14" width="134" height="82" rx="5" fill="var(--green-s)" stroke="var(--green)" stroke-width="2"/>
+          <rect x="48" y="34" width="54" height="42" rx="4" fill="var(--blue-s)" stroke="var(--blue)" stroke-width="1.5"/>
+          <text x="75" y="27" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--green)">10</text>
+          <text x="75" y="90" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--green)">10</text>
+          <text x="28" y="59" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--green)">30</text>
+          <text x="122" y="59" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--green)">30</text>
+        </svg>
+      </div>
+      <div class="cap"><b>2 values</b> → vertical, horizontal</div>
+    </div>
+    <div class="cl">
+      <div class="h">padding: 10px 30px 40px</div>
+      <div class="b">
+        <svg viewBox="0 0 150 110" style="max-width:150px" role="img" aria-label="Three values apply ten to top, thirty to both sides, forty to bottom">
+          <rect x="8" y="10" width="134" height="92" rx="5" fill="var(--green-s)" stroke="var(--green)" stroke-width="2"/>
+          <rect x="48" y="28" width="54" height="32" rx="4" fill="var(--blue-s)" stroke="var(--blue)" stroke-width="1.5"/>
+          <text x="75" y="23" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--green)">10</text>
+          <text x="75" y="88" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="700" fill="var(--green)">40</text>
+          <text x="28" y="48" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--green)">30</text>
+          <text x="122" y="48" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--green)">30</text>
+        </svg>
+      </div>
+      <div class="cap"><b>3 values</b> → top, sides, bottom</div>
+    </div>
+    <div class="cl">
+      <div class="h">padding: 10px 30px 40px 5px</div>
+      <div class="b">
+        <svg viewBox="0 0 150 110" style="max-width:150px" role="img" aria-label="Four values go clockwise from the top: ten, thirty, forty, five">
+          <rect x="8" y="10" width="134" height="92" rx="5" fill="var(--green-s)" stroke="var(--green)" stroke-width="2"/>
+          <rect x="26" y="28" width="76" height="32" rx="4" fill="var(--blue-s)" stroke="var(--blue)" stroke-width="1.5"/>
+          <text x="64" y="23" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--green)">10</text>
+          <text x="64" y="88" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="700" fill="var(--green)">40</text>
+          <text x="17" y="48" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="700" fill="var(--green)">5</text>
+          <text x="122" y="48" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--green)">30</text>
+        </svg>
+      </div>
+      <div class="cap"><b>4 values</b> → T, R, B, L clockwise</div>
+    </div>
+  </div>
+  <div class="callout q"><b>The memory hook that actually sticks:</b> start at twelve o'clock and go clockwise — <b>T R B L</b>. Say it as <i>"trouble"</i>. Then: three values means the left side copies the right, and two values means each side copies its opposite.</div>
+</section>
+
+<!-- 19 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · Shorthand</div>
+  <h2>Every shorthand you need, and what it expands to</h2>
+  <div class="scroll-x">
+    <table style="font-size:13px">
+      <tr><th>Shorthand</th><th>Order of values</th><th>Example</th></tr>
+      <tr><td><code>margin</code> <code>padding</code></td><td>Clock rule — 1, 2, 3 or 4 values</td><td><code>margin: 0 auto</code></td></tr>
+      <tr><td><code>border</code></td><td><code>width style color</code> — <b>style is compulsory</b></td><td><code>border: 1px solid #ccc</code></td></tr>
+      <tr><td><code>border-radius</code></td><td>Clock rule, but corners: TL, TR, BR, BL</td><td><code>border-radius: 12px 12px 0 0</code></td></tr>
+      <tr><td><code>background</code></td><td><code>color image position / size repeat</code></td><td><code>background: #eee url(a.png) center / cover no-repeat</code></td></tr>
+      <tr><td><code>font</code></td><td><code>style weight size/line-height family</code> — size and family are compulsory</td><td><code>font: 600 1rem/1.5 system-ui</code></td></tr>
+      <tr><td><code>flex</code></td><td><code>grow shrink basis</code></td><td><code>flex: 1 1 0</code> &nbsp;or just&nbsp; <code>flex: 1</code></td></tr>
+      <tr><td><code>gap</code></td><td><code>row-gap column-gap</code></td><td><code>gap: 16px 24px</code></td></tr>
+      <tr><td><code>inset</code></td><td>Clock rule for <code>top right bottom left</code></td><td><code>inset: 0</code> pins to all four edges</td></tr>
+      <tr><td><code>transition</code></td><td><code>property duration timing-function delay</code></td><td><code>transition: opacity .2s ease</code></td></tr>
+      <tr><td><code>box-shadow</code></td><td><code>x y blur spread color</code> — <code>inset</code> first to invert</td><td><code>box-shadow: 0 4px 12px rgba(0,0,0,.12)</code></td></tr>
+      <tr><td><code>overflow</code></td><td><code>overflow-x overflow-y</code></td><td><code>overflow: hidden auto</code></td></tr>
+    </table>
+  </div>
+  <div class="grid g2">
+    <div class="card a">
+      <span class="tag">The border-radius detail nobody teaches</span>
+      <pre style="font-size:12px"><span class="a">border-radius</span>: <span class="s">12px 12px 0 0</span>;
+<span class="c">/* TL  TR  BR  BL — corners, not sides */</span></pre>
+      <p style="margin-top:6px">Corners start at top-left and go clockwise, exactly like the sides do. This is how you round only the top of a card header.</p>
+    </div>
+    <div class="card b">
+      <span class="tag">flex: 1 is three values in disguise</span>
+      <pre style="font-size:12px"><span class="a">flex</span>: <span class="s">1</span>;
+<span class="c">/* means: flex: 1 1 0% */</span>
+<span class="c">/* grow yes · shrink yes · start from 0 */</span></pre>
+      <p style="margin-top:6px">This is why <code>flex:1</code> makes every child the same width regardless of its content — the basis is zero, so only the growth factor matters.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 20 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · Shorthand</div>
+  <h2>The shorthand trap — it resets what you left out</h2>
+  <p class="sub">A shorthand does not set only the values you wrote. It sets <b>every property in the family</b>, and anything you omitted is reset to its initial value — silently.</p>
+  <div class="grid g2">
+    <div class="card r">
+      <span class="tag">The bug</span>
+      <pre style="font-size:12px"><span class="t">.card</span> {
+  <span class="a">background-image</span>: <span class="t">url</span>(<span class="s">pattern.png</span>);
+  <span class="a">background-color</span>: <span class="s">navy</span>;
+}
+
+<span class="t">.card.featured</span> {
+  <span class="a">background</span>: <span class="s">gold</span>;   <span class="c">/* ← shorthand */</span>
+}</pre>
+      <p style="margin-top:8px"><b>The pattern image is gone.</b> Writing the <code>background</code> shorthand reset <code>background-image</code> back to <code>none</code>, even though the line never mentions images.</p>
+    </div>
+    <div class="card g">
+      <span class="tag">The fix</span>
+      <pre style="font-size:12px"><span class="t">.card.featured</span> {
+  <span class="a">background-color</span>: <span class="s">gold</span>;
+}</pre>
+      <p style="margin-top:8px">Use the <b>longhand</b> when you are overriding one thing. Use the shorthand when you are declaring the whole family from scratch.</p>
+      <div class="callout g" style="margin-top:10px;font-size:13.5px"><b>The working rule:</b> shorthand to <i>set</i>, longhand to <i>override</i>.</div>
+    </div>
+  </div>
+  <div class="grid g2">
+    <div class="card a">
+      <span class="tag">Same trap, different property</span>
+      <pre style="font-size:12px"><span class="t">h1</span> { <span class="a">font-weight</span>: <span class="s">800</span>; }
+<span class="t">h1</span> { <span class="a">font</span>: <span class="s">2rem system-ui</span>; }
+<span class="c">/* weight is now 400 — the shorthand reset it */</span></pre>
+    </div>
+    <div class="card a">
+      <span class="tag">And the one that costs an afternoon</span>
+      <pre style="font-size:12px"><span class="a">transition</span>: <span class="s">color .2s</span>;
+<span class="a">transition</span>: <span class="s">background .3s</span>;
+<span class="c">/* colour no longer transitions at all */</span>
+<span class="c">/* correct: transition: color .2s, background .3s */</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- 21 -->
+<section class="slide">
+  <div class="eyebrow">Close</div>
+  <h2>What to carry out of this module</h2>
+  <div class="grid g2">
+    <div>
+      <ul class="clean">
+        <li><b>Name the family before you name the property.</b> Eight questions cover five hundred properties.</li>
+        <li><b><code>rem</code> for size, <code>px</code> for hairlines.</b> <code>em</code> only where compounding is the point.</li>
+        <li><b><code>width</code> measures content, not the box</b> — until you write <code>box-sizing: border-box</code>, which you should write once, at the top, for everything.</li>
+        <li><b>Padding if the background should stretch. Margin if it should not.</b> One question, every time.</li>
+        <li><b>Vertical margins collapse. <code>gap</code> does not.</b> In flex and grid layouts, reach for <code>gap</code> first.</li>
+      </ul>
+    </div>
+    <div>
+      <ul class="clean">
+        <li><b>Four values go clockwise from the top.</b> Fewer values, and each side copies its opposite.</li>
+        <li><b><code>border</code> without a style renders nothing.</b> The initial value of <code>border-style</code> is <code>none</code>.</li>
+        <li><b>Shorthand to set, longhand to override.</b> A shorthand silently resets everything you did not write.</li>
+        <li><b>Never remove the focus outline.</b> Restyle it with <code>:focus-visible</code> instead.</li>
+        <li><b>Only <code>transform</code> and <code>opacity</code> animate cheaply.</b> Everything else redoes layout on every frame.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="grow"></div>
+  <div class="callout g"><b>Next:</b> the practice lab — a live box model inspector where the arithmetic updates as you drag, a shorthand decoder, a margin-collapse bench, plus eleven auto-checked coding challenges and ten prediction drills built on exactly this material.</div>
+</section>
+</main>
+
+<nav class="navbar">
+  <button id="prev" aria-label="Previous slide">← Prev</button>
+  <button id="next" aria-label="Next slide">Next →</button>
+  <span class="counter" id="counter">1 / 1</span>
+  <span class="bar"><i id="fill"></i></span>
+  <button id="mode" aria-label="Toggle slide or scroll view">Scroll view</button>
+  <span class="hint">Arrow keys to navigate</span>
+</nav>
+
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter = document.getElementById('counter');
+  var fill = document.getElementById('fill');
+  var modeBtn = document.getElementById('mode');
+  var i = 0, one = true;
+
+  function render() {
+    if (one) {
+      slides.forEach(function (s, n) { s.classList.toggle('hidden', n !== i); });
+      window.scrollTo(0, 0);
+    } else {
+      slides.forEach(function (s) { s.classList.remove('hidden'); });
+    }
+    counter.textContent = (i + 1) + ' / ' + slides.length;
+    fill.style.width = ((i + 1) / slides.length * 100) + '%';
+  }
+  function go(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    if (!one) slides[i].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    render();
+  }
+  document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+  document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+  modeBtn.addEventListener('click', function () {
+    one = !one; modeBtn.textContent = one ? 'Scroll view' : 'Slide view'; render();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(i + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+    if (e.key === 'Home') { e.preventDefault(); go(0); }
+    if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+  });
+  render();
+})();
+</script>
+</body>
+</html>

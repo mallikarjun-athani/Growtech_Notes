@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JavaScript Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#F4F7F8; --card:#FFFFFF; --sunk:#EDF2F3;
+    --ink:#12181C; --ink-2:#3D4A52; --ink-3:#6B7C86;
+    --line:#D8E1E4; --line-soft:#E7EDEF;
+    --accent:#0E6E68; --accent-soft:#DBEEEC;
+    --amber:#A85A11; --amber-soft:#F8EADA;
+    --blue:#1F5FA8;  --blue-s:#E0EAF7;
+    --plum:#7A3E86;  --plum-s:#F1E5F4;
+    --red:#B03A2E;   --red-s:#FBE6E3;
+    --green:#1E7A4C; --green-s:#DDF0E5;
+    --code-bg:#101A20; --code-ink:#D5E2E6;
+    --shadow:0 1px 2px rgba(18,24,28,.05), 0 8px 24px rgba(18,24,28,.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#0C1317; --card:#131C21; --sunk:#0F171B;
+      --ink:#E9F0F2; --ink-2:#AEBEC5; --ink-3:#7D9099;
+      --line:#26343B; --line-soft:#1C272D;
+      --accent:#5CC8BE; --accent-soft:#123230;
+      --amber:#E0A15C; --amber-soft:#2F2313;
+      --blue:#79B4EE;  --blue-s:#14263A;
+      --plum:#CE9ED9;  --plum-s:#2C1D31;
+      --red:#E88070;   --red-s:#331714;
+      --green:#5FC98C; --green-s:#0F2C1D;
+      --code-bg:#070D10; --code-ink:#D5E2E6;
+      --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 32px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0C1317; --card:#131C21; --sunk:#0F171B;
+    --ink:#E9F0F2; --ink-2:#AEBEC5; --ink-3:#7D9099;
+    --line:#26343B; --line-soft:#1C272D;
+    --accent:#5CC8BE; --accent-soft:#123230;
+    --amber:#E0A15C; --amber-soft:#2F2313;
+    --blue:#79B4EE;  --blue-s:#14263A;
+    --plum:#CE9ED9;  --plum-s:#2C1D31;
+    --red:#E88070;   --red-s:#331714;
+    --green:#5FC98C; --green-s:#0F2C1D;
+    --code-bg:#070D10; --code-ink:#D5E2E6;
+    --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 32px rgba(0,0,0,.3);
+  }
+
+  *{box-sizing:border-box}
+  body{background:var(--paper);color:var(--ink);margin:0;
+    font-family:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4{font-family:"Archivo","IBM Plex Sans",system-ui,sans-serif;margin:0;text-wrap:balance;letter-spacing:-.02em}
+  p{margin:0}
+  code{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.88em;background:var(--sunk);padding:1px 6px;border-radius:4px;border:1px solid var(--line-soft)}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 20px 90px}
+
+  header.top{padding:44px 0 22px;border-bottom:2px solid var(--ink);margin-bottom:6px}
+  .kicker{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+  header.top h1{font-size:clamp(31px,5.2vw,50px);font-weight:800;line-height:1.03;margin-bottom:12px}
+  header.top .lede{font-size:clamp(15px,1.6vw,17.5px);color:var(--ink-2);max-width:72ch}
+  header.top .lede b{color:var(--ink);font-weight:600}
+
+  .nav{position:sticky;top:0;z-index:40;background:var(--paper);box-shadow:0 6px 16px -10px rgba(0,0,0,.35);padding:12px 0;border-bottom:1px solid var(--line);margin-bottom:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .nav button{font-family:"IBM Plex Sans",sans-serif;font-size:13.5px;font-weight:600;padding:8px 14px;border-radius:9px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2)}
+  .nav button.on{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .nav button:hover{border-color:var(--accent)}
+  .nav button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .score{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-3);white-space:nowrap}
+  .score b{color:var(--green);font-size:15px}
+
+  .view{display:none}
+  .view.on{display:block}
+
+  section{margin:34px 0}
+  h2.head{font-size:clamp(19px,2.5vw,26px);font-weight:800;padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:15px}
+  .intro{color:var(--ink-2);font-size:15.5px;max-width:74ch;margin-bottom:16px}
+  .intro b{color:var(--ink);font-weight:600}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:20px;box-shadow:var(--shadow)}
+  .note{border-left:3px solid var(--amber);background:var(--amber-soft);padding:12px 16px;border-radius:0 9px 9px 0;font-size:14.5px;color:var(--ink-2);margin:14px 0}
+  .note b{color:var(--ink)}
+  .note .l{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--amber);margin-bottom:4px;font-weight:600}
+  .note.q{border-left-color:var(--plum);background:var(--plum-s)}
+  .note.q .l{color:var(--plum)}
+
+  .btn{font-family:"IBM Plex Sans",sans-serif;font-size:13.5px;font-weight:600;padding:9px 15px;border-radius:9px;cursor:pointer;border:1px solid var(--line);background:var(--sunk);color:var(--ink)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .btn:hover{border-color:var(--accent)}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .btn[disabled]{opacity:.4;cursor:default}
+  .btn.sm{font-size:12px;padding:6px 11px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+  textarea,input.tx{
+    width:100%;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--line);
+    border-radius:10px;padding:13px 15px;
+    font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.65;resize:vertical;tab-size:2;
+  }
+  input.tx{padding:11px 15px;font-size:15px}
+  textarea:focus,input.tx:focus{outline:2px solid var(--accent);outline-offset:1px}
+  pre{margin:12px 0;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:"IBM Plex Mono",monospace;font-size:12.7px;line-height:1.7;border:1px solid var(--line)}
+  pre .c{color:#6E828B;font-style:italic}
+  pre .t{color:#79D3C9}
+  pre .a{color:#9FC6E8}
+  pre .s{color:#E8B57A}
+  .lbl{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:7px;display:block}
+
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .split > *{min-width:0}
+  @media (max-width:900px){.split{grid-template-columns:1fr}}
+
+  /* ---- selector playground ---- */
+  .stage{background:var(--sunk);border-radius:10px;padding:16px;min-height:300px;font-size:14px}
+  .stage .sh{background:var(--card);border:2px dashed var(--line);border-radius:9px;padding:12px;margin-bottom:10px}
+  .stage .sh .nm{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3);display:block;margin-bottom:6px}
+  .node{border:2px solid var(--line);border-radius:8px;padding:9px 12px;margin:6px 0;background:var(--card);transition:all .2s ease;position:relative}
+  .node .tg{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3)}
+  .node.hit{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+  @media (prefers-reduced-motion:reduce){.node{transition:none}}
+  .selin{display:flex;gap:9px;align-items:center;margin-bottom:12px}
+  .selin span{font-family:"IBM Plex Mono",monospace;font-size:18px;color:var(--accent);font-weight:600}
+  .hitcount{font-family:"IBM Plex Mono",monospace;font-size:13.5px;margin-top:10px;font-weight:600}
+  .hitcount.ok{color:var(--green)} .hitcount.no{color:var(--red)}
+  .presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .presets button{font-family:"IBM Plex Mono",monospace;font-size:11.5px;padding:5px 10px;border-radius:7px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2)}
+  .presets button:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* ---- specificity calc ---- */
+  .spec{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;background:var(--sunk);border-radius:10px;padding:14px 16px;margin-bottom:10px}
+  .spec .sel{font-family:"IBM Plex Mono",monospace;font-size:15px;color:var(--ink);word-break:break-all}
+  .spec .sc{display:flex;gap:5px}
+  .spec .sc i{font-family:"IBM Plex Mono",monospace;font-style:normal;font-size:15px;font-weight:700;width:34px;height:34px;border-radius:7px;display:grid;place-items:center;border:2px solid}
+  .sc i.i0{background:var(--red-s);border-color:var(--red);color:var(--red)}
+  .sc i.i1{background:var(--plum-s);border-color:var(--plum);color:var(--plum)}
+  .sc i.i2{background:var(--blue-s);border-color:var(--blue);color:var(--blue)}
+  .sc i.i3{background:var(--green-s);border-color:var(--green);color:var(--green)}
+  .winner{margin-top:12px;padding:13px 16px;border-radius:10px;background:var(--green-s);border-left:3px solid var(--green);font-size:15px;color:var(--ink)}
+  .winner b{color:var(--green)}
+
+  /* ---- cascade lab ---- */
+  .casc{display:grid;grid-template-columns:1fr 200px;gap:16px}
+  @media (max-width:820px){.casc{grid-template-columns:1fr}}
+  .swatch{border:2px solid var(--line);border-radius:10px;min-height:150px;display:grid;place-items:center;font-family:"Archivo",sans-serif;font-size:22px;font-weight:700;background:var(--card);transition:all .25s}
+  .toggles{display:flex;flex-direction:column;gap:9px}
+  .tog{display:flex;align-items:center;gap:10px;padding:10px 13px;border:1px solid var(--line);border-radius:9px;background:var(--sunk);cursor:pointer;font-size:13.5px}
+  .tog input{accent-color:var(--accent);width:17px;height:17px}
+  .tog.on{border-color:var(--accent);background:var(--accent-soft)}
+  .tog .mono{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3);display:block}
+
+  /* ---- tag matcher ---- */
+  .match{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:820px){.match{grid-template-columns:1fr}}
+  .mq{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--card);margin-bottom:10px}
+  .mq p{font-size:14.5px;color:var(--ink-2);margin-bottom:10px}
+  .mq .opts{display:flex;gap:6px;flex-wrap:wrap}
+  .mq .opts button{font-family:"IBM Plex Mono",monospace;font-size:12px;padding:6px 11px;border-radius:7px;cursor:pointer;border:1px solid var(--line);background:var(--sunk);color:var(--ink-2)}
+  .mq .opts button.right{background:var(--green-s);border-color:var(--green);color:var(--green);font-weight:700}
+  .mq .opts button.wrong{background:var(--red-s);border-color:var(--red);color:var(--red)}
+  .mq .why{margin-top:10px;font-size:13.5px;color:var(--ink-2);display:none;border-top:1px solid var(--line-soft);padding-top:9px}
+  .mq .why.show{display:block}
+
+  /* ---- challenges ---- */
+  .chlist{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+  .chlist button{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2);display:flex;gap:6px;align-items:center}
+  .chlist button.on{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .chlist button.solved{border-color:var(--green)}
+  .chlist button.solved::after{content:"✓";color:var(--green);font-weight:700}
+  .chlist button.on.solved::after{color:var(--card)}
+
+  .chead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+  .chead h3{font-size:19px;font-weight:800}
+  .lvl{font-family:"IBM Plex Mono",monospace;font-size:10px;padding:3px 9px;border-radius:6px;font-weight:600;letter-spacing:.06em}
+  .lvl.m{background:var(--blue-s);color:var(--blue)}
+  .lvl.a{background:var(--plum-s);color:var(--plum)}
+  .lvl.b{background:var(--red-s);color:var(--red)}
+  .brief{color:var(--ink-2);font-size:15px;margin-bottom:12px;max-width:76ch}
+  .brief b{color:var(--ink);font-weight:600}
+  .scenario{background:var(--blue-s);border-left:3px solid var(--blue);border-radius:0 9px 9px 0;padding:11px 15px;font-size:14px;color:var(--ink-2);margin-bottom:12px}
+  .scenario .l{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--blue);margin-bottom:4px;font-weight:600}
+
+  iframe.prev{width:100%;height:250px;border:1px solid var(--line);border-radius:10px;background:#fff}
+  .checks{margin-top:13px;background:var(--sunk);border-radius:10px;padding:14px 16px}
+  .chk{display:flex;gap:10px;align-items:flex-start;padding:5px 0;font-size:13.8px;color:var(--ink-2)}
+  .chk .mk{flex:none;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;margin-top:2px}
+  .chk.pass .mk{background:var(--green);color:#fff}
+  .chk.fail .mk{background:var(--red-s);color:var(--red);border:1.5px solid var(--red)}
+  .chk.idle .mk{background:var(--card);border:1.5px solid var(--line);color:var(--ink-3)}
+  .chk.pass{color:var(--ink)}
+  .verdict{margin-top:11px;font-size:15px;font-weight:700;min-height:24px}
+  .verdict.ok{color:var(--green)}
+  .verdict.no{color:var(--red)}
+  .hint{margin-top:11px;font-size:14px;color:var(--ink-2);background:var(--amber-soft);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:11px 15px;display:none}
+  .hint.show{display:block}
+
+  .g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+  .g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+  @media (max-width:820px){.g2,.g3{grid-template-columns:1fr}}
+  .mini{border:1px solid var(--line);border-radius:12px;padding:17px;background:var(--card)}
+  .mini h4{font-size:15.5px;margin-bottom:6px}
+  .mini p{font-size:14px;color:var(--ink-2)}
+  .mini .tag{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:600;display:block;margin-bottom:5px}
+
+  /* ================= runner output (shared look with the deck) ================= */
+  .code-ed{width:100%;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--line);border-radius:10px 10px 0 0;
+    padding:14px 16px;font-family:"IBM Plex Mono",monospace;font-size:13.5px;line-height:1.7;resize:vertical;tab-size:2;min-height:150px;display:block}
+  .code-ed:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .out{background:#081014;border:1px solid var(--line);border-top:0;border-radius:0 0 10px 10px;font-family:"IBM Plex Mono",monospace;
+    font-size:13.5px;line-height:1.6;padding:10px 16px;min-height:44px;max-height:300px;overflow:auto;color:#D7E3E6}
+  .out .ol,.out .or{padding:2px 0;border-bottom:1px solid #111E24;white-space:pre-wrap;word-break:break-word}
+  .out .or{color:#8FA3AD} .out .or .arrow{color:#566B75}
+  .out .ow{padding:3px 8px;margin:2px -8px;background:#2B2210;color:#F0C27A;border-radius:4px}
+  .out .oe{padding:5px 9px;margin:3px -8px;background:#2C1512;color:#F4A193;border-radius:4px;white-space:pre-wrap}
+  .out .oe b{color:#FF8E7C} .out .onote{display:block;color:#D9B0A8;font-size:12px;margin-top:3px}
+  .out .ot{padding:7px 10px;margin:3px -8px;background:#2B2210;color:#F0C27A;border-radius:4px}
+  .out .oa{padding:3px 8px;margin:2px -8px;background:#12263A;color:#AFD3F5;border-radius:4px}
+  .out .tagalert{font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:#1F5FA8;color:#fff;padding:1px 6px;border-radius:3px}
+  .out .oempty,.out .ohint{color:#566B75;font-style:italic}
+  .v-string{color:#E7ECEE} .v-number,.v-bigint{color:#7FB8F0} .v-boolean{color:#D9A8E3}
+  .v-null,.v-undefined{color:#8FA3AD} .v-function{color:#7FD1C7} .v-error{color:#F4A193}
+  .v-array,.v-object{color:#E7ECEE} .v-symbol{color:#F0C27A}
+  pre .k{color:#79D3C9;font-weight:600} pre .n{color:#8FC0F0} pre .f{color:#D6A8E0}
+
+  .chips2{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+  .chips2 button{font-family:"IBM Plex Mono",monospace;font-size:12px;padding:6px 10px;border-radius:7px;cursor:pointer;
+    border:1px solid var(--line);background:var(--card);color:var(--ink-2)}
+  .chips2 button:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* ================= == vs === explorer ================= */
+  .eqpick{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:820px){.eqpick{grid-template-columns:1fr}}
+  .vals{display:flex;flex-wrap:wrap;gap:6px}
+  .vals button{font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600;padding:7px 11px;border-radius:8px;cursor:pointer;
+    border:1px solid var(--line);background:var(--sunk);color:var(--ink-2);min-width:52px}
+  .vals button.on{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .eqres{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+  .eqbox{border:2px solid var(--line);border-radius:11px;padding:14px 16px;background:var(--card)}
+  .eqbox .ex{font-family:"IBM Plex Mono",monospace;font-size:16px;color:var(--ink);font-weight:600;word-break:break-all}
+  .eqbox .rv{font-family:"IBM Plex Mono",monospace;font-size:26px;font-weight:800;margin-top:6px}
+  .eqbox.t{border-color:var(--green);background:var(--green-s)} .eqbox.t .rv{color:var(--green)}
+  .eqbox.f{border-color:var(--red);background:var(--red-s)} .eqbox.f .rv{color:var(--red)}
+  .eqwhy{margin-top:12px;font-size:14.5px;color:var(--ink-2);background:var(--sunk);border-radius:9px;padding:12px 15px}
+  .eqwhy b{color:var(--ink)}
+  .eqgrid{margin-top:16px}
+  .eqgrid table{border-collapse:collapse;font-family:"IBM Plex Mono",monospace;font-size:11.5px}
+  .eqgrid th,.eqgrid td{border:1px solid var(--line-soft);padding:0;width:44px;height:30px;text-align:center}
+  .eqgrid th{background:var(--sunk);color:var(--ink-2);font-weight:600;padding:0 6px;white-space:nowrap}
+  .eqgrid td.y{background:var(--green-s);color:var(--green);font-weight:700}
+  .eqgrid td.n{color:var(--line)}
+  .eqgrid td.hot{outline:3px solid var(--amber);outline-offset:-3px}
+
+  /* ================= truthy / falsy sorter ================= */
+  .tfgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+  .tfcard{border:2px solid var(--line);border-radius:11px;padding:12px;background:var(--card);display:flex;flex-direction:column;gap:8px}
+  .tfcard .v{font-family:"IBM Plex Mono",monospace;font-size:17px;font-weight:700;color:var(--ink);text-align:center;padding:6px 0}
+  .tfcard .bt{display:flex;gap:6px}
+  .tfcard .bt button{flex:1;font-size:12.5px;font-weight:600;padding:7px 4px;border-radius:7px;cursor:pointer;border:1px solid var(--line);
+    background:var(--sunk);color:var(--ink-2);font-family:"IBM Plex Sans",sans-serif}
+  .tfcard .bt button:hover{border-color:var(--accent)}
+  .tfcard.ok{border-color:var(--green);background:var(--green-s)}
+  .tfcard.bad{border-color:var(--red);background:var(--red-s)}
+  .tfcard .why{font-size:12.5px;color:var(--ink-2);display:none;line-height:1.4}
+  .tfcard.ok .why,.tfcard.bad .why{display:block}
+  .tfscore{font-family:"IBM Plex Mono",monospace;font-size:15px;font-weight:700;margin:12px 0}
+
+  /* ================= loop tracer ================= */
+  .trwrap{display:grid;grid-template-columns:1.05fr 1fr;gap:18px}
+  @media (max-width:940px){.trwrap{grid-template-columns:1fr}}
+  .trcode{background:var(--code-bg);border-radius:10px;padding:12px 0;font-family:"IBM Plex Mono",monospace;font-size:13.5px;line-height:1.75;color:var(--code-ink);overflow-x:auto}
+  .trcode .ln{display:flex;padding:0 14px;border-left:4px solid transparent;white-space:pre}
+  .trcode .ln .no{color:#566B75;width:26px;flex:none;text-align:right;margin-right:14px;user-select:none}
+  .trcode .ln.cur{background:rgba(224,161,92,.16);border-left-color:#E0A15C}
+  .trphase{display:flex;gap:8px;align-items:center;margin:12px 0 4px;flex-wrap:wrap}
+  .trphase .ph{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;background:var(--sunk);color:var(--ink-3);border:1px solid var(--line)}
+  .trphase .ph.on{background:var(--amber-soft);border-color:var(--amber);color:var(--amber)}
+  .trnote{font-size:15px;color:var(--ink);background:var(--amber-soft);border-left:3px solid var(--amber);border-radius:0 9px 9px 0;padding:11px 15px;margin-top:8px;min-height:46px}
+  .trnote b{color:var(--amber)}
+  .trvars{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .trvars .vv{border:2px solid var(--blue);background:var(--blue-s);border-radius:9px;padding:7px 12px;font-family:"IBM Plex Mono",monospace}
+  .trvars .vv .k{font-size:11px;color:var(--blue);font-weight:700;display:block}
+  .trvars .vv .x{font-size:18px;font-weight:800;color:var(--ink)}
+  .trvars .vv.chg{border-color:var(--amber);background:var(--amber-soft)}
+  .trtable{margin-top:12px;max-height:210px;overflow:auto;border:1px solid var(--line);border-radius:9px}
+  .trtable table{font-size:13px}
+  .trtable th{position:sticky;top:0;background:var(--sunk);padding:7px 10px}
+  .trtable td{padding:6px 10px;font-family:"IBM Plex Mono",monospace}
+  .trtable td.ct{color:var(--green);font-weight:700} .trtable td.cf{color:var(--red);font-weight:700}
+  .trout{margin-top:12px}
+  .trcount{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3);margin-left:auto}
+
+  /* ================= challenges ================= */
+  .lanes{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+  .lanes .cap{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-right:3px}
+  .lanes button{font-family:"IBM Plex Sans",sans-serif;font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:8px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2)}
+  .lanes button:hover{border-color:var(--accent)}
+  .lanes button.on{color:var(--card)}
+  .lanes button[data-l="guided"].on{background:var(--green);border-color:var(--green)}
+  .lanes button[data-l="standard"].on{background:var(--accent);border-color:var(--accent)}
+  .lanes button[data-l="stretch"].on{background:var(--plum);border-color:var(--plum)}
+  .lanenote{font-size:12.5px;color:var(--ink-3);margin-bottom:9px}
+  .stretchbox{display:none;border-left:3px solid var(--plum);background:var(--plum-s);border-radius:0 9px 9px 0;padding:12px 16px;font-size:14px;color:var(--ink-2);margin-bottom:11px}
+  .stretchbox.show{display:block}
+  .stretchbox .l{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--plum);margin-bottom:4px;font-weight:600}
+  .stretchbox b{color:var(--ink)}
+
+  .sig{font-family:"IBM Plex Mono",monospace;font-size:13.5px;background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:9px 13px;margin-bottom:12px;color:var(--ink)}
+  .sig b{color:var(--accent)}
+  .examples{font-family:"IBM Plex Mono",monospace;font-size:12.8px;color:var(--ink-2);margin:-4px 0 12px;display:flex;flex-direction:column;gap:3px}
+  .examples span b{color:var(--ink)}
+
+  .chbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+  .chbtns .btn.submit{background:var(--green);border-color:var(--green);color:var(--card)}
+  .chbtns .kbd{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);margin-left:auto}
+
+  .tests{margin-top:12px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .tests .th{display:flex;gap:10px;align-items:center;padding:9px 13px;background:var(--sunk);border-bottom:1px solid var(--line);
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+  .tests .th .sc{margin-left:auto;letter-spacing:0;text-transform:none;font-size:13px;color:var(--ink)}
+  .tr{display:grid;grid-template-columns:22px 1fr;gap:10px;padding:8px 13px;border-bottom:1px solid var(--line-soft);font-size:13.5px;align-items:start}
+  .tr:last-child{border-bottom:0}
+  .tr .mk{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;margin-top:1px}
+  .tr.pass .mk{background:var(--green);color:#fff}
+  .tr.fail .mk{background:var(--red-s);color:var(--red);border:1.5px solid var(--red)}
+  .tr.idle .mk{background:var(--card);border:1.5px solid var(--line);color:var(--ink-3)}
+  .tr .call{font-family:"IBM Plex Mono",monospace;color:var(--ink);word-break:break-all}
+  .tr .det{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-3);margin-top:2px;word-break:break-all}
+  .tr .det b{color:var(--ink-2);font-weight:600}
+  .tr .hid{font-family:"IBM Plex Sans",sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--plum);font-weight:700;margin-left:6px}
+  .rules .tr{grid-template-columns:22px 1fr}
+  .diag{margin-top:12px;border-left:3px solid var(--amber);background:var(--amber-soft);border-radius:0 9px 9px 0;padding:12px 16px;font-size:14px;color:var(--ink-2);display:none}
+  .diag.show{display:block}
+  .diag .l{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--amber);margin-bottom:6px;font-weight:600}
+  .diag ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+  .diag code{font-size:.9em}
+  .conlbl{margin-top:12px}
+
+  .drill .runproof{margin-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="kicker">Practice Lab · JavaScript Foundations</div>
+  <h1>JavaScript Lab</h1>
+  <p class="lede">Four tools and eleven coding challenges that work like the <b>coding round of a placement test</b>. You write real functions. <b>Run</b> checks the sample cases; <b>Submit</b> runs the hidden ones too. When something fails, it tells you why — including the mistakes every beginner makes.</p>
+</header>
+
+<nav class="nav" id="nav">
+  <button data-v="tools" class="on">Tools</button>
+  <button data-v="ch">Challenges</button>
+  <button data-v="logic">Logic drills</button>
+  <span class="score" id="score">solved <b>0</b> / 11</span>
+</nav>
+
+<!-- ======================= TOOLS ======================= -->
+<div class="view on" id="v-tools">
+
+  <section>
+    <h2 class="head">1 · Scratchpad</h2>
+    <p class="intro">Write anything and press <b>Run</b> — or <b>Ctrl + Enter</b>. You see what <code>console.log</code> prints, and the value of the last line after the <code>←</code> arrow, exactly as the browser console shows it. <b>Click a surprise</b> to load one of JavaScript's famous oddities and predict the answer before it runs.</p>
+    <div class="panel">
+      <span class="lbl">Surprises — predict first, then click</span>
+      <div class="chips2" id="spPresets"></div>
+      <textarea class="code-ed" id="spCode" spellcheck="false" aria-label="Scratchpad code">let seats = 50;
+let filled = 38;
+console.log(`${seats - filled} seats left`);
+filled >= seats</textarea>
+      <div class="out" id="spOut" aria-live="polite"><div class="ohint">Press Run to see the output</div></div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn primary" id="spRun">Run ▶</button>
+        <button class="btn" id="spClear">Clear</button>
+        <span style="font-size:12.5px;color:var(--ink-3)">An infinite loop is stopped after 1.5 seconds — nothing freezes.</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="head">2 · == versus === explorer</h2>
+    <p class="intro">Pick a value on each side. You get both answers and the reason. <b>Then look at the grid</b> — every green square is a pair that loose equality calls "equal". Strict equality turns all but the diagonal red.</p>
+    <div class="panel">
+      <div class="eqpick">
+        <div><span class="lbl">Left value</span><div class="vals" id="eqL"></div></div>
+        <div><span class="lbl">Right value</span><div class="vals" id="eqR"></div></div>
+      </div>
+      <div class="eqres">
+        <div class="eqbox" id="eqLoose"><div class="ex"></div><div class="rv"></div></div>
+        <div class="eqbox" id="eqStrict"><div class="ex"></div><div class="rv"></div></div>
+      </div>
+      <div class="eqwhy" id="eqWhy"></div>
+      <div class="eqgrid scroll-x"><span class="lbl" style="margin-top:6px">Every pair — green means == says true</span><div id="eqGrid"></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="head">3 · Truthy or falsy?</h2>
+    <p class="intro">Sixteen values. Decide for each one whether an <code>if</code> would treat it as true or false. <b>The answer is checked with the real <code>Boolean()</code></b>, so there is no arguing with it.</p>
+    <div class="panel">
+      <div class="tfscore" id="tfScore">0 / 16 answered</div>
+      <div class="tfgrid" id="tfGrid"></div>
+      <div class="row" style="margin-top:12px"><button class="btn" id="tfReset">Start again</button></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="head">4 · Loop tracer</h2>
+    <p class="intro">Step through a loop one move at a time. The highlighted line is what runs next, the phase badges match the <b>① start ② check ③ body ④ update</b> diagram from the deck, and the trace table builds itself — <b>the same table you should draw on paper whenever a loop gives the wrong answer.</b></p>
+    <div class="panel">
+      <div class="chips2" id="trPick"></div>
+      <div class="trwrap">
+        <div>
+          <div class="trcode" id="trCode"></div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn primary" id="trStep">Step ▶</button>
+            <button class="btn" id="trAll">Run to the end</button>
+            <button class="btn" id="trReset">Reset</button>
+            <span class="trcount" id="trCount"></span>
+          </div>
+          <div class="trphase" id="trPhase">
+            <span class="ph" data-p="start">① start</span><span class="ph" data-p="check">② check</span>
+            <span class="ph" data-p="body">③ body</span><span class="ph" data-p="update">④ update</span>
+          </div>
+          <div class="trnote" id="trNote"></div>
+        </div>
+        <div>
+          <span class="lbl">Variables right now</span>
+          <div class="trvars" id="trVars"></div>
+          <div class="trtable scroll-x"><table id="trTable"></table></div>
+          <div class="trout"><span class="lbl">Output so far</span><div class="out" id="trOut" style="border-radius:10px;border-top:1px solid var(--line)"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ======================= CHALLENGES ======================= -->
+<div class="view" id="v-ch">
+  <section>
+    <h2 class="head">Eleven coding challenges</h2>
+    <p class="intro">Each one asks you to write a single function. This is the format of almost every placement coding round: <b>the grader calls your function with inputs and compares what it returns.</b> What you print is ignored. <b>Run</b> tries the sample cases. <b>Submit</b> adds the hidden ones — the edge cases a careful programmer thinks of first.</p>
+    <div class="chlist" id="chList"></div>
+    <div class="panel">
+      <div class="chead"><h3 id="chTitle">—</h3><span class="lvl m" id="chLvl">—</span></div>
+      <div class="scenario" id="chScenario"></div>
+      <p class="brief" id="chBrief"></p>
+      <div class="sig" id="chSig"></div>
+      <div class="examples" id="chEx"></div>
+      <div class="split">
+        <div>
+          <div class="lanes" id="chLanes">
+            <span class="cap">How much help</span>
+            <button data-l="guided">Guided</button>
+            <button data-l="standard" class="on">Standard</button>
+            <button data-l="stretch">Stretch</button>
+          </div>
+          <div class="lanenote" id="chLaneNote"></div>
+          <div class="stretchbox" id="chStretch"></div>
+          <textarea class="code-ed" id="chCode" rows="18" spellcheck="false" aria-label="Your solution" style="border-radius:10px"></textarea>
+          <div class="chbtns">
+            <button class="btn" id="chRun">Run ▶</button>
+            <button class="btn submit" id="chSubmit">Submit</button>
+            <button class="btn" id="chReset">Reset code</button>
+            <button class="btn" id="chHint">Show hint</button>
+            <span class="kbd">Ctrl + Enter runs</span>
+          </div>
+          <div class="hint" id="chHintBox"></div>
+        </div>
+        <div>
+          <div class="tests" id="chTests"></div>
+          <div class="diag" id="chDiag"></div>
+          <div class="verdict" id="chVerdict"></div>
+          <div class="conlbl"><span class="lbl">Your console output</span><div class="out" id="chCon" style="border-radius:10px;border-top:1px solid var(--line);max-height:160px"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ======================= LOGIC DRILLS ======================= -->
+<div class="view" id="v-logic">
+  <section>
+    <h2 class="head">Ten logic drills</h2>
+    <p class="intro">Read the code. <b>Say the output out loud</b> before you reveal it. Then press <b>Run it</b> — the answer is proved by actually running the code, not by taking anyone's word for it.</p>
+    <div id="logicWrap"></div>
+  </section>
+</div>
+
+</div>
+
+<script>
+/* =====================================================================
+   JSRunner — runs learner JavaScript in a Web Worker.
+
+   Why a worker: a beginner's first while-loop is often infinite. In the
+   page itself that freezes the tab (and the projector). In a worker we
+   simply terminate it after a timeout and explain what happened.
+
+   Shared by the deck (live slides) and the lab (challenges + tools).
+   ===================================================================== */
+var JSRunner = (function () {
+  'use strict';
+
+  var WORKER_SRC = [
+    "'use strict';",
+    "var OUT = [];",
+    "function ser(v, d) {",
+    "  d = d || 0; var t = typeof v;",
+    "  if (v === null) return { t:'null', s:'null' };",
+    "  if (t === 'undefined') return { t:'undefined', s:'undefined' };",
+    "  if (t === 'string') return { t:'string', s:v };",
+    "  if (t === 'number') return { t:'number', s: Object.is(v, -0) ? '-0' : String(v) };",
+    "  if (t === 'boolean') return { t:'boolean', s:String(v) };",
+    "  if (t === 'bigint') return { t:'bigint', s:String(v) + 'n' };",
+    "  if (t === 'symbol') return { t:'symbol', s:v.toString() };",
+    "  if (t === 'function') return { t:'function', s:'ƒ ' + (v.name || 'anonymous') + '()' };",
+    "  if (v instanceof Error) return { t:'error', s:v.name + ': ' + v.message };",
+    "  if (Array.isArray(v)) return { t:'array', s:inner(v, d) };",
+    "  return { t:'object', s:inner(v, d) };",
+    "}",
+    "function rep(x, d) { return typeof x === 'string' ? \"'\" + x + \"'\" : ser(x, d).s; }",
+    "function inner(v, d) {",
+    "  if (d > 2) return Array.isArray(v) ? '[Array]' : '{…}';",
+    "  if (Array.isArray(v)) return '[' + v.map(function (x) { return rep(x, d + 1); }).join(', ') + ']';",
+    "  var ks = Object.keys(v);",
+    "  if (!ks.length) return '{}';",
+    "  return '{' + ks.map(function (k) { return k + ': ' + rep(v[k], d + 1); }).join(', ') + '}';",
+    "}",
+    "function canon(v) {",
+    "  if (typeof v === 'string') return 's:' + JSON.stringify(v);",
+    "  if (typeof v === 'number') return Number.isNaN(v) ? 'n:NaN' : 'n:' + String(v);",
+    "  if (v === null) return 'null';",
+    "  if (v === undefined) return 'undef';",
+    "  if (typeof v === 'boolean') return 'b:' + v;",
+    "  if (Array.isArray(v)) return 'a:[' + v.map(canon).join(',') + ']';",
+    "  if (typeof v === 'object') return 'o:{' + Object.keys(v).sort().map(function (k) { return k + '=' + canon(v[k]); }).join(',') + '}';",
+    "  return typeof v + ':' + String(v);",
+    "}",
+    "var CAP = 300, capped = false;",
+    "function push(kind, args) {",
+    "  if (capped) return;",
+    "  OUT.push({ k:kind, parts:[].map.call(args, function (a) { return ser(a, 0); }) });",
+    "  if (OUT.length >= CAP) { capped = true; postMessage({ partial:true, out:OUT }); }",
+    "}",
+    "console.log   = function () { push('log', arguments); };",
+    "console.info  = function () { push('log', arguments); };",
+    "console.warn  = function () { push('warn', arguments); };",
+    "console.error = function () { push('error', arguments); };",
+    "console.table = function () { push('log', arguments); };",
+    "self.alert  = function (m) { OUT.push({ k:'alert', parts:[ser(String(m))] }); };",
+    "self.prompt = function () { OUT.push({ k:'warn', parts:[ser('prompt() is not available here - pass values into your function as parameters instead.')] }); return null; };",
+    "function err(e) {",
+    "  var name = (e && e.name) || 'Error', msg = (e && e.message) || String(e), note = '';",
+    "  if (/\\b(document|window) is not defined/.test(msg)) note = 'This runner has no web page attached - the DOM comes in a later module. Use console.log for now.';",
+    "  return { name:name, message:msg, note:note };",
+    "}",
+    "self.onmessage = function (e) {",
+    "  var m = e.data;",
+    "  if (m.cap) CAP = m.cap;",
+    "  if (m.mode === 'run') {",
+    "    try {",
+    "      var r = (0, eval)(m.code);",
+    "      postMessage({ ok:true, out:OUT, result:ser(r, 0), truncated:capped });",
+    "    } catch (x) { postMessage({ ok:false, out:OUT, error:err(x), truncated:capped }); }",
+    "    return;",
+    "  }",
+    "  if (m.mode === 'test') {",
+    "    var fn;",
+    "    try {",
+    "      fn = (0, eval)(m.code + '\\n;\\n(typeof ' + m.fname + \" === 'function' ? \" + m.fname + ' : undefined)');",
+    "    } catch (x) { postMessage({ ok:false, out:OUT, error:err(x) }); return; }",
+    "    if (typeof fn !== 'function') {",
+    "      postMessage({ ok:false, out:OUT, error:{ name:'NotFound', message:'No function called ' + m.fname + ' was found.', note:'Check the spelling - the name must match exactly, including capital letters.' } });",
+    "      return;",
+    "    }",
+    "    var results = m.cases.map(function (c) {",
+    "      var before = OUT.length;",
+    "      try {",
+    "        var got = fn.apply(null, c.args);",
+    "        return { pass: canon(got) === canon(c.expect), got: ser(got, 0), printed: OUT.length > before, gotUndef: got === undefined };",
+    "      } catch (x) { return { pass:false, threw:err(x), printed: OUT.length > before }; }",
+    "    });",
+    "    postMessage({ ok:true, out:OUT, results:results });",
+    "  }",
+    "};"
+  ].join('\n');
+
+  var url = null;
+  function workerURL() {
+    if (!url) url = URL.createObjectURL(new Blob([WORKER_SRC], { type: 'text/javascript' }));
+    return url;
+  }
+
+  function exec(msg, ms) {
+    return new Promise(function (resolve) {
+      var w, done = false;
+      try { w = new Worker(workerURL()); }
+      catch (e) {
+        resolve({ ok:false, fatal:true, error:{ name:'RunnerError', message:'This browser blocked the code runner.', note:'Open the file in Chrome or Edge.' } });
+        return;
+      }
+      var partial = null;
+      var t = setTimeout(function () {
+        if (done) return; done = true; w.terminate();
+        resolve({ ok:false, timeout:true, ms:ms, out:partial || [], truncated:!!partial });
+      }, ms);
+      w.onmessage = function (e) {
+        if (done) return;
+        if (e.data && e.data.partial) { partial = e.data.out; return; }
+        done = true; clearTimeout(t); w.terminate(); resolve(e.data);
+      };
+      w.onerror = function (e) {
+        if (done) return; done = true; clearTimeout(t); w.terminate();
+        if (e && e.preventDefault) e.preventDefault();
+        resolve({ ok:false, error:{ name:'Error', message:(e && e.message) || 'The code could not run.' } });
+      };
+      w.postMessage(msg);
+    });
+  }
+
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  /* one value as the console would draw it */
+  function val(v, quoteStrings) {
+    if (!v) return '';
+    var s = (v.t === 'string' && quoteStrings) ? "'" + v.s + "'" : v.s;
+    return '<span class="v-' + v.t + '">' + esc(s) + '</span>';
+  }
+
+  /* render a run result into an output element */
+  function render(el, r, opts) {
+    opts = opts || {};
+    var h = '';
+    (r.out || []).forEach(function (line) {
+      var cls = line.k === 'error' ? 'oe' : line.k === 'warn' ? 'ow' : line.k === 'alert' ? 'oa' : 'ol';
+      var body = line.parts.map(function (p) { return val(p, false); }).join(' ');
+      if (line.k === 'alert') body = '<span class="tagalert">alert</span> ' + body;
+      h += '<div class="' + cls + '">' + (body || '&nbsp;') + '</div>';
+    });
+    if (r.truncated) h += '<div class="ow">… output stopped after ' + (r.out || []).length + ' lines</div>';
+    if (r.timeout) {
+      h += '<div class="ot"><b>Stopped after ' + (r.ms / 1000) + ' seconds.</b> The code never finished — this almost always means an infinite loop. Check that the loop condition eventually becomes false.</div>';
+    } else if (r.error) {
+      h += '<div class="oe"><b>Uncaught ' + esc(r.error.name) + ':</b> ' + esc(r.error.message) +
+           (r.error.note ? '<span class="onote">' + esc(r.error.note) + '</span>' : '') + '</div>';
+    } else if (opts.showResult && r.result && !(r.result.t === 'undefined' && (r.out || []).length)) {
+      h += '<div class="or"><span class="arrow">←</span> ' + val(r.result, true) + '</div>';
+    }
+    if (!h) h = '<div class="oempty">No output. Use console.log(…) to print something.</div>';
+    el.innerHTML = h;
+  }
+
+  /* single-pass syntax highlighter — tokens are consumed once, never re-scanned */
+  var KW = /^(const|let|var|function|return|if|else|for|while|do|switch|case|break|continue|default|new|typeof|instanceof|in|of|class|this|try|catch|finally|throw|async|await)$/;
+  var LIT = /^(true|false|null|undefined|NaN|Infinity)$/;
+  function highlight(src) {
+    var re = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(`(?:\\[\s\S]|[^`\\])*`|'(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*")|(\b\d+(?:\.\d+)?n?\b)|([A-Za-z_$][\w$]*)|([\s\S])/g;
+    var out = '', m;
+    while ((m = re.exec(src)) !== null) {
+      if (m[1]) out += '<span class="c">' + esc(m[1]) + '</span>';
+      else if (m[2]) out += '<span class="s">' + esc(m[2]) + '</span>';
+      else if (m[3]) out += '<span class="n">' + m[3] + '</span>';
+      else if (m[4]) {
+        var w = m[4], next = src.charAt(re.lastIndex);
+        if (KW.test(w)) out += '<span class="k">' + w + '</span>';
+        else if (LIT.test(w)) out += '<span class="n">' + w + '</span>';
+        else if (next === '(') out += '<span class="f">' + w + '</span>';
+        else out += w;
+      }
+      else out += esc(m[5]);
+    }
+    return out;
+  }
+
+  /* strip comments and strings, for static rules like "no .reverse()" */
+  function codeOnly(src) {
+    var re = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(`(?:\\[\s\S]|[^`\\])*`|'(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*")|([\s\S])/g;
+    var out = '', m;
+    while ((m = re.exec(src)) !== null) {
+      if (m[1]) out += ' ';
+      else if (m[2]) out += m[2].charAt(0) === '`' ? '``' : '""';
+      else out += m[3];
+    }
+    return out;
+  }
+
+  return {
+    run: function (code, ms, cap) { return exec({ mode:'run', code:code, cap:cap || 300 }, ms || 1500); },
+    test: function (code, fname, cases, ms) { return exec({ mode:'test', code:code, fname:fname, cases:cases }, ms || 2500); },
+    render: render,
+    val: val,
+    highlight: highlight,
+    codeOnly: codeOnly,
+    esc: esc
+  };
+})();
+
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = JSRunner.esc;
+
+  /* ---------------- tabs ---------------- */
+  var navBtns = Array.prototype.slice.call(document.querySelectorAll('#nav button'));
+  navBtns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      navBtns.forEach(function (x) { x.classList.toggle('on', x === b); });
+      ['tools', 'ch', 'logic'].forEach(function (v) { $('v-' + v).classList.toggle('on', v === b.dataset.v); });
+      window.scrollTo(0, 0);
+    });
+  });
+
+  /* shared editor keys: Tab indents, Ctrl+Enter runs */
+  window.wireEditor = function (ta, onRun) {
+    ta.addEventListener('keydown', function (e) {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        var s = ta.selectionStart, en = ta.selectionEnd;
+        ta.value = ta.value.slice(0, s) + '  ' + ta.value.slice(en);
+        ta.selectionStart = ta.selectionEnd = s + 2;
+        ta.dispatchEvent(new Event('input'));
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); onRun(); }
+    });
+  };
+
+  /* ============================================================
+     TOOL 1 — SCRATCHPAD
+     ============================================================ */
+  var SURPRISES = [
+    '"5" + 3', '"5" - 3', '"10" / "2"', 'typeof null', 'typeof NaN',
+    '0.1 + 0.2', '0.1 + 0.2 === 0.3', 'NaN === NaN', '[] + []', '[] + {}',
+    '"b" + "a" + +"a" + "a"', '1 < 2 < 3', '3 > 2 > 1', 'Math.max()'
+  ];
+  $('spPresets').innerHTML = SURPRISES.map(function (s) {
+    return '<button type="button">' + esc(s) + '</button>';
+  }).join('');
+  function spRun() {
+    $('spOut').innerHTML = '<div class="ohint">running…</div>';
+    JSRunner.run($('spCode').value, 1500, 300).then(function (r) {
+      JSRunner.render($('spOut'), r, { showResult: true });
+    });
+  }
+  $('spPresets').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    $('spCode').value = b.textContent;
+    spRun();
+  });
+  $('spRun').addEventListener('click', spRun);
+  $('spClear').addEventListener('click', function () {
+    $('spCode').value = ''; $('spOut').innerHTML = '<div class="ohint">Press Run to see the output</div>'; $('spCode').focus();
+  });
+  wireEditor($('spCode'), spRun);
+
+  /* ============================================================
+     TOOL 2 — == vs === EXPLORER
+     Values are made fresh each time, so [] == [] behaves like two
+     separate array literals — which is what the language actually does.
+     ============================================================ */
+  var EQV = [
+    { l:'0',         mk:function () { return 0; },         kind:'number' },
+    { l:'1',         mk:function () { return 1; },         kind:'number' },
+    { l:'""',        mk:function () { return ''; },        kind:'string' },
+    { l:'"0"',       mk:function () { return '0'; },       kind:'string' },
+    { l:'"1"',       mk:function () { return '1'; },       kind:'string' },
+    { l:'false',     mk:function () { return false; },     kind:'boolean' },
+    { l:'true',      mk:function () { return true; },      kind:'boolean' },
+    { l:'null',      mk:function () { return null; },      kind:'null' },
+    { l:'undefined', mk:function () { return undefined; }, kind:'undefined' },
+    { l:'NaN',       mk:function () { return NaN; },       kind:'nan' },
+    { l:'[]',        mk:function () { return []; },        kind:'array' }
+  ];
+  var eqA = 0, eqB = 3;
+
+  function toNumLabel(e) {
+    var n = Number(e.mk());
+    return Number.isNaN(n) ? 'NaN' : String(n);
+  }
+  function explain(a, b) {
+    var A = EQV[a], B = EQV[b];
+    var loose = A.mk() == B.mk(), strict = A.mk() === B.mk();
+    if (A.kind === 'nan' || B.kind === 'nan')
+      return '<b>NaN is not equal to anything — not even NaN.</b> Both comparisons are false, always. To test for it, use <code>Number.isNaN(x)</code>.';
+    if (A.kind === 'array' && B.kind === 'array')
+      return '<b>Two separate arrays are two different objects.</b> Objects are compared by <i>reference</i> — "is this the very same object?" — not by contents. Both are false even though they look identical.';
+    if (A.kind === B.kind)
+      return '<b>Same type on both sides</b>, so <code>==</code> and <code>===</code> behave identically — no conversion happens. They are ' + (strict ? 'equal.' : 'simply different values.');
+    var nullish = function (k) { return k === 'null' || k === 'undefined'; };
+    if (nullish(A.kind) && nullish(B.kind))
+      return '<b>A special rule:</b> <code>null == undefined</code> is true, and they are loosely equal to nothing else. <code>===</code> is false because they are different types.';
+    if (nullish(A.kind) || nullish(B.kind))
+      return '<b>null and undefined are only loosely equal to each other.</b> They are never <code>==</code> to 0, <code>""</code> or false — even though all of those are falsy. That surprises almost everyone.';
+    var parts = [];
+    [A, B].forEach(function (e) {
+      if (e.kind === 'boolean') parts.push('<code>' + e.l + '</code> becomes the number <code>' + toNumLabel(e) + '</code>');
+      if (e.kind === 'string')  parts.push('the string <code>' + esc(e.l) + '</code> becomes the number <code>' + toNumLabel(e) + '</code>');
+      if (e.kind === 'array')   parts.push('<code>[]</code> becomes <code>""</code>, then the number <code>0</code>');
+    });
+    return '<b>Different types, so <code>==</code> converts first:</b> ' + parts.join(', and ') + '. After that it compares ' +
+           (loose ? 'two equal numbers — true.' : 'two different values — false.') +
+           ' <code>===</code> does no converting at all: different types means <b>false</b>, immediately.';
+  }
+  function eqRender() {
+    $('eqL').innerHTML = EQV.map(function (e, i) { return '<button type="button" data-i="' + i + '" class="' + (i === eqA ? 'on' : '') + '">' + esc(e.l) + '</button>'; }).join('');
+    $('eqR').innerHTML = EQV.map(function (e, i) { return '<button type="button" data-i="' + i + '" class="' + (i === eqB ? 'on' : '') + '">' + esc(e.l) + '</button>'; }).join('');
+    var A = EQV[eqA], B = EQV[eqB];
+    var loose = A.mk() == B.mk(), strict = A.mk() === B.mk();
+    var lb = $('eqLoose'), sb = $('eqStrict');
+    lb.className = 'eqbox ' + (loose ? 't' : 'f');
+    sb.className = 'eqbox ' + (strict ? 't' : 'f');
+    lb.querySelector('.ex').textContent = A.l + ' == ' + B.l;
+    sb.querySelector('.ex').textContent = A.l + ' === ' + B.l;
+    lb.querySelector('.rv').textContent = String(loose);
+    sb.querySelector('.rv').textContent = String(strict);
+    $('eqWhy').innerHTML = explain(eqA, eqB);
+
+    var h = '<table><tr><th>==</th>' + EQV.map(function (e) { return '<th>' + esc(e.l) + '</th>'; }).join('') + '</tr>';
+    EQV.forEach(function (r, i) {
+      h += '<tr><th>' + esc(r.l) + '</th>';
+      EQV.forEach(function (c, j) {
+        var y = r.mk() == c.mk();
+        var hot = (i === eqA && j === eqB) ? ' hot' : '';
+        h += '<td class="' + (y ? 'y' : 'n') + hot + '" data-a="' + i + '" data-b="' + j + '" title="' + esc(r.l + ' == ' + c.l) + '">' + (y ? '✓' : '·') + '</td>';
+      });
+      h += '</tr>';
+    });
+    $('eqGrid').innerHTML = h + '</table>';
+  }
+  $('eqL').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) { eqA = +b.dataset.i; eqRender(); } });
+  $('eqR').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) { eqB = +b.dataset.i; eqRender(); } });
+  $('eqGrid').addEventListener('click', function (e) {
+    var td = e.target.closest('td'); if (!td) return;
+    eqA = +td.dataset.a; eqB = +td.dataset.b; eqRender();
+  });
+  eqRender();
+
+  /* ============================================================
+     TOOL 3 — TRUTHY / FALSY SORTER
+     ============================================================ */
+  var TF = [
+    { l:'0',         v:function () { return 0; },          why:'Zero is one of the eight falsy values.' },
+    { l:'"0"',       v:function () { return '0'; },        why:'A string holding one character. Every non-empty string is truthy.' },
+    { l:'""',        v:function () { return ''; },         why:'The empty string — one of the eight falsy values.' },
+    { l:'" "',       v:function () { return ' '; },        why:'Not empty — it holds a space. Truthy.' },
+    { l:'"false"',   v:function () { return 'false'; },    why:'Five letters of text. The word does not matter — truthy.' },
+    { l:'false',     v:function () { return false; },      why:'The boolean false itself.' },
+    { l:'null',      v:function () { return null; },       why:'Deliberately empty — falsy.' },
+    { l:'undefined', v:function () { return undefined; },  why:'Nothing assigned yet — falsy.' },
+    { l:'NaN',       v:function () { return NaN; },        why:'Not a Number — falsy.' },
+    { l:'[]',        v:function () { return []; },         why:'An empty array still exists. Every object is truthy — use arr.length === 0 to test for empty.' },
+    { l:'{}',        v:function () { return {}; },         why:'An empty object is still an object — truthy.' },
+    { l:'-1',        v:function () { return -1; },         why:'Every number except 0, -0 and NaN is truthy — negatives included.' },
+    { l:'0n',        v:function () { return BigInt(0); },  why:'BigInt zero — the least-known of the eight falsy values.' },
+    { l:'"null"',    v:function () { return 'null'; },     why:'The text "null" — four letters, so truthy.' },
+    { l:'Infinity',  v:function () { return Infinity; },   why:'A number that is not zero — truthy.' },
+    { l:'-0',        v:function () { return -0; },         why:'Negative zero is still zero — falsy.' }
+  ];
+  var tfAns = {};
+  function tfRender() {
+    $('tfGrid').innerHTML = TF.map(function (t, i) {
+      var st = tfAns[i] === undefined ? '' : (tfAns[i] === Boolean(t.v()) ? ' ok' : ' bad');
+      var verdict = tfAns[i] === undefined ? '' :
+        '<b>' + (Boolean(t.v()) ? 'Truthy' : 'Falsy') + '.</b> ' + esc(t.why);
+      return '<div class="tfcard' + st + '" data-i="' + i + '"><div class="v">' + esc(t.l) + '</div>' +
+        '<div class="bt"><button type="button" data-a="1">truthy</button><button type="button" data-a="0">falsy</button></div>' +
+        '<div class="why">' + verdict + '</div></div>';
+    }).join('');
+    var n = Object.keys(tfAns).length;
+    var right = Object.keys(tfAns).filter(function (k) { return tfAns[k] === Boolean(TF[k].v()); }).length;
+    $('tfScore').textContent = n === TF.length
+      ? right + ' / 16 correct' + (right === 16 ? ' — perfect.' : ' — read the red ones again.')
+      : n + ' / 16 answered · ' + right + ' correct so far';
+  }
+  $('tfGrid').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    var i = +b.closest('.tfcard').dataset.i;
+    if (tfAns[i] !== undefined) return;
+    tfAns[i] = b.dataset.a === '1';
+    tfRender();
+  });
+  $('tfReset').addEventListener('click', function () { tfAns = {}; tfRender(); });
+  tfRender();
+
+  /* ============================================================
+     TOOL 4 — LOOP TRACER
+     Each program is a generator that yields one step per move.
+     ============================================================ */
+  var PROGRAMS = [
+    { name:'Sum 1 to 5  ·  for',
+      code:['let total = 0;', 'for (let i = 1; i <= 5; i++) {', '  total += i;', '}', 'console.log(total);'],
+      cols:['round', 'i', 'total', 'i <= 5'],
+      gen:function* () {
+        var total = 0, round = 0;
+        yield { line:0, vars:{ total:total }, note:'<b>total</b> starts at 0 — before the loop.' };
+        var i = 1;
+        yield { line:1, vars:{ total:total, i:i }, phase:'start', note:'<b>① start</b> runs exactly once: <code>i = 1</code>.' };
+        while (true) {
+          var c = i <= 5; round++;
+          yield { line:1, vars:{ total:total, i:i }, phase:'check', cond:c, row:[c ? round : '—', i, total, c],
+                  note:'<b>② check</b> — is ' + i + ' &lt;= 5? <b>' + c + '</b>' + (c ? ', so run the body.' : ', so the loop ends here.') };
+          if (!c) break;
+          total += i;
+          yield { line:2, vars:{ total:total, i:i }, phase:'body', note:'<b>③ body</b> — <code>total += ' + i + '</code>, so total is now <b>' + total + '</b>.' };
+          i++;
+          yield { line:1, vars:{ total:total, i:i }, phase:'update', note:'<b>④ update</b> — <code>i++</code> makes i <b>' + i + '</b>. Back to the check.' };
+        }
+        yield { line:4, vars:{ total:total }, out:String(total), note:'The loop is over and <code>i</code> no longer exists. Print total: <b>' + total + '</b>.' };
+      } },
+
+    { name:'Countdown  ·  while',
+      code:['let n = 3;', 'while (n > 0) {', '  console.log(n);', '  n--;', '}', 'console.log("Lift off!");'],
+      cols:['round', 'n', 'n > 0'],
+      gen:function* () {
+        var n = 3, round = 0;
+        yield { line:0, vars:{ n:n }, phase:'start', note:'<b>① start</b> — a while loop has no built-in start. The variable is set up <i>before</i> it: <code>n = 3</code>.' };
+        while (true) {
+          var c = n > 0; round++;
+          yield { line:1, vars:{ n:n }, phase:'check', cond:c, row:[c ? round : '—', n, c],
+                  note:'<b>② check</b> — is ' + n + ' &gt; 0? <b>' + c + '</b>' + (c ? '.' : ' — the loop ends.') };
+          if (!c) break;
+          yield { line:2, vars:{ n:n }, phase:'body', out:String(n), note:'<b>③ body</b> — print <b>' + n + '</b>.' };
+          n--;
+          yield { line:3, vars:{ n:n }, phase:'update', note:'<b>④ update</b> — <code>n--</code> makes n <b>' + n + '</b>. In a while loop <i>you</i> must write this line — forget it and the loop never ends.' };
+        }
+        yield { line:5, vars:{ n:n }, out:'Lift off!', note:'Condition false, loop skipped. Print <b>Lift off!</b>' };
+      } },
+
+    { name:'FizzBuzz 1 to 15  ·  for + if',
+      code:['for (let i = 1; i <= 15; i++) {', '  if (i % 15 === 0) {', '    console.log("FizzBuzz");', '  } else if (i % 3 === 0) {',
+            '    console.log("Fizz");', '  } else if (i % 5 === 0) {', '    console.log("Buzz");', '  } else {', '    console.log(i);', '  }', '}'],
+      cols:['i', 'i % 3', 'i % 5', 'prints'],
+      gen:function* () {
+        var i = 1;
+        yield { line:0, vars:{ i:i }, phase:'start', note:'<b>① start</b> — <code>i = 1</code>.' };
+        while (true) {
+          var c = i <= 15;
+          yield { line:0, vars:{ i:i }, phase:'check', cond:c, note:'<b>② check</b> — is ' + i + ' &lt;= 15? <b>' + c + '</b>' + (c ? '.' : ' — done.') };
+          if (!c) break;
+          var out, line, why;
+          if (i % 15 === 0) { out = 'FizzBuzz'; line = 2; why = i + ' % 15 is 0 — the first test matches, so the others are never looked at.'; }
+          else if (i % 3 === 0) { out = 'Fizz'; line = 4; why = i + ' % 15 is ' + (i % 15) + ', but ' + i + ' % 3 is 0.'; }
+          else if (i % 5 === 0) { out = 'Buzz'; line = 6; why = i + ' % 3 is ' + (i % 3) + ', but ' + i + ' % 5 is 0.'; }
+          else { out = String(i); line = 8; why = 'no remainder is 0, so print the number itself.'; }
+          yield { line:line, vars:{ i:i }, phase:'body', out:out, row:[i, i % 3, i % 5, out], note:'<b>③ body</b> — ' + why };
+          i++;
+          yield { line:0, vars:{ i:i }, phase:'update', note:'<b>④ update</b> — i becomes <b>' + i + '</b>.' };
+        }
+      } },
+
+    { name:'Largest in a list  ·  for…of',
+      code:['const nums = [3, 9, 2, 7];', 'let max = nums[0];', 'for (const n of nums) {', '  if (n > max) {', '    max = n;', '  }', '}', 'console.log(max);'],
+      cols:['n', 'n > max?', 'max after'],
+      gen:function* () {
+        var nums = [3, 9, 2, 7];
+        yield { line:0, vars:{ nums:'[3, 9, 2, 7]' }, note:'The list to search.' };
+        var max = nums[0];
+        yield { line:1, vars:{ nums:'[3, 9, 2, 7]', max:max }, phase:'start', note:'<b>① start</b> — max begins as the <b>first item</b>, 3. Not 0: if every number were negative, 0 would wrongly win.' };
+        for (var k = 0; k <= nums.length; k++) {
+          var more = k < nums.length;
+          if (!more) {
+            yield { line:2, vars:{ max:max }, phase:'check', cond:false, note:'<b>② check</b> — are there any items left? <b>No</b> — the loop ends.' };
+            break;
+          }
+          var n = nums[k];
+          yield { line:2, vars:{ n:n, max:max }, phase:'check', cond:true, note:'<b>② check</b> — another item? Yes: <code>n = ' + n + '</code>.' };
+          var bigger = n > max;
+          yield { line:3, vars:{ n:n, max:max }, phase:'body', note:'<b>③ body</b> — is ' + n + ' &gt; ' + max + '? <b>' + bigger + '</b>' + (bigger ? '.' : ' — max stays ' + max + '.'), row: bigger ? null : [n, false, max] };
+          if (bigger) {
+            max = n;
+            yield { line:4, vars:{ n:n, max:max }, phase:'body', row:[n, true, max], note:'<b>③ body</b> — new largest: max becomes <b>' + max + '</b>.' };
+          }
+          yield { line:2, vars:{ n:n, max:max }, phase:'update', note:'<b>④ update</b> — for…of moves to the next item by itself. No counter to forget.' };
+        }
+        yield { line:7, vars:{ max:max }, out:String(max), note:'Print the largest: <b>' + max + '</b>.' };
+      } }
+  ];
+
+  var trP = 0, trSteps = [], trI = -1;
+  $('trPick').innerHTML = PROGRAMS.map(function (p, i) {
+    return '<button type="button" data-i="' + i + '">' + esc(p.name) + '</button>';
+  }).join('');
+
+  function trLoad(i) {
+    trP = i; trSteps = []; trI = -1;
+    var it = PROGRAMS[i].gen();
+    for (var s = it.next(); !s.done; s = it.next()) trSteps.push(s.value);
+    Array.prototype.forEach.call($('trPick').children, function (b, k) {
+      b.style.background = k === i ? 'var(--accent)' : '';
+      b.style.color = k === i ? 'var(--card)' : '';
+      b.style.borderColor = k === i ? 'var(--accent)' : '';
+    });
+    trDraw();
+  }
+  function trDraw() {
+    var P = PROGRAMS[trP], st = trSteps[trI] || null, prev = trSteps[trI - 1] || null;
+    $('trCode').innerHTML = P.code.map(function (ln, k) {
+      return '<div class="ln' + (st && st.line === k ? ' cur' : '') + '"><span class="no">' + (k + 1) + '</span><span>' + JSRunner.highlight(ln) + '</span></div>';
+    }).join('');
+    $('trCount').textContent = trI < 0 ? trSteps.length + ' steps' : 'step ' + (trI + 1) + ' / ' + trSteps.length;
+    Array.prototype.forEach.call($('trPhase').children, function (ph) { ph.classList.toggle('on', !!st && st.phase === ph.dataset.p); });
+    $('trNote').innerHTML = st ? st.note : 'Press <b>Step</b> to run the first line.';
+
+    var vars = st ? st.vars : {};
+    $('trVars').innerHTML = Object.keys(vars).map(function (k) {
+      var changed = prev && prev.vars && String(prev.vars[k]) !== String(vars[k]);
+      return '<div class="vv' + (changed ? ' chg' : '') + '"><span class="k">' + esc(k) + '</span><span class="x">' + esc(String(vars[k])) + '</span></div>';
+    }).join('') || '<span style="color:var(--ink-3);font-size:13px">none yet</span>';
+
+    var rows = trSteps.slice(0, trI + 1).filter(function (x) { return x.row; });
+    var h = '<tr>' + P.cols.map(function (c) { return '<th>' + esc(c) + '</th>'; }).join('') + '</tr>';
+    rows.forEach(function (x) {
+      h += '<tr>' + x.row.map(function (v) {
+        var cls = v === true ? 'ct' : v === false ? 'cf' : '';
+        return '<td class="' + cls + '">' + esc(String(v)) + '</td>';
+      }).join('') + '</tr>';
+    });
+    $('trTable').innerHTML = h;
+
+    var outs = trSteps.slice(0, trI + 1).filter(function (x) { return x.out !== undefined; });
+    $('trOut').innerHTML = outs.length
+      ? outs.map(function (x) { return '<div class="ol">' + esc(x.out) + '</div>'; }).join('')
+      : '<div class="ohint">nothing printed yet</div>';
+    $('trStep').disabled = trI >= trSteps.length - 1;
+  }
+  $('trPick').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) trLoad(+b.dataset.i); });
+  $('trStep').addEventListener('click', function () { if (trI < trSteps.length - 1) { trI++; trDraw(); } });
+  $('trAll').addEventListener('click', function () { trI = trSteps.length - 1; trDraw(); });
+  $('trReset').addEventListener('click', function () { trI = -1; trDraw(); });
+  trLoad(0);
+
+  window.__TOOLS = { PROGRAMS: PROGRAMS, EQV: EQV, TF: TF };
+})();
+
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = JSRunner.esc;
+
+  /* rules every challenge shares — the two habits this module insists on */
+  var GLOBAL_RULES = [
+    { l:'No var — uses let or const', f:function (code) { return !/\bvar\b/.test(code); } },
+    { l:'Uses === and !== (no loose == or !=)', f:function (code) { return !/(^|[^=!<>])==(?!=)/.test(code) && !/!=(?!=)/.test(code); } }
+  ];
+
+  function V(args, expect) { return { args:args, expect:expect }; }
+  function H(args, expect) { return { args:args, expect:expect, hidden:true }; }
+
+  var CH = [
+    { id:'J1', fname:'greet', lvl:'m', title:'Greeting',
+      sig:'greet(name) → string',
+      scen:'The welcome banner shows "Hello, undefined!" whenever a user skips the name field.',
+      brief:'Return <b><code>Hello, NAME!</code></b> using a <b>template literal</b>. If the name is <b>empty or missing</b>, greet them as <code>stranger</code>.',
+      start:'function greet(name) {\n  // your code here\n}\n',
+      guided:['If name is empty or missing, use "stranger" instead.',
+              '  Both an empty string and undefined are falsy — one check covers both.',
+              'Build the sentence with a template literal:  `Hello, ${...}!`',
+              'RETURN it. Do not console.log it — the grader reads what you return.'],
+      stretch:'Trim spaces, so <code>"  Asha  "</code> gives <code>"Hello, Asha!"</code> — and treat a name made only of spaces as missing too.',
+      hint:'const who = name ? name : "stranger";  then  return `Hello, ${who}!`;  A default parameter (name = "stranger") covers a missing name but NOT an empty string.',
+      rules:[{ l:'Uses a template literal', f:function (code) { return code.indexOf('`') !== -1; } }],
+      tests:[V(['Asha'], 'Hello, Asha!'), V(['Ravi'], 'Hello, Ravi!'),
+             H([''], 'Hello, stranger!'), H([], 'Hello, stranger!'), H(['Meera Iyer'], 'Hello, Meera Iyer!')],
+      diag:function (args, got) {
+        if (got && got.t === 'string' && /undefined|, !$/.test(got.s)) return 'An empty or missing name should give <code>"Hello, stranger!"</code>. A default parameter only replaces <code>undefined</code> — an empty string <code>""</code> gets through it. Check for both with one falsy test.';
+      } },
+
+    { id:'J2', fname:'isEven', lvl:'m', title:'Even or odd',
+      sig:'isEven(n) → boolean',
+      scen:'A seating script puts even roll numbers on the left side of the lab.',
+      brief:'Return <b><code>true</code></b> if <code>n</code> is even and <b><code>false</code></b> if it is odd. Return a real boolean — not the word "yes".',
+      start:'function isEven(n) {\n  // your code here\n}\n',
+      guided:['The remainder of n divided by 2 tells you everything:  n % 2',
+              'A number is even when that remainder is exactly 0.',
+              'Return the comparison itself — it is already true or false.',
+              '  (no need for an if/else that returns true or false)'],
+      stretch:'Solve it <b>without <code>%</code></b>, using <code>Math.floor</code> — then write one line on why <code>%</code> is still the right tool.',
+      hint:'return n % 2 === 0;   Checking n % 2 === 1 fails for negative odd numbers, because -3 % 2 is -1.',
+      rules:[],
+      tests:[V([4], true), V([7], false), V([0], true),
+             H([-2], true), H([-3], false), H([1000001], false)],
+      diag:function (args, got) {
+        if (args[0] === -3 && got && got.s === 'true') return 'Negative numbers: <code>-3 % 2</code> is <code>-1</code>, not 1 — the remainder keeps the sign. Test <code>n % 2 === 0</code> for even; it works for negatives too.';
+        if (got && got.t === 'string') return 'Return <code>true</code> or <code>false</code> — a boolean — not a word in quotes.';
+      } },
+
+    { id:'J3', fname:'grade', lvl:'m', title:'Grade calculator',
+      sig:'grade(marks) → "A" | "B" | "C" | "D" | "F" | "Invalid"',
+      scen:'The report-card system gave a student who scored exactly 90 a B, and accepted a score of 105.',
+      brief:'<b>A</b> 90–100 · <b>B</b> 75–89 · <b>C</b> 60–74 · <b>D</b> 40–59 · <b>F</b> 0–39. Anything that is not a number, or is outside 0–100, returns <b><code>"Invalid"</code></b>. The hidden tests sit on every boundary.',
+      start:'function grade(marks) {\n  // your code here\n}\n',
+      guided:['GUARD FIRST: if marks is not a number, or below 0, or above 100,',
+              '  return "Invalid".   Hint: typeof marks !== "number"',
+              'Then check from the TOP grade downward:',
+              '  90 and above -> "A",  75 and above -> "B",',
+              '  60 and above -> "C",  40 and above -> "D"',
+              'Anything left over is "F".'],
+      stretch:'Remove the if/else chain: store the bands as data — <code>[[90, "A"], [75, "B"], …]</code> — and loop over them, so adding a new band is a one-line change.',
+      hint:'Guard: if (typeof marks !== "number" || marks < 0 || marks > 100) return "Invalid";  then if (marks >= 90) return "A"; if (marks >= 75) return "B"; …',
+      rules:[],
+      tests:[V([95], 'A'), V([80], 'B'), V([45], 'D'),
+             H([100], 'A'), H([90], 'A'), H([89], 'B'), H([75], 'B'), H([60], 'C'), H([40], 'D'),
+             H([39], 'F'), H([0], 'F'), H([-5], 'Invalid'), H([101], 'Invalid'), H(['85'], 'Invalid')],
+      diag:function (args, got) {
+        if (args[0] === '85') return '<code>"85"</code> arrived as a <b>string</b> — exactly what a form gives you. Your guard should reject anything where <code>typeof marks !== "number"</code>.';
+        if ((args[0] === -5 || args[0] === 101) && got && got.s !== 'Invalid') return 'Check the impossible scores <b>first</b>. Once you are past the guard, every other branch can assume the input is sensible.';
+        if ([90, 75, 60, 40].indexOf(args[0]) !== -1) return 'Boundary value ' + args[0] + ' landed in the wrong band. Use <code>&gt;=</code> for the lower edge of each grade, not <code>&gt;</code>.';
+      } },
+
+    { id:'J4', fname:'sumTo', lvl:'m', title:'Sum from 1 to n',
+      sig:'sumTo(n) → number',
+      scen:'A report needs the total of all the numbers from 1 up to a given value.',
+      brief:'Return <code>1 + 2 + … + n</code> using a <b>loop</b>. If <code>n</code> is less than 1, return <b>0</b>.',
+      start:'function sumTo(n) {\n  // your code here\n}\n',
+      guided:['Make a running total that starts at 0 (let — it will change).',
+              'Loop i from 1 up to AND INCLUDING n:  for (let i = 1; i <= n; i++)',
+              '  Add i to the total each round.',
+              'After the loop ends, return the total.',
+              '  (If n is 0 or negative the loop never runs, so total stays 0 — free!)'],
+      stretch:'Add a second function, <code>sumToFast(n)</code>, using the formula <code>n × (n + 1) ÷ 2</code> with the same n &lt; 1 rule. Then write one line explaining why it is O(1) and the loop is O(n).',
+      hint:'let total = 0; for (let i = 1; i <= n; i++) { total += i; } return total;',
+      rules:[{ l:'Uses a loop', f:function (code) { return /\b(for|while)\b/.test(code); } }],
+      tests:[V([5], 15), V([10], 55), V([1], 1),
+             H([0], 0), H([-4], 0), H([100], 5050)],
+      diag:function (args, got) {
+        var n = args[0];
+        if (n > 1 && got && got.t === 'number' && +got.s === (n - 1) * n / 2) return 'Your loop stops one short — this is the classic off-by-one. For "up to and including n", the condition is <code>i &lt;= n</code>, not <code>i &lt; n</code>.';
+        if (n < 1 && got && got.t === 'number' && +got.s !== 0) return 'For n below 1 the answer is 0. If you start the total at 0 and loop while <code>i &lt;= n</code>, this case handles itself.';
+      } },
+
+    { id:'J5', fname:'fizzBuzz', lvl:'m', title:'FizzBuzz',
+      sig:'fizzBuzz(n) → array of strings',
+      scen:'The most famous screening question in the industry. It is not hard — it is a test of whether you check the conditions in the right order.',
+      brief:'Return an array for <code>1</code> to <code>n</code>: <b>"Fizz"</b> for multiples of 3, <b>"Buzz"</b> for multiples of 5, <b>"FizzBuzz"</b> for multiples of both, and otherwise the number <b>as a string</b>.',
+      start:'function fizzBuzz(n) {\n  // your code here\n}\n',
+      guided:['Make an empty array to collect the answers:  const out = [];',
+              'Loop i from 1 to n, inclusive.',
+              '  FIRST check divisible by BOTH 3 and 5 -> push "FizzBuzz"',
+              '  else divisible by 3 -> "Fizz"',
+              '  else divisible by 5 -> "Buzz"',
+              '  else push the number AS A STRING:  String(i)',
+              'Return the array.'],
+      stretch:'Make it configurable: <code>fizzBuzz(n, rules)</code> where <code>rules</code> is <code>[[3, "Fizz"], [5, "Buzz"], [7, "Bazz"]]</code> — and 21 prints <code>"FizzBazz"</code>. No hard-coded numbers inside the loop.',
+      hint:'Check i % 15 === 0 (or i % 3 === 0 && i % 5 === 0) BEFORE the Fizz and Buzz checks, and push String(i) for the plain numbers.',
+      rules:[],
+      tests:[V([5], ['1', '2', 'Fizz', '4', 'Buzz']), V([3], ['1', '2', 'Fizz']),
+             H([15], ['1', '2', 'Fizz', '4', 'Buzz', 'Fizz', '7', '8', 'Fizz', 'Buzz', '11', 'Fizz', '13', '14', 'FizzBuzz']),
+             H([1], ['1']), H([0], [])],
+      diag:function (args, got) {
+        if (got && got.t === 'array' && /\[\d|, \d/.test(got.s)) return 'Every item must be a <b>string</b> — <code>"1"</code>, not <code>1</code>. The test is strict about type. Use <code>String(i)</code>.';
+        if (args[0] === 15 && got && got.t === 'array' && !/'FizzBuzz'\]$/.test(got.s)) return 'Check the "both" case <b>first</b>. If the Fizz test comes first, 15 matches it and the FizzBuzz branch is never reached — the first true condition wins.';
+      } },
+
+    { id:'J6', fname:'countVowels', lvl:'m', title:'Count the vowels',
+      sig:'countVowels(str) → number',
+      scen:'A text-analysis feature needs to count vowels in a sentence, whatever the case.',
+      brief:'Return how many of <b>a, e, i, o, u</b> appear in <code>str</code>, counting <b>upper and lower case</b> alike.',
+      start:'function countVowels(str) {\n  // your code here\n}\n',
+      guided:['Start a counter at 0.',
+              'Lower-case the string once, so "A" and "a" are treated the same.',
+              'Loop over each character — for…of works on strings.',
+              '  If the character is one of "aeiou", add 1.',
+              '  Hint: "aeiou".includes(ch)',
+              'Return the counter.'],
+      stretch:'Return an object instead — <code>{ a: 1, e: 1, i: 0, o: 1, u: 0 }</code> — counting each vowel separately, in a single loop.',
+      hint:'let count = 0; for (const ch of str.toLowerCase()) { if ("aeiou".includes(ch)) count++; } return count;',
+      rules:[{ l:'Uses a loop', f:function (code) { return /\b(for|while)\b/.test(code); } }],
+      tests:[V(['hello'], 2), V(['JavaScript'], 3), V(['rhythm'], 0),
+             H([''], 0), H(['AEIOU'], 5), H(['Indore Foundation'], 8)],
+      diag:function (args, got) {
+        if (args[0] === 'AEIOU' && got && got.s === '0') return 'Capital vowels count too. Lower-case the string before the loop — <code>str.toLowerCase()</code> — so you only have to check one case.';
+      } },
+
+    { id:'J7', fname:'reverse', lvl:'a', title:'Reverse a string',
+      sig:'reverse(str) → string',
+      scen:'An interview classic. The interviewer says: "Now do it without the built-in reverse."',
+      brief:'Return <code>str</code> backwards — <b>without</b> <code>.reverse()</code>, and using a <b>loop</b>.',
+      start:'function reverse(str) {\n  // your code here\n}\n',
+      guided:['Start with an empty result string:  let out = "";',
+              'Loop i from the LAST index down to 0:',
+              '  for (let i = str.length - 1; i >= 0; i--)',
+              '  Add str[i] onto the end of out.',
+              'Return out.'],
+      stretch:'Reverse it by walking only <b>half</b> the length and swapping characters from both ends inside an array. Then say why that is still O(n).',
+      hint:'let out = ""; for (let i = str.length - 1; i >= 0; i--) { out += str[i]; } return out;',
+      rules:[{ l:'Does not use .reverse()', f:function (code) { return !/\.reverse\s*\(/.test(code); } },
+             { l:'Uses a loop', f:function (code) { return /\b(for|while)\b/.test(code); } }],
+      tests:[V(['abc'], 'cba'), V(['Indore'], 'erodnI'), V([''], ''),
+             H(['a'], 'a'), H(['racecar'], 'racecar'), H(['hello world'], 'dlrow olleh')],
+      diag:function (args, got) {
+        if (got && got.t === 'string' && got.s === args[0] && args[0].length > 1 && args[0] !== 'racecar') return 'The string came back unchanged — your loop is walking forwards. Start at <code>str.length - 1</code> and count <b>down</b> to 0.';
+        if (got && got.t === 'string' && args[0] && got.s.length === args[0].length - 1) return 'One character is missing — the loop stops too early. Go down to <b>and including</b> index 0: <code>i &gt;= 0</code>.';
+      } },
+
+    { id:'J8', fname:'isPalindrome', lvl:'a', title:'Palindrome check',
+      sig:'isPalindrome(str) → boolean',
+      scen:'Asked in almost every fresher interview — and almost always with the follow-up "ignore case and spaces".',
+      brief:'Return <code>true</code> if <code>str</code> reads the same backwards, <b>ignoring capital letters and spaces</b>. Do not use <code>.reverse()</code>.',
+      start:'function isPalindrome(str) {\n  // your code here\n}\n',
+      guided:['Clean it first: lower-case it and remove the spaces.',
+              '  Hint: str.toLowerCase().replaceAll(" ", "")',
+              'Build the reversed version with a loop — like the last challenge.',
+              'Return whether the cleaned string === its reverse.'],
+      stretch:'Solve it with <b>two pointers</b> — one at each end, moving inward — and no reversed copy at all. That uses O(1) extra space, and it is the version interviewers are hoping for.',
+      hint:'const s = str.toLowerCase().replaceAll(" ", ""); let r = ""; for (let i = s.length - 1; i >= 0; i--) r += s[i]; return s === r;',
+      rules:[{ l:'Does not use .reverse()', f:function (code) { return !/\.reverse\s*\(/.test(code); } }],
+      tests:[V(['racecar'], true), V(['Level'], true), V(['hello'], false),
+             H(['Never odd or even'], true), H(['Taco cat'], true), H(['a'], true), H([''], true), H(['ab'], false)],
+      diag:function (args, got) {
+        if (args[0] === 'Level' && got && got.s === 'false') return 'Lower-case first. <code>"L"</code> and <code>"l"</code> are different characters to a computer.';
+        if (/ /.test(args[0] || '') && got && got.s === 'false') return 'Remove the spaces before comparing — <code>"never odd or even"</code> only reads the same backwards once the spaces are gone.';
+      } },
+
+    { id:'J9', fname:'largest', lvl:'a', title:'Largest number',
+      sig:'largest(nums) → number | null',
+      scen:'A leaderboard needs the top score. The obvious first attempt has a bug that only shows up with negative numbers.',
+      brief:'Return the <b>largest</b> number in the array — <b>without</b> <code>Math.max</code> or <code>sort</code>. For an <b>empty</b> array, return <code>null</code>.',
+      start:'function largest(nums) {\n  // your code here\n}\n',
+      guided:['If the list is empty, return null straight away.',
+              'Start max at the FIRST element, nums[0] — NOT at 0.',
+              '  (Why not 0? Try the test [-5, -2, -9] and see.)',
+              'Loop over the rest; whenever you see something bigger, update max.',
+              'Return max.'],
+      stretch:'Return both the value and its position — <code>{ value: 9, index: 1 }</code> — in a single pass. If the largest appears twice, return the first position.',
+      hint:'if (nums.length === 0) return null; let max = nums[0]; for (const n of nums) { if (n > max) max = n; } return max;',
+      rules:[{ l:'Does not use Math.max', f:function (code) { return !/Math\s*\.\s*max/.test(code); } },
+             { l:'Does not use sort', f:function (code) { return !/\.sort\s*\(/.test(code); } }],
+      tests:[V([[3, 9, 2]], 9), V([[-5, -2, -9]], -2), V([[7]], 7),
+             H([[]], null), H([[0, -1]], 0), H([[1, 1, 1]], 1), H([[-10]], -10), H([[2, 8, 8, 3]], 8)],
+      diag:function (args, got) {
+        var a = args[0];
+        if (a.length && a.every(function (x) { return x < 0; }) && got && got.s === '0') return 'You started max at <b>0</b> — but every number here is negative, so nothing ever beats 0 and 0 is not even in the list. Start from the first element: <code>let max = nums[0];</code>';
+        if (!a.length && got && got.s !== 'null') return 'An empty list has no largest number. Check <code>nums.length === 0</code> first and return <code>null</code>.';
+      } },
+
+    { id:'J10', fname:'formatPrice', lvl:'a', title:'Format a price',
+      sig:'formatPrice(amount, currency = "₹") → string',
+      scen:'Free items on the store show "Price unavailable". A zero price is being treated as a missing one.',
+      brief:'Return the amount with the currency and <b>exactly two decimals</b>: <code>"₹499.00"</code>. If <code>amount</code> is <code>null</code> or <code>undefined</code>, return <b><code>"Price unavailable"</code></b>. <b>Zero is a real price.</b>',
+      start:'function formatPrice(amount, currency = "₹") {\n  // your code here\n}\n',
+      guided:['If amount is null or undefined, return "Price unavailable".',
+              '  Careful: 0 is a REAL price. Do not use !amount or || here —',
+              '  both treat 0 as missing. Check:  amount === null || amount === undefined',
+              'Otherwise format with exactly two decimals:  amount.toFixed(2)',
+              'Return currency + the formatted number, e.g. "₹499.00"'],
+      stretch:'Format the Indian way with separators — <code>"₹1,24,990.00"</code> — using <code>toLocaleString("en-IN", …)</code>, and show refunds as <code>"-₹499.00"</code>.',
+      hint:'if (amount === null || amount === undefined) return "Price unavailable";  return currency + amount.toFixed(2);   (or: amount ?? … — ?? treats only null and undefined as missing)',
+      rules:[],
+      tests:[V([499], '₹499.00'), V([1299.5, '$'], '$1299.50'), V([0], '₹0.00'),
+             H([null], 'Price unavailable'), H([undefined], 'Price unavailable'), H([0, '$'], '$0.00'), H([19.999], '₹20.00')],
+      diag:function (args, got) {
+        if (args[0] === 0 && got && /unavailable/i.test(got.s)) return '<b>0 is a real price.</b> <code>!amount</code> and <code>amount || …</code> both treat 0 as missing because 0 is falsy. Check specifically for <code>null</code> and <code>undefined</code> — or use <code>??</code>, which does exactly that.';
+        if (got && got.t === 'string' && /^\D?\d+(\.\d)?$/.test(got.s.replace(/^[₹$]/, '')) && !/\.\d\d$/.test(got.s)) return 'Always two decimals for money: <code>amount.toFixed(2)</code> turns 499 into <code>"499.00"</code> and 1299.5 into <code>"1299.50"</code>.';
+      } },
+
+    { id:'J11', fname:'electricityBill', lvl:'b', title:'Boss — electricity bill',
+      sig:'electricityBill(units) → number',
+      scen:'A placement-test favourite in Indian campus rounds: slab-based billing. Most wrong answers charge every unit at the highest slab it reaches.',
+      brief:'First <b>100</b> units at <b>₹5</b> each · the next <b>100</b> (101–200) at <b>₹7</b> · everything <b>above 200</b> at <b>₹10</b> · plus a fixed charge of <b>₹50</b>. If <code>units</code> is not a number, is <code>NaN</code>, or is negative, return <b><code>-1</code></b>.',
+      start:'function electricityBill(units) {\n  // your code here\n}\n',
+      guided:['GUARD: not a number, NaN, or negative  ->  return -1',
+              '  Hint: typeof units !== "number" || Number.isNaN(units) || units < 0',
+              'Name your numbers — no magic numbers in the maths:',
+              '  const FIXED = 50, RATE1 = 5, RATE2 = 7, RATE3 = 10;',
+              'Units in each slab:',
+              '  slab 1 = the first 100 units      Math.min(units, 100)',
+              '  slab 2 = units 101 to 200         at most 100',
+              '  slab 3 = everything above 200',
+              'bill = FIXED + slab1 * RATE1 + slab2 * RATE2 + slab3 * RATE3',
+              'Return the bill.'],
+      stretch:'Make the slabs <b>data, not code</b>: <code>const SLABS = [[100, 5], [100, 7], [Infinity, 10]]</code>, and loop over them. The electricity board can then change a rate without anyone touching the logic — and that is exactly the design question the interviewer asks next.',
+      hint:'const s1 = Math.min(units, 100); const s2 = Math.min(Math.max(units - 100, 0), 100); const s3 = Math.max(units - 200, 0); return 50 + s1 * 5 + s2 * 7 + s3 * 10;',
+      rules:[],
+      tests:[V([50], 300), V([150], 900), V([250], 1750),
+             H([0], 50), H([100], 550), H([101], 557), H([200], 1250), H([201], 1260),
+             H([-10], -1), H(['100'], -1), H([NaN], -1)],
+      diag:function (args, got) {
+        var u = args[0];
+        if (u === 150 && got && got.s === String(150 * 7 + 50)) return 'Only the units <b>above 100</b> are charged at ₹7 — the first 100 are still ₹5 each. That is what a slab means: each band has its own rate.';
+        if (u === 250 && got && got.s === String(250 * 10 + 50)) return 'You charged all 250 units at the top rate. Split them: 100 at ₹5, 100 at ₹7, and only the last 50 at ₹10.';
+        if (u === 0 && got && got.s === '0') return 'The ₹50 fixed charge applies even when no units were used.';
+        if (u === '100') return '<code>"100"</code> is a string, not a number. Your guard should reject it — <code>typeof units !== "number"</code>.';
+        if (typeof u === 'number' && Number.isNaN(u)) return '<code>NaN</code> has type "number", so a typeof check lets it through. Add <code>Number.isNaN(units)</code> to the guard.';
+        if (u === -10) return 'Negative units are impossible — guard against them first and return <code>-1</code>.';
+      } }
+  ];
+
+  /* ---------- formatting a value the way the tests show it ---------- */
+  function fmt(v, top) {
+    if (typeof v === 'string') return top === false ? "'" + v + "'" : JSON.stringify(v);
+    if (v === null) return 'null';
+    if (v === undefined) return 'undefined';
+    if (typeof v === 'number') return Number.isNaN(v) ? 'NaN' : (Object.is(v, -0) ? '-0' : String(v));
+    if (Array.isArray(v)) return '[' + v.map(function (x) { return fmt(x, false); }).join(', ') + ']';
+    if (typeof v === 'object') return '{' + Object.keys(v).map(function (k) { return k + ': ' + fmt(v[k], false); }).join(', ') + '}';
+    return String(v);
+  }
+  function fmtGot(g) {
+    if (!g) return '—';
+    return g.t === 'string' ? JSON.stringify(g.s) : g.s;
+  }
+  function typeName(v) {
+    if (v === null) return 'null';
+    if (Array.isArray(v)) return 'array';
+    if (typeof v === 'number' && Number.isNaN(v)) return 'number';
+    return typeof v;
+  }
+  function callText(c, fname) {
+    return fname + '(' + c.args.map(function (a) { return fmt(a, true); }).join(', ') + ')';
+  }
+
+  /* ---------- state ---------- */
+  var solved = {}, submits = {}, codeStore = {}, idx = 0, lane = 'standard', started = false;
+
+  function guidedStarter(c) {
+    var n = 0;
+    var body = c.guided.map(function (t) {
+      if (/^\s/.test(t)) return '  //      ' + t.trim();
+      n++; return '  // ' + n + '. ' + t;
+    });
+    var sigLine = c.start.split('\n')[0];
+    return sigLine + '\n' + body.join('\n') + '\n\n}\n';
+  }
+  function starterFor(c) { return lane === 'guided' ? guidedStarter(c) : c.start; }
+  function untouched(c, code) { return code === c.start || code === guidedStarter(c); }
+
+  var list = $('chList');
+  list.innerHTML = CH.map(function (c) { return '<button type="button">' + c.id + '</button>'; }).join('');
+
+  function updateScore() {
+    $('score').innerHTML = 'solved <b>' + Object.keys(solved).length + '</b> / ' + CH.length;
+    Array.prototype.forEach.call(list.children, function (b, i) {
+      b.classList.toggle('solved', !!solved[CH[i].id]);
+      b.classList.toggle('on', i === idx);
+    });
+  }
+
+  function idleTests(c) {
+    var vis = c.tests.filter(function (t) { return !t.hidden; }).length;
+    var h = '<div class="th">Tests<span class="sc">' + vis + ' sample · ' + (c.tests.length - vis) + ' hidden</span></div>';
+    c.tests.forEach(function (t, i) {
+      h += '<div class="tr idle"><span class="mk">·</span><div>' +
+        (t.hidden ? '<span class="call">hidden test ' + (i + 1) + '</span><span class="hid">runs on Submit</span>'
+                  : '<span class="call">' + esc(callText(t, c.fname)) + '</span><div class="det">expected <b>' + esc(fmt(t.expect, true)) + '</b></div>') +
+        '</div></div>';
+    });
+    var rules = GLOBAL_RULES.concat(c.rules);
+    h += '<div class="th">Code rules<span class="sc">' + rules.length + '</span></div>';
+    rules.forEach(function (r) { h += '<div class="tr idle"><span class="mk">·</span><div class="call" style="font-family:inherit">' + esc(r.l) + '</div></div>'; });
+    $('chTests').innerHTML = h;
+  }
+
+  function load(i) {
+    if (started && CH[idx]) codeStore[CH[idx].id] = $('chCode').value;
+    started = true;
+    idx = i;
+    var c = CH[i];
+    $('chTitle').textContent = c.id + ' · ' + c.title;
+    var lv = $('chLvl');
+    lv.className = 'lvl ' + c.lvl;
+    lv.textContent = c.lvl === 'm' ? 'MODERATE' : (c.lvl === 'a' ? 'ADVANCED' : 'BOSS');
+    $('chScenario').innerHTML = '<span class="l">Real scenario</span>' + c.scen;
+    $('chBrief').innerHTML = c.brief;
+    $('chSig').innerHTML = '<b>' + esc(c.fname) + '</b>' + esc(c.sig.slice(c.fname.length));
+    $('chEx').innerHTML = c.tests.filter(function (t) { return !t.hidden; }).map(function (t) {
+      return '<span>' + esc(callText(t, c.fname)) + '  →  <b>' + esc(fmt(t.expect, true)) + '</b></span>';
+    }).join('');
+    $('chCode').value = codeStore[c.id] !== undefined ? codeStore[c.id] : starterFor(c);
+    $('chVerdict').textContent = ''; $('chVerdict').className = 'verdict';
+    $('chDiag').className = 'diag'; $('chDiag').innerHTML = '';
+    $('chHintBox').className = 'hint'; $('chHintBox').textContent = c.hint;
+    $('chCon').innerHTML = '<div class="ohint">anything your code prints shows up here</div>';
+    idleTests(c);
+    renderLane();
+    updateScore();
+  }
+
+  function renderLane() {
+    var c = CH[idx];
+    Array.prototype.forEach.call(document.querySelectorAll('#chLanes button'), function (b) { b.classList.toggle('on', b.dataset.l === lane); });
+    $('chLaneNote').textContent = {
+      guided: 'Every step is written into the starter for you. Same tests, same rules — only the help changes.',
+      standard: 'The brief, the sample cases and the tests. This is the level to aim for.',
+      stretch: 'Pass the tests first, then take the extension below. Hints are switched off.'
+    }[lane];
+    var sb = $('chStretch');
+    if (lane === 'stretch') { sb.innerHTML = '<span class="l">Extension · after Submit passes</span>' + c.stretch; sb.classList.add('show'); }
+    else sb.classList.remove('show');
+    $('chHint').style.display = lane === 'stretch' ? 'none' : '';
+    if (lane === 'stretch') $('chHintBox').className = 'hint';
+  }
+
+  $('chLanes').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    var c = CH[idx], fresh = untouched(c, $('chCode').value);
+    lane = b.dataset.l;
+    if (fresh) $('chCode').value = starterFor(c);
+    renderLane();
+  });
+
+  /* ---------- running tests ---------- */
+  function diagnose(c, t, r) {
+    if (r.threw) return '<b>Test crashed</b> with <code>' + esc(r.threw.name + ': ' + r.threw.message) + '</code>' + (r.threw.note ? ' — ' + esc(r.threw.note) : '');
+    if (r.printed && r.gotUndef) return '<b>You printed the answer but did not return it.</b> <code>console.log</code> shows a value to a human; the grader only reads what the function <b>returns</b>. Change <code>console.log(x)</code> to <code>return x</code>.';
+    if (r.gotUndef) return '<b>Your function returned nothing</b> (<code>undefined</code>). Is there a <code>return</code> on every path — including the one this input takes?';
+    var special = c.diag ? c.diag(t.args, r.got) : null;
+    if (special) return special;
+    var want = typeName(t.expect), gotT = r.got ? r.got.t : '';
+    if (gotT && want !== gotT && !(want === 'number' && gotT === 'number'))
+      return 'You returned a <b>' + gotT + '</b> where the test expects a <b>' + want + '</b>. ' +
+        (want === 'string' ? 'Wrap it with <code>String()</code> or a template literal.' :
+         want === 'number' ? 'Check for stray quotes, or convert with <code>Number()</code>.' :
+         want === 'boolean' ? 'Return <code>true</code> or <code>false</code> — not a word.' : '');
+    return null;
+  }
+
+  function run(isSubmit) {
+    var c = CH[idx], code = $('chCode').value;
+    var cases = c.tests.filter(function (t) { return isSubmit || !t.hidden; });
+    $('chVerdict').className = 'verdict'; $('chVerdict').textContent = isSubmit ? 'Submitting…' : 'Running sample cases…';
+    return JSRunner.test(code, c.fname, cases.map(function (t) { return { args:t.args, expect:t.expect }; }), 2500).then(function (res) {
+      if (isSubmit) submits[c.id] = (submits[c.id] || 0) + 1;
+      var reveal = (submits[c.id] || 0) >= 2;
+      var h = '', pass = 0, diags = [];
+
+      /* console */
+      JSRunner.render($('chCon'), { out: res.out || [], truncated: res.truncated }, {});
+      if (!(res.out || []).length) $('chCon').innerHTML = '<div class="ohint">your code printed nothing</div>';
+
+      if (res.timeout) {
+        h = '<div class="th">Tests<span class="sc">stopped</span></div><div class="tr fail"><span class="mk">✕</span><div><span class="call">Your code did not finish in 2.5 seconds.</span><div class="det">That is almost always an infinite loop — check that the loop condition can become false, and that the counter actually changes.</div></div></div>';
+        $('chTests').innerHTML = h;
+        verdict(false, 0, c.tests.length, isSubmit, 'timeout');
+        return res;
+      }
+      if (!res.ok) {
+        h = '<div class="th">Tests<span class="sc">could not run</span></div><div class="tr fail"><span class="mk">✕</span><div><span class="call">' + esc(res.error.name + ': ' + res.error.message) + '</span>' +
+            (res.error.note ? '<div class="det">' + esc(res.error.note) + '</div>' : '') + '</div></div>';
+        $('chTests').innerHTML = h;
+        verdict(false, 0, c.tests.length, isSubmit, 'error');
+        return res;
+      }
+
+      var shownCount = 0;
+      h += '<div class="th">' + (isSubmit ? 'All tests' : 'Sample cases') + '<span class="sc" id="chTally"></span></div>';
+      c.tests.forEach(function (t, i) {
+        var k = cases.indexOf(t);
+        if (k === -1) {
+          h += '<div class="tr idle"><span class="mk">·</span><div><span class="call">hidden test ' + (i + 1) + '</span><span class="hid">runs on Submit</span></div></div>';
+          return;
+        }
+        var r = res.results[k]; shownCount++;
+        if (r.pass) pass++;
+        else { var d = diagnose(c, t, r); if (d && diags.indexOf(d) === -1) diags.push(d); }
+        var showCall = !t.hidden || reveal;
+        h += '<div class="tr ' + (r.pass ? 'pass' : 'fail') + '"><span class="mk">' + (r.pass ? '✓' : '✕') + '</span><div>' +
+          (showCall ? '<span class="call">' + esc(callText(t, c.fname)) + '</span>' : '<span class="call">hidden test ' + (i + 1) + '</span>') +
+          (t.hidden ? '<span class="hid">' + (showCall ? 'hidden · revealed' : 'hidden') + '</span>' : '') +
+          (showCall
+            ? '<div class="det">expected <b>' + esc(fmt(t.expect, true)) + '</b> · got <b>' + esc(r.threw ? r.threw.name + ': ' + r.threw.message : fmtGot(r.got)) + '</b></div>'
+            : '<div class="det">' + (r.pass ? 'passed' : 'inputs stay hidden until your second submission') + '</div>') +
+          '</div></div>';
+      });
+
+      var rules = GLOBAL_RULES.concat(c.rules), stripped = JSRunner.codeOnly(code), rulePass = 0;
+      if (isSubmit) {
+        h += '<div class="th">Code rules</div>';
+        rules.forEach(function (rl) {
+          var ok = rl.f(stripped);
+          if (ok) rulePass++;
+          h += '<div class="tr ' + (ok ? 'pass' : 'fail') + '"><span class="mk">' + (ok ? '✓' : '✕') + '</span><div class="call" style="font-family:inherit">' + esc(rl.l) + '</div></div>';
+        });
+      }
+      $('chTests').innerHTML = h;
+      var tally = $('chTally'); if (tally) tally.textContent = pass + ' / ' + shownCount + ' passed';
+
+      var dg = $('chDiag');
+      if (diags.length) {
+        dg.innerHTML = '<span class="l">What went wrong</span><ul>' + diags.slice(0, 4).map(function (d) { return '<li>' + d + '</li>'; }).join('') + '</ul>';
+        dg.className = 'diag show';
+      } else { dg.className = 'diag'; dg.innerHTML = ''; }
+
+      var allTests = pass === cases.length, allRules = rulePass === rules.length;
+      if (isSubmit && allTests && allRules) solved[c.id] = true;
+      verdict(isSubmit ? (allTests && allRules) : allTests, pass, cases.length, isSubmit, isSubmit && allTests && !allRules ? 'rules' : '');
+      if (isSubmit && !(allTests && allRules) && submits[c.id] >= 2 && lane !== 'stretch') $('chHintBox').className = 'hint show';
+      updateScore();
+      return res;
+    });
+  }
+
+  function verdict(ok, pass, total, isSubmit, why) {
+    var v = $('chVerdict');
+    if (why === 'timeout') { v.className = 'verdict no'; v.textContent = 'Stopped — infinite loop?'; return; }
+    if (why === 'error') { v.className = 'verdict no'; v.textContent = 'Your code has an error — read the message above.'; return; }
+    if (why === 'rules') { v.className = 'verdict no'; v.textContent = 'Every test passes — but a code rule does not. Fix it and submit again.'; return; }
+    if (!isSubmit) {
+      v.className = 'verdict ' + (ok ? 'ok' : 'no');
+      v.textContent = ok ? '✓ Sample cases pass. Now Submit — the hidden tests are where the edge cases live.' : pass + ' of ' + total + ' sample cases pass.';
+      return;
+    }
+    v.className = 'verdict ' + (ok ? 'ok' : 'no');
+    v.textContent = ok ? '✓ Accepted — every test and every rule passes.' : 'Wrong answer — ' + pass + ' of ' + total + ' tests pass.';
+  }
+
+  list.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    load(Array.prototype.indexOf.call(list.children, b));
+    window.scrollTo(0, document.getElementById('v-ch').offsetTop - 10);
+  });
+  $('chRun').addEventListener('click', function () { run(false); });
+  $('chSubmit').addEventListener('click', function () { run(true); });
+  $('chReset').addEventListener('click', function () { $('chCode').value = starterFor(CH[idx]); codeStore[CH[idx].id] = $('chCode').value; idleTests(CH[idx]); $('chDiag').className = 'diag'; $('chVerdict').textContent = ''; });
+  $('chHint').addEventListener('click', function () { $('chHintBox').classList.toggle('show'); });
+  wireEditor($('chCode'), function () { run(false); });
+
+  load(0);
+  window.__CH = CH;
+  window.__CHAPI = { load: load, run: run, setLane: function (l) { lane = l; }, guidedStarter: guidedStarter, GLOBAL_RULES: GLOBAL_RULES };
+})();
+
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = JSRunner.esc;
+
+  var LOGIC = [
+    { code:'console.log("5" + 3);\nconsole.log("5" - 3);',
+      ask:'What are the two lines of output?',
+      a:'<p><b><code>53</code>, then <code>2</code>.</b> <code>+</code> joins when either side is a string, so <code>"5" + 3</code> becomes <code>"53"</code>. <code>-</code> only does maths, so it converts <code>"5"</code> to the number 5 first.</p><p>This is the bug behind every "2 + 3 = 23" in a real form.</p>' },
+
+    { code:'console.log(typeof null);\nconsole.log(typeof undefined);\nconsole.log(typeof NaN);',
+      ask:'Three typeof results — what are they?',
+      a:'<p><b><code>object</code>, <code>undefined</code>, <code>number</code>.</b> <code>typeof null</code> being "object" is a bug from 1995 that can never be fixed without breaking the web. And "Not a Number" really is of type number.</p><p>Test for null with <code>x === null</code>, and for NaN with <code>Number.isNaN(x)</code>.</p>' },
+
+    { code:'console.log(0.1 + 0.2 === 0.3);\nconsole.log(0.1 + 0.2);',
+      ask:'True or false — and what does the second line show?',
+      a:'<p><b><code>false</code>, then <code>0.30000000000000004</code>.</b> Decimals are stored in binary, and 0.1 has no exact binary form — the same way 1/3 has no exact decimal form. Every mainstream language behaves like this.</p><p>Compare decimals with a tolerance: <code>Math.abs(a - b) &lt; Number.EPSILON</code>. For money, work in whole paise.</p>' },
+
+    { code:'console.log(NaN === NaN);\nconsole.log(Number.isNaN(NaN));',
+      ask:'What do these print?',
+      a:'<p><b><code>false</code>, then <code>true</code>.</b> NaN is the only value in JavaScript that is not equal to itself. So <code>x === NaN</code> is <i>always</i> false — even when x is NaN — and is a silent bug whenever someone writes it.</p><p><code>Number.isNaN()</code> is the reliable test.</p>' },
+
+    { code:'const qty = 0;\nconsole.log(qty || 10);\nconsole.log(qty ?? 10);',
+      ask:'The quantity is genuinely zero. What do the two lines print?',
+      a:'<p><b><code>10</code>, then <code>0</code>.</b> <code>||</code> uses the right side whenever the left is <i>falsy</i> — and 0 is falsy, so a real zero is replaced by the default. <code>??</code> only steps in for <code>null</code> or <code>undefined</code>, so the 0 survives.</p><p>Use <code>??</code> for defaults whenever 0 or an empty string is a legitimate answer.</p>' },
+
+    { code:'function add(a, b) {\n  console.log(a + b);\n}\n\nconst total = add(2, 3);\nconsole.log(total);',
+      ask:'Two lines are printed. What are they?',
+      a:'<p><b><code>5</code>, then <code>undefined</code>.</b> The function <i>prints</i> 5, but it never <i>returns</i> anything — so <code>total</code> is <code>undefined</code>.</p><p>This is the single mistake that fails most placement-test submissions: the grader reads the return value and ignores everything printed.</p>' },
+
+    { code:'for (let i = 0; i < 3; i++) {\n  // loop body\n}\nconsole.log(i);',
+      ask:'What happens on the last line?',
+      a:'<p><b>A <code>ReferenceError</code>: i is not defined.</b> A <code>let</code> declared in the loop header belongs to the loop\'s block. Once the loop ends, <code>i</code> no longer exists.</p><p>With <code>var</code> it would print 3, because <code>var</code> ignores blocks — which is exactly the kind of leak <code>let</code> was introduced to prevent.</p>' },
+
+    { code:'console.log(sayHi());\nfunction sayHi() {\n  return "hi";\n}\n\nconsole.log(greet());\nconst greet = () => "hello";',
+      ask:'The first call works. Does the second?',
+      a:'<p><b><code>hi</code> — then a <code>ReferenceError</code>.</b> Function <i>declarations</i> are hoisted in full, so you can call them above the line they are written on. A function stored in a <code>const</code> is not usable until that line has run — the gap before it is called the <b>temporal dead zone</b>.</p>' },
+
+    { code:'const user = { name: "Asha" };\nuser.name = "Ravi";\nconsole.log(user.name);',
+      ask:'const was used. Is this an error?',
+      a:'<p><b>No error — it prints <code>Ravi</code>.</b> <code>const</code> fixes the <i>binding</i>: <code>user</code> must always point at this same object. It does not freeze what is inside the object.</p><p><code>user = {}</code> would throw. Changing a property is fine. To lock the contents too, use <code>Object.freeze(user)</code>.</p>' },
+
+    { code:'console.log(1 < 2 < 3);\nconsole.log(3 > 2 > 1);',
+      ask:'Both look true to a human. What does JavaScript say?',
+      a:'<p><b><code>true</code>, then <code>false</code>.</b> Comparisons run left to right, one pair at a time. <code>3 &gt; 2</code> is <code>true</code>, and then <code>true &gt; 1</code> converts true to 1 — and <code>1 &gt; 1</code> is false.</p><p>To check a range, write both halves: <code>a &gt; b &amp;&amp; b &gt; c</code>.</p>' }
+  ];
+
+  $('logicWrap').innerHTML = LOGIC.map(function (d, i) {
+    return '<div class="panel drill" style="margin-bottom:14px">' +
+      '<span class="lbl">Drill ' + (i + 1) + '</span>' +
+      '<pre>' + JSRunner.highlight(d.code) + '</pre>' +
+      '<p style="font-size:15.5px;color:var(--ink);font-weight:600;margin:12px 0">' + d.ask + '</p>' +
+      '<div class="row"><button class="btn sm" type="button" data-rev="' + i + '">Reveal the answer</button>' +
+      '<button class="btn sm" type="button" data-run="' + i + '">Run it ▶</button></div>' +
+      '<div class="note q" id="la' + i + '" style="display:none;margin-top:12px">' + d.a + '</div>' +
+      '<div class="out runproof" id="lr' + i + '" style="display:none;border-radius:10px;border-top:1px solid var(--line)"></div>' +
+      '</div>';
+  }).join('');
+
+  $('logicWrap').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.rev !== undefined) {
+      var box = $('la' + b.dataset.rev), open = box.style.display !== 'none';
+      box.style.display = open ? 'none' : 'block';
+      b.textContent = open ? 'Reveal the answer' : 'Hide the answer';
+    }
+    if (b.dataset.run !== undefined) {
+      var i = +b.dataset.run, out = $('lr' + i);
+      out.style.display = 'block';
+      out.innerHTML = '<div class="ohint">running…</div>';
+      JSRunner.run(LOGIC[i].code, 1500, 50).then(function (r) { JSRunner.render(out, r, {}); });
+    }
+  });
+
+  window.__LOGIC = LOGIC;
+})();
+
+</script>
+</body>
+</html>

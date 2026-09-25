@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Selector Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#F4F7F8; --card:#FFFFFF; --sunk:#EDF2F3;
+    --ink:#12181C; --ink-2:#3D4A52; --ink-3:#6B7C86;
+    --line:#D8E1E4; --line-soft:#E7EDEF;
+    --accent:#0E6E68; --accent-soft:#DBEEEC;
+    --amber:#A85A11; --amber-soft:#F8EADA;
+    --blue:#1F5FA8;  --blue-s:#E0EAF7;
+    --plum:#7A3E86;  --plum-s:#F1E5F4;
+    --red:#B03A2E;   --red-s:#FBE6E3;
+    --green:#1E7A4C; --green-s:#DDF0E5;
+    --code-bg:#101A20; --code-ink:#D5E2E6;
+    --shadow:0 1px 2px rgba(18,24,28,.05), 0 8px 24px rgba(18,24,28,.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#0C1317; --card:#131C21; --sunk:#0F171B;
+      --ink:#E9F0F2; --ink-2:#AEBEC5; --ink-3:#7D9099;
+      --line:#26343B; --line-soft:#1C272D;
+      --accent:#5CC8BE; --accent-soft:#123230;
+      --amber:#E0A15C; --amber-soft:#2F2313;
+      --blue:#79B4EE;  --blue-s:#14263A;
+      --plum:#CE9ED9;  --plum-s:#2C1D31;
+      --red:#E88070;   --red-s:#331714;
+      --green:#5FC98C; --green-s:#0F2C1D;
+      --code-bg:#070D10; --code-ink:#D5E2E6;
+      --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 32px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0C1317; --card:#131C21; --sunk:#0F171B;
+    --ink:#E9F0F2; --ink-2:#AEBEC5; --ink-3:#7D9099;
+    --line:#26343B; --line-soft:#1C272D;
+    --accent:#5CC8BE; --accent-soft:#123230;
+    --amber:#E0A15C; --amber-soft:#2F2313;
+    --blue:#79B4EE;  --blue-s:#14263A;
+    --plum:#CE9ED9;  --plum-s:#2C1D31;
+    --red:#E88070;   --red-s:#331714;
+    --green:#5FC98C; --green-s:#0F2C1D;
+    --code-bg:#070D10; --code-ink:#D5E2E6;
+    --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 32px rgba(0,0,0,.3);
+  }
+
+  *{box-sizing:border-box}
+  body{background:var(--paper);color:var(--ink);margin:0;
+    font-family:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4{font-family:"Archivo","IBM Plex Sans",system-ui,sans-serif;margin:0;text-wrap:balance;letter-spacing:-.02em}
+  p{margin:0}
+  code{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.88em;background:var(--sunk);padding:1px 6px;border-radius:4px;border:1px solid var(--line-soft)}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 20px 90px}
+
+  header.top{padding:44px 0 22px;border-bottom:2px solid var(--ink);margin-bottom:6px}
+  .kicker{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+  header.top h1{font-size:clamp(31px,5.2vw,50px);font-weight:800;line-height:1.03;margin-bottom:12px}
+  header.top .lede{font-size:clamp(15px,1.6vw,17.5px);color:var(--ink-2);max-width:72ch}
+  header.top .lede b{color:var(--ink);font-weight:600}
+
+  .nav{position:sticky;top:0;z-index:40;background:var(--paper);box-shadow:0 6px 16px -10px rgba(0,0,0,.35);padding:12px 0;border-bottom:1px solid var(--line);margin-bottom:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .nav button{font-family:"IBM Plex Sans",sans-serif;font-size:13.5px;font-weight:600;padding:8px 14px;border-radius:9px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2)}
+  .nav button.on{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .nav button:hover{border-color:var(--accent)}
+  .nav button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .score{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-3);white-space:nowrap}
+  .score b{color:var(--green);font-size:15px}
+
+  .view{display:none}
+  .view.on{display:block}
+
+  section{margin:34px 0}
+  h2.head{font-size:clamp(19px,2.5vw,26px);font-weight:800;padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:15px}
+  .intro{color:var(--ink-2);font-size:15.5px;max-width:74ch;margin-bottom:16px}
+  .intro b{color:var(--ink);font-weight:600}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:20px;box-shadow:var(--shadow)}
+  .note{border-left:3px solid var(--amber);background:var(--amber-soft);padding:12px 16px;border-radius:0 9px 9px 0;font-size:14.5px;color:var(--ink-2);margin:14px 0}
+  .note b{color:var(--ink)}
+  .note .l{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--amber);margin-bottom:4px;font-weight:600}
+  .note.q{border-left-color:var(--plum);background:var(--plum-s)}
+  .note.q .l{color:var(--plum)}
+
+  .btn{font-family:"IBM Plex Sans",sans-serif;font-size:13.5px;font-weight:600;padding:9px 15px;border-radius:9px;cursor:pointer;border:1px solid var(--line);background:var(--sunk);color:var(--ink)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .btn:hover{border-color:var(--accent)}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .btn[disabled]{opacity:.4;cursor:default}
+  .btn.sm{font-size:12px;padding:6px 11px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+  textarea,input.tx{
+    width:100%;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--line);
+    border-radius:10px;padding:13px 15px;
+    font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.65;resize:vertical;tab-size:2;
+  }
+  input.tx{padding:11px 15px;font-size:15px}
+  textarea:focus,input.tx:focus{outline:2px solid var(--accent);outline-offset:1px}
+  pre{margin:12px 0;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:"IBM Plex Mono",monospace;font-size:12.7px;line-height:1.7;border:1px solid var(--line)}
+  pre .c{color:#6E828B;font-style:italic}
+  pre .t{color:#79D3C9}
+  pre .a{color:#9FC6E8}
+  pre .s{color:#E8B57A}
+  .lbl{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:7px;display:block}
+
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .split > *{min-width:0}
+  @media (max-width:900px){.split{grid-template-columns:1fr}}
+
+  /* ---- selector playground ---- */
+  .stage{background:var(--sunk);border-radius:10px;padding:16px;min-height:300px;font-size:14px}
+  .stage .sh{background:var(--card);border:2px dashed var(--line);border-radius:9px;padding:12px;margin-bottom:10px}
+  .stage .sh .nm{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3);display:block;margin-bottom:6px}
+  .node{border:2px solid var(--line);border-radius:8px;padding:9px 12px;margin:6px 0;background:var(--card);transition:all .2s ease;position:relative}
+  .node .tg{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3)}
+  .node.hit{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+  @media (prefers-reduced-motion:reduce){.node{transition:none}}
+  .selin{display:flex;gap:9px;align-items:center;margin-bottom:12px}
+  .selin span{font-family:"IBM Plex Mono",monospace;font-size:18px;color:var(--accent);font-weight:600}
+  .hitcount{font-family:"IBM Plex Mono",monospace;font-size:13.5px;margin-top:10px;font-weight:600}
+  .hitcount.ok{color:var(--green)} .hitcount.no{color:var(--red)}
+  .presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .presets button{font-family:"IBM Plex Mono",monospace;font-size:11.5px;padding:5px 10px;border-radius:7px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2)}
+  .presets button:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* ---- specificity calc ---- */
+  .spec{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;background:var(--sunk);border-radius:10px;padding:14px 16px;margin-bottom:10px}
+  .spec .sel{font-family:"IBM Plex Mono",monospace;font-size:15px;color:var(--ink);word-break:break-all}
+  .spec .sc{display:flex;gap:5px}
+  .spec .sc i{font-family:"IBM Plex Mono",monospace;font-style:normal;font-size:15px;font-weight:700;width:34px;height:34px;border-radius:7px;display:grid;place-items:center;border:2px solid}
+  .sc i.i0{background:var(--red-s);border-color:var(--red);color:var(--red)}
+  .sc i.i1{background:var(--plum-s);border-color:var(--plum);color:var(--plum)}
+  .sc i.i2{background:var(--blue-s);border-color:var(--blue);color:var(--blue)}
+  .sc i.i3{background:var(--green-s);border-color:var(--green);color:var(--green)}
+  .winner{margin-top:12px;padding:13px 16px;border-radius:10px;background:var(--green-s);border-left:3px solid var(--green);font-size:15px;color:var(--ink)}
+  .winner b{color:var(--green)}
+
+  /* ---- cascade lab ---- */
+  .casc{display:grid;grid-template-columns:1fr 200px;gap:16px}
+  @media (max-width:820px){.casc{grid-template-columns:1fr}}
+  .swatch{border:2px solid var(--line);border-radius:10px;min-height:150px;display:grid;place-items:center;font-family:"Archivo",sans-serif;font-size:22px;font-weight:700;background:var(--card);transition:all .25s}
+  .toggles{display:flex;flex-direction:column;gap:9px}
+  .tog{display:flex;align-items:center;gap:10px;padding:10px 13px;border:1px solid var(--line);border-radius:9px;background:var(--sunk);cursor:pointer;font-size:13.5px}
+  .tog input{accent-color:var(--accent);width:17px;height:17px}
+  .tog.on{border-color:var(--accent);background:var(--accent-soft)}
+  .tog .mono{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3);display:block}
+
+  /* ---- tag matcher ---- */
+  .match{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:820px){.match{grid-template-columns:1fr}}
+  .mq{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--card);margin-bottom:10px}
+  .mq p{font-size:14.5px;color:var(--ink-2);margin-bottom:10px}
+  .mq .opts{display:flex;gap:6px;flex-wrap:wrap}
+  .mq .opts button{font-family:"IBM Plex Mono",monospace;font-size:12px;padding:6px 11px;border-radius:7px;cursor:pointer;border:1px solid var(--line);background:var(--sunk);color:var(--ink-2)}
+  .mq .opts button.right{background:var(--green-s);border-color:var(--green);color:var(--green);font-weight:700}
+  .mq .opts button.wrong{background:var(--red-s);border-color:var(--red);color:var(--red)}
+  .mq .why{margin-top:10px;font-size:13.5px;color:var(--ink-2);display:none;border-top:1px solid var(--line-soft);padding-top:9px}
+  .mq .why.show{display:block}
+
+  /* ---- challenges ---- */
+  .chlist{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+  .chlist button{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2);display:flex;gap:6px;align-items:center}
+  .chlist button.on{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .chlist button.solved{border-color:var(--green)}
+  .chlist button.solved::after{content:"✓";color:var(--green);font-weight:700}
+  .chlist button.on.solved::after{color:var(--card)}
+
+  .chead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+  .chead h3{font-size:19px;font-weight:800}
+  .lvl{font-family:"IBM Plex Mono",monospace;font-size:10px;padding:3px 9px;border-radius:6px;font-weight:600;letter-spacing:.06em}
+  .lvl.m{background:var(--blue-s);color:var(--blue)}
+  .lvl.a{background:var(--plum-s);color:var(--plum)}
+  .lvl.b{background:var(--red-s);color:var(--red)}
+  .brief{color:var(--ink-2);font-size:15px;margin-bottom:12px;max-width:76ch}
+  .brief b{color:var(--ink);font-weight:600}
+  .scenario{background:var(--blue-s);border-left:3px solid var(--blue);border-radius:0 9px 9px 0;padding:11px 15px;font-size:14px;color:var(--ink-2);margin-bottom:12px}
+  .scenario .l{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--blue);margin-bottom:4px;font-weight:600}
+
+  iframe.prev{width:100%;height:250px;border:1px solid var(--line);border-radius:10px;background:#fff}
+  .checks{margin-top:13px;background:var(--sunk);border-radius:10px;padding:14px 16px}
+  .chk{display:flex;gap:10px;align-items:flex-start;padding:5px 0;font-size:13.8px;color:var(--ink-2)}
+  .chk .mk{flex:none;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;margin-top:2px}
+  .chk.pass .mk{background:var(--green);color:#fff}
+  .chk.fail .mk{background:var(--red-s);color:var(--red);border:1.5px solid var(--red)}
+  .chk.idle .mk{background:var(--card);border:1.5px solid var(--line);color:var(--ink-3)}
+  .chk.pass{color:var(--ink)}
+  .verdict{margin-top:11px;font-size:15px;font-weight:700;min-height:24px}
+  .verdict.ok{color:var(--green)}
+  .verdict.no{color:var(--red)}
+  .hint{margin-top:11px;font-size:14px;color:var(--ink-2);background:var(--amber-soft);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:11px 15px;display:none}
+  .hint.show{display:block}
+
+  .g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+  .g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+  @media (max-width:820px){.g2,.g3{grid-template-columns:1fr}}
+  .mini{border:1px solid var(--line);border-radius:12px;padding:17px;background:var(--card)}
+  .mini h4{font-size:15.5px;margin-bottom:6px}
+  .mini p{font-size:14px;color:var(--ink-2)}
+  .mini .tag{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:600;display:block;margin-bottom:5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="kicker">Practice Lab · HTML5 · CSS · Selectors</div>
+  <h1>Selector Lab</h1>
+  <p class="lede">Four working tools and eleven auto-checked challenges. <b>Type a selector and watch the matching elements light up. Score specificity automatically. Toggle inline, internal and external CSS on the same element and see which one actually wins.</b> Then build the real thing.</p>
+</header>
+
+<nav class="nav" id="nav">
+  <button data-v="tools" class="on">Playgrounds</button>
+  <button data-v="ch">Coding Challenges</button>
+  <button data-v="logic">Logic Drills</button>
+  <span class="score" id="score">solved <b>0</b> / 11</span>
+</nav>
+
+<!-- ==================== PLAYGROUNDS ==================== -->
+<div class="view on" id="v-tools">
+
+  <!-- SELECTOR PLAYGROUND -->
+  <section>
+    <h2 class="head">1 · Selector playground</h2>
+    <p class="intro">Type any CSS selector on the left. Every element it matches lights up on the right, live. <b>This is the fastest way to make selectors stop being abstract.</b></p>
+    <div class="panel">
+      <div class="selin">
+        <span>CSS</span>
+        <input class="tx" id="selIn" value=".card" spellcheck="false" aria-label="CSS selector">
+      </div>
+      <div class="presets" id="presets"></div>
+      <div class="hitcount" id="hitCount"></div>
+      <div class="split" style="margin-top:14px">
+        <div>
+          <span class="lbl">The markup being matched</span>
+          <pre id="selSrc" style="max-height:330px"></pre>
+        </div>
+        <div>
+          <span class="lbl">What your selector matches</span>
+          <div class="stage" id="selStage"></div>
+        </div>
+      </div>
+      <div class="note">
+        <span class="l">Drill to run</span>
+        Give them a target — <b>"light up exactly the two buttons inside the sidebar, and nothing else"</b> — and let them race. The count tells them instantly whether they over-matched.
+      </div>
+    </div>
+  </section>
+
+  <!-- SPECIFICITY CALCULATOR -->
+  <section>
+    <h2 class="head">2 · Specificity calculator</h2>
+    <p class="intro">Enter two or more selectors, one per line. Each is scored as <b>inline, id, class, element</b> and the winner is decided the way a browser decides it — column by column, left to right.</p>
+    <div class="panel">
+      <span class="lbl">One selector per line</span>
+      <textarea id="specIn" rows="5" spellcheck="false"></textarea>
+      <div class="row" style="margin-top:10px">
+        <button class="btn primary" id="specGo">Score them</button>
+        <button class="btn sm" data-spec="a">Classic tie</button>
+        <button class="btn sm" data-spec="b">id vs many classes</button>
+        <button class="btn sm" data-spec="c">The !important trap</button>
+      </div>
+      <div id="specOut" style="margin-top:16px"></div>
+    </div>
+  </section>
+
+  <!-- CASCADE LAB -->
+  <section>
+    <h2 class="head">3 · Cascade lab — inline vs internal vs external</h2>
+    <p class="intro">One paragraph. Four competing rules. Tick them on and off and watch the colour change. <b>Most learners predict this wrong on their first try.</b></p>
+    <div class="panel">
+      <div class="casc">
+        <div>
+          <div class="toggles" id="cascToggles"></div>
+          <div class="note q" style="margin-top:14px">
+            <span class="l">Ask before they tick anything</span>
+            "The style block says blue. The linked stylesheet below it says green. What colour is the text?" — <b>Green.</b> Internal and external carry equal weight, so the later one wins. Location does not matter; order does.
+          </div>
+        </div>
+        <div>
+          <span class="lbl">Result</span>
+          <div class="swatch" id="cascSwatch">Sample text</div>
+          <div style="margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-3)" id="cascWhy"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAG MATCHER -->
+  <section>
+    <h2 class="head">4 · Pick the right HTML5 tag</h2>
+    <p class="intro">Ten real cases. Choose the correct element — the reason appears only after you answer. <b>Getting these wrong is how div soup starts.</b></p>
+    <div id="matchWrap"></div>
+    <div class="hitcount" id="matchScore" style="margin-top:12px"></div>
+  </section>
+</div>
+
+<!-- ==================== CHALLENGES ==================== -->
+<div class="view" id="v-ch">
+  <section>
+    <h2 class="head">Coding challenges</h2>
+    <p class="intro">Each one is a real requirement. Write your code, press <b>Run checks</b>, and the checker parses your markup and CSS and reports exactly what is missing. Hints unlock after two failed attempts.</p>
+    <div class="chlist" id="chList"></div>
+    <div class="panel">
+      <div class="chead">
+        <h3 id="chTitle">—</h3>
+        <span class="lvl m" id="chLvl">—</span>
+      </div>
+      <div class="scenario" id="chScenario"></div>
+      <p class="brief" id="chBrief"></p>
+      <div class="split">
+        <div>
+          <span class="lbl">Your code</span>
+          <textarea id="chCode" rows="19" spellcheck="false"></textarea>
+          <div class="row" style="margin-top:10px">
+            <button class="btn primary" id="chRun">Run checks</button>
+            <button class="btn" id="chReset">Reset code</button>
+            <button class="btn" id="chHint">Show hint</button>
+          </div>
+        </div>
+        <div>
+          <span class="lbl">Live preview</span>
+          <iframe class="prev" id="chPrev" sandbox="" title="Live preview"></iframe>
+          <div class="checks" id="chChecks"></div>
+          <div class="verdict" id="chVerdict"></div>
+          <div class="hint" id="chHintBox"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== LOGIC ==================== -->
+<div class="view" id="v-logic">
+  <section>
+    <h2 class="head">Logic drills</h2>
+    <p class="intro">No typing. Read, reason, commit to an answer, then reveal. <b>A prediction written down and found wrong sticks far harder than a correct answer you were handed.</b></p>
+    <div id="logicWrap"></div>
+  </section>
+</div>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+  /* ---------------- nav ---------------- */
+  var nav = document.getElementById('nav');
+  nav.addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-v]'); if (!b) return;
+    Array.prototype.forEach.call(nav.querySelectorAll('button'), function (x) { x.classList.remove('on'); });
+    b.classList.add('on');
+    ['tools','ch','logic'].forEach(function (v) {
+      document.getElementById('v-' + v).classList.toggle('on', v === b.dataset.v);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  /* ============================================================
+     1 · SELECTOR PLAYGROUND
+     ============================================================ */
+  var SAMPLE =
+'<header id="top">\n' +
+'  <h1 class="title">Store</h1>\n' +
+'  <nav class="menu">\n' +
+'    <a href="/" class="link active">Home</a>\n' +
+'    <a href="/shop" class="link">Shop</a>\n' +
+'  </nav>\n' +
+'</header>\n' +
+'<main>\n' +
+'  <article class="card featured">\n' +
+'    <h2 class="title">Headphones</h2>\n' +
+'    <p class="price">2499</p>\n' +
+'    <button class="btn buy" type="button">Buy</button>\n' +
+'  </article>\n' +
+'  <article class="card">\n' +
+'    <h2 class="title">Keyboard</h2>\n' +
+'    <p class="price">1299</p>\n' +
+'    <button class="btn buy" type="button">Buy</button>\n' +
+'  </article>\n' +
+'</main>\n' +
+'<aside class="sidebar">\n' +
+'  <button class="btn" type="button">Filter</button>\n' +
+'  <button class="btn" type="button">Sort</button>\n' +
+'</aside>\n' +
+'<footer id="bottom"><p class="note">Contact</p></footer>';
+
+  var selIn = document.getElementById('selIn');
+  var selStage = document.getElementById('selStage');
+  var selSrcEl = document.getElementById('selSrc');
+  var hitCount = document.getElementById('hitCount');
+  var sampleDoc = new DOMParser().parseFromString('<body>' + SAMPLE + '</body>', 'text/html');
+
+  selSrcEl.innerHTML = esc(SAMPLE)
+    .replace(/(&lt;\/?)([a-z0-9]+)/g, '$1<span class="t">$2</span>')
+    .replace(/([a-z-]+)=(&quot;|")([^"&]*)/g, '<span class="a">$1</span>=<span class="s">"$3"</span>');
+
+  function drawStage(sel) {
+    var matched = [];
+    try { matched = Array.prototype.slice.call(sampleDoc.body.querySelectorAll(sel)); }
+    catch (e) {
+      hitCount.className = 'hitcount no';
+      hitCount.textContent = '✕ Not a valid selector';
+      selStage.innerHTML = '';
+      return;
+    }
+    function build(node, depth) {
+      var out = '';
+      Array.prototype.forEach.call(node.children, function (c) {
+        var hit = matched.indexOf(c) >= 0;
+        var cls = c.className ? '.' + String(c.className).trim().split(/\s+/).join('.') : '';
+        var id = c.id ? '#' + c.id : '';
+        out += '<div class="node' + (hit ? ' hit' : '') + '" style="margin-left:' + (depth * 8) + 'px">'
+             + '<span class="tg">' + c.tagName.toLowerCase() + esc(id) + esc(cls) + '</span>'
+             + (c.children.length === 0 && c.textContent.trim() ? ' <span style="font-size:13px">' + esc(c.textContent.trim().slice(0,22)) + '</span>' : '')
+             + build(c, depth + 1) + '</div>';
+      });
+      return out;
+    }
+    selStage.innerHTML = build(sampleDoc.body, 0);
+    var total = sampleDoc.body.querySelectorAll('*').length;
+    hitCount.className = 'hitcount ' + (matched.length ? 'ok' : 'no');
+    hitCount.textContent = matched.length
+      ? '✓ matches ' + matched.length + ' of ' + total + ' elements'
+      : '· matches nothing';
+  }
+  selIn.addEventListener('input', function () { drawStage(selIn.value.trim() || ' '); });
+
+  var PRESETS = ['*', 'p', '.card', '#top', '.btn', 'article .title', 'aside .btn', '.card .btn', 'button.buy', '.card.featured', 'nav a.active', 'h2.title'];
+  var presetsEl = document.getElementById('presets');
+  PRESETS.forEach(function (p) {
+    var b = document.createElement('button');
+    b.textContent = p;
+    b.addEventListener('click', function () { selIn.value = p; drawStage(p); });
+    presetsEl.appendChild(b);
+  });
+  drawStage('.card');
+
+  /* ============================================================
+     2 · SPECIFICITY CALCULATOR
+     ============================================================ */
+  function specScore(sel) {
+    var s = sel.trim();
+    var inline = 0, imp = /!important/.test(s);
+    s = s.replace(/!important/g, '').trim();
+    if (/^style\s*=/.test(s)) inline = 1;
+
+    // strip strings & remove pseudo-element markers for counting
+    var work = ' ' + s + ' ';
+    var ids = (work.match(/#[A-Za-z_][\w-]*/g) || []).length;
+    var pseudoEls = (work.match(/::[a-z-]+/g) || []).length;
+    work = work.replace(/::[a-z-]+/g, ' ');
+    var classes = (work.match(/\.[A-Za-z_][\w-]*/g) || []).length;
+    var attrs = (work.match(/\[[^\]]+\]/g) || []).length;
+    var pseudoCls = (work.match(/:[a-z-]+(\([^)]*\))?/g) || []).length;
+    work = work.replace(/#[A-Za-z_][\w-]*/g, ' ')
+               .replace(/\.[A-Za-z_][\w-]*/g, ' ')
+               .replace(/\[[^\]]+\]/g, ' ')
+               .replace(/:[a-z-]+(\([^)]*\))?/g, ' ');
+    var els = (work.match(/(^|[\s>+~(])([a-z][a-z0-9]*)/gi) || []).length;
+    return { a: inline, b: ids, c: classes + attrs + pseudoCls, d: els + pseudoEls, imp: imp, sel: sel.trim() };
+  }
+  function cmp(x, y) {
+    if (x.imp !== y.imp) return x.imp ? 1 : -1;
+    if (x.a !== y.a) return x.a - y.a;
+    if (x.b !== y.b) return x.b - y.b;
+    if (x.c !== y.c) return x.c - y.c;
+    return x.d - y.d;
+  }
+
+  var SPEC_PRE = {
+    a: '.btn\nbutton.btn\n.card .btn',
+    b: '#buy\n.card .btn.primary:hover\nnav ul li a',
+    c: '#buy\n.btn { color: red !important }'
+  };
+  var specIn = document.getElementById('specIn');
+  var specOut = document.getElementById('specOut');
+  specIn.value = SPEC_PRE.a;
+
+  function runSpec() {
+    var lines = specIn.value.split('\n').map(function (l) { return l.trim(); }).filter(Boolean);
+    if (!lines.length) { specOut.innerHTML = ''; return; }
+    var scored = lines.map(specScore);
+    var best = scored.slice().sort(cmp).pop();
+    var tied = scored.filter(function (s) { return cmp(s, best) === 0; });
+    var html = '';
+    scored.forEach(function (s) {
+      html += '<div class="spec"><span class="sel">' + esc(s.sel) + (s.imp ? ' <b style="color:var(--red)">!important</b>' : '') + '</span>'
+        + '<span class="sc">'
+        + '<i class="i0">' + s.a + '</i><i class="i1">' + s.b + '</i><i class="i2">' + s.c + '</i><i class="i3">' + s.d + '</i>'
+        + '</span></div>';
+    });
+    html += '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:11px;color:var(--ink-3);margin-top:4px">'
+         + 'columns: inline · id · class/attr/pseudo-class · element/pseudo-element</div>';
+    html += '<div class="winner">';
+    if (tied.length > 1) {
+      html += '<b>Tie on ' + tied.length + ' selectors.</b> When specificity is equal, the rule written <b>last</b> wins — so the answer depends on source order, not the selector.';
+    } else {
+      html += '<b>Winner: ' + esc(best.sel) + '</b>'
+           + (best.imp ? ' — because !important overrides normal declarations regardless of score.' : ' — highest score, reading the columns left to right.');
+    }
+    html += '</div>';
+    specOut.innerHTML = html;
+  }
+  document.getElementById('specGo').addEventListener('click', runSpec);
+  specIn.addEventListener('input', runSpec);
+  document.querySelectorAll('[data-spec]').forEach(function (b) {
+    b.addEventListener('click', function () { specIn.value = SPEC_PRE[b.dataset.spec]; runSpec(); });
+  });
+  runSpec();
+
+  /* ============================================================
+     3 · CASCADE LAB
+     ============================================================ */
+  var CASC = [
+    { id:'ext',  label:'External stylesheet',  mono:'<link href="a.css">  →  color: green',  color:'#1E7A4C', name:'green',   on:true,  rank:1 },
+    { id:'int',  label:'Internal style block', mono:'<style> p { color: blue }',             color:'#1F5FA8', name:'blue',    on:true,  rank:0 },
+    { id:'inl',  label:'Inline style',         mono:'<p style="color: purple">',             color:'#7A3E86', name:'purple',  on:false, rank:2 },
+    { id:'imp',  label:'!important on the internal rule', mono:'p { color: crimson !important }', color:'#B03A2E', name:'crimson', on:false, rank:3 }
+  ];
+  var cascT = document.getElementById('cascToggles');
+  var cascSw = document.getElementById('cascSwatch');
+  var cascWhy = document.getElementById('cascWhy');
+
+  CASC.forEach(function (c) {
+    var l = document.createElement('label');
+    l.className = 'tog' + (c.on ? ' on' : '');
+    l.innerHTML = '<input type="checkbox"' + (c.on ? ' checked' : '') + '>'
+      + '<span>' + c.label + '<span class="mono">' + esc(c.mono) + '</span></span>';
+    l.querySelector('input').addEventListener('change', function (e) {
+      c.on = e.target.checked;
+      l.classList.toggle('on', c.on);
+      drawCasc();
+    });
+    cascT.appendChild(l);
+  });
+
+  function drawCasc() {
+    var active = CASC.filter(function (c) { return c.on; });
+    if (!active.length) {
+      cascSw.style.color = 'var(--ink-3)';
+      cascSw.textContent = 'Sample text';
+      cascWhy.textContent = 'No rules active — the browser default applies.';
+      return;
+    }
+    var win = active.slice().sort(function (a, b) { return a.rank - b.rank; }).pop();
+    cascSw.style.color = win.color;
+    cascSw.textContent = 'Sample text';
+    var why = '';
+    if (win.id === 'imp') why = '!important beats every normal declaration, even an inline style.';
+    else if (win.id === 'inl') why = 'Inline styles sit directly on the element and outrank both stylesheets.';
+    else if (win.id === 'ext') why = 'External and internal carry EQUAL weight \u2014 the &lt;link&gt; is written after the &lt;style&gt; block, so it wins on order.';
+    else why = 'Only the internal rule is active, so it applies.';
+    cascWhy.innerHTML = '→ <b style="color:' + win.color + '">' + win.name + '</b> · ' + why;
+  }
+  drawCasc();
+
+  /* ============================================================
+     4 · TAG MATCHER
+     ============================================================ */
+  var MATCH = [
+    { q:'A blog post that could be re-published on another site and still make sense.', o:['<section>','<article>','<div>','<aside>'], a:1, w:'It is self-contained — that is the definition of an article.' },
+    { q:'The site logo and page title at the very top of every page.', o:['<head>','<title>','<header>','<top>'], a:2, w:'&lt;head&gt; is metadata; &lt;header&gt; is the visible banner. Two different things with confusingly similar names.' },
+    { q:'A block of links pointing to the main pages of the site.', o:['<menu>','<nav>','<ul>','<links>'], a:1, w:'&lt;nav&gt; is a landmark, so a screen reader user can jump straight to it or skip past it.' },
+    { q:'An advertisement sitting beside the main content.', o:['<aside>','<section>','<footer>','<div>'], a:0, w:'Related to the page but not essential to it — exactly what &lt;aside&gt; means.' },
+    { q:'An image with a caption underneath that belongs to it.', o:['<img> + <p>','<figure> + <figcaption>','<div> + <span>','<picture>'], a:1, w:'&lt;figcaption&gt; is programmatically bound to the image; a stray &lt;p&gt; is just text that happens to sit nearby.' },
+    { q:'A collapsible "Frequently asked questions" item, with no JavaScript.', o:['<details> + <summary>','<div> + onclick','<dialog>','<section>'], a:0, w:'Native, keyboard accessible, and free. Most developers write 40 lines of JS for this.' },
+    { q:'The unique content of this page — not the header, nav or footer.', o:['<body>','<content>','<main>','<section>'], a:2, w:'One &lt;main&gt; per page. It is what a skip link should point to.' },
+    { q:'A phone number field on a mobile signup form.', o:['type="text"','type="number"','type="tel"','type="phone"'], a:2, w:'type="tel" gives the phone keypad. type="number" strips leading zeros and adds a useless spinner.' },
+    { q:'Marking up a price so a machine can read the number.', o:['<span class="price">','<data value="2499">','<b>','<strong>'], a:1, w:'&lt;data&gt; carries a machine-readable value alongside the human-readable text.' },
+    { q:'A published date that should be machine-readable.', o:['<time datetime="...">','<span class="date">','<date>','<p>'], a:0, w:'&lt;time&gt; lets search engines and browsers read the exact date whatever text you display.' }
+  ];
+  var matchWrap = document.getElementById('matchWrap');
+  var matchScore = document.getElementById('matchScore');
+  var matchDone = 0, matchRight = 0;
+
+  MATCH.forEach(function (m, i) {
+    var d = document.createElement('div');
+    d.className = 'mq';
+    var opts = m.o.map(function (o, k) { return '<button data-k="' + k + '">' + esc(o) + '</button>'; }).join('');
+    d.innerHTML = '<p><b>' + (i + 1) + '.</b> ' + esc(m.q) + '</p><div class="opts">' + opts + '</div>'
+                + '<div class="why"></div>';
+    d.querySelectorAll('.opts button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (d.dataset.done) return;
+        d.dataset.done = '1';
+        var k = +b.dataset.k;
+        d.querySelectorAll('.opts button').forEach(function (x, xi) {
+          if (xi === m.a) x.classList.add('right');
+          else if (xi === k) x.classList.add('wrong');
+        });
+        var w = d.querySelector('.why');
+        w.innerHTML = (k === m.a ? '<b style="color:var(--green)">Correct.</b> ' : '<b style="color:var(--red)">Not quite.</b> ') + m.w;
+        w.classList.add('show');
+        matchDone++; if (k === m.a) matchRight++;
+        matchScore.className = 'hitcount ' + (matchRight === matchDone ? 'ok' : 'no');
+        matchScore.textContent = matchRight + ' correct out of ' + matchDone + ' answered';
+      });
+    });
+    matchWrap.appendChild(d);
+  });
+
+  /* ============================================================
+     CHALLENGES
+     ============================================================ */
+  function P(raw){ return new DOMParser().parseFromString(raw, 'text/html'); }
+  function txt(el){ return el ? el.textContent.trim() : ''; }
+  // pull all CSS text out of <style> blocks
+  function cssOf(doc){
+    var out = '';
+    Array.prototype.forEach.call(doc.querySelectorAll('style'), function (s) { out += s.textContent + '\n'; });
+    return out;
+  }
+  function hasRule(css, selector){
+    var re = new RegExp('(^|[},])\\s*' + selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*(,[^{]*)?\\{', 'm');
+    return re.test(css);
+  }
+  function ruleHas(css, selector, prop){
+    var re = new RegExp(selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[^{]*\\{([^}]*)\\}', 'm');
+    var m = css.match(re);
+    return !!m && new RegExp(prop + '\\s*:', 'i').test(m[1]);
+  }
+
+  var CH = [
+    { id:'S1', title:'Semantic page shell', lvl:'m',
+      scen:'An audit flagged the landing page: no landmarks, no document outline, everything is a div.',
+      brief:'Rebuild this shell with <b>real HTML5 landmark elements</b> — banner, navigation, main content and footer — plus exactly one h1 and an article inside main.',
+      start:'<div class="top">\n  <div class="menu"><div>Home</div></div>\n</div>\n<div class="body">\n  <div class="big">Welcome</div>\n  <div class="post">A post</div>\n</div>\n<div class="foot">Contact</div>',
+      hint:'header, nav, main, article, footer. A nav full of divs is still not navigation — the items must be links.',
+      checks:[
+        {l:'Has a <header>', f:function(d){return !!d.querySelector('header');}},
+        {l:'Has a <nav> containing links', f:function(d){var n=d.querySelector('nav');return !!n&&n.querySelectorAll('a[href]').length>0;}},
+        {l:'Exactly one <main>', f:function(d){return d.querySelectorAll('main').length===1;}},
+        {l:'An <article> inside <main>', f:function(d){return !!d.querySelector('main article');}},
+        {l:'Exactly one <h1>', f:function(d){return d.querySelectorAll('h1').length===1;}},
+        {l:'Has a <footer>', f:function(d){return !!d.querySelector('footer');}},
+        {l:'No leftover clickable divs', f:function(d){return d.querySelectorAll('div[onclick]').length===0;}}
+      ]},
+
+    { id:'S2', title:'HTML5 input types', lvl:'m',
+      scen:'Mobile users complain the signup form is painful — wrong keyboard every time, and the age field accepts "abc".',
+      brief:'Rewrite the form using the <b>correct HTML5 input types</b> so each field gets the right mobile keyboard and free validation. Every field needs an associated label and a name.',
+      start:'<form>\n  Email <input type="text" name="email">\n  Phone <input type="text" name="phone">\n  Age <input type="text" name="age">\n  Birthday <input type="text" name="dob">\n  <button>Go</button>\n</form>',
+      hint:'email, tel, number (with min and max), date. Labels need for="x" matching the input id="x" — sitting next to it is not enough.',
+      checks:[
+        {l:'Uses type="email"', f:function(d){return !!d.querySelector('input[type="email"]');}},
+        {l:'Uses type="tel"', f:function(d){return !!d.querySelector('input[type="tel"]');}},
+        {l:'Uses type="number" with min and max', f:function(d){var n=d.querySelector('input[type="number"]');return !!n&&n.hasAttribute('min')&&n.hasAttribute('max');}},
+        {l:'Uses type="date"', f:function(d){return !!d.querySelector('input[type="date"]');}},
+        {l:'Every input has an id', f:function(d){var i=d.querySelectorAll('input');return i.length>=4&&Array.prototype.every.call(i,function(x){return !!x.id;});}},
+        {l:'Every input has a matching <label for>', f:function(d){var i=d.querySelectorAll('input');return i.length>=4&&Array.prototype.every.call(i,function(x){return !!d.querySelector('label[for="'+x.id+'"]');});}},
+        {l:'Every input has a name', f:function(d){var i=d.querySelectorAll('input');return i.length>=4&&Array.prototype.every.call(i,function(x){return !!x.getAttribute('name');});}}
+      ]},
+
+    { id:'S3', title:'Attributes that carry data', lvl:'m',
+      scen:'The cart script needs the product id, price and stock state from each button — without inventing invalid attributes.',
+      brief:'Build three product buttons. Each carries its id, price and stock state in <b>data-* attributes</b>. One product is out of stock and its button must be genuinely disabled.',
+      start:'<button productid="1" price="2499">Buy</button>\n<button productid="2" price="1299">Buy</button>\n<button productid="3" price="899">Buy</button>',
+      hint:'Invented attributes like productid are invalid HTML. Prefix them with data-. And remember: disabled is a boolean — disabled="false" still disables.',
+      checks:[
+        {l:'Three buttons present', f:function(d){return d.querySelectorAll('button').length===3;}},
+        {l:'Every button has a data-* id attribute', f:function(d){var b=d.querySelectorAll('button');return b.length===3&&Array.prototype.every.call(b,function(x){return Array.prototype.some.call(x.attributes,function(a){return /^data-.*id/.test(a.name)&&/\d/.test(a.value);});});}},
+        {l:'Every button has a data-* price', f:function(d){var b=d.querySelectorAll('button');return b.length===3&&Array.prototype.every.call(b,function(x){return Array.prototype.some.call(x.attributes,function(a){return /^data-.*price/.test(a.name);});});}},
+        {l:'No invented non-data attributes', f:function(d){return Array.prototype.every.call(d.querySelectorAll('button'),function(x){return Array.prototype.every.call(x.attributes,function(a){return /^(data-|class$|id$|type$|disabled$|aria-|title$|name$|value$)/.test(a.name);});});}},
+        {l:'Every button has an explicit type', f:function(d){var b=d.querySelectorAll('button');return b.length===3&&Array.prototype.every.call(b,function(x){return !!x.getAttribute('type');});}},
+        {l:'Exactly one button is disabled', f:function(d){return d.querySelectorAll('button[disabled]').length===1;}}
+      ]},
+
+    { id:'S4', title:'Native accordion, no JavaScript', lvl:'m',
+      scen:'The FAQ page loads a 30 KB accordion library. It can be deleted entirely.',
+      brief:'Build a three-item FAQ using only <b>&lt;details&gt; and &lt;summary&gt;</b>. The first item should be open when the page loads.',
+      start:'<div class="faq">\n  <div class="q" onclick="toggle()">What is HTML?</div>\n  <div class="a">A markup language.</div>\n</div>',
+      hint:'Each item is a <details> with a <summary> as its first child. The open attribute is a boolean — just its presence opens the item.',
+      checks:[
+        {l:'Three <details> elements', f:function(d){return d.querySelectorAll('details').length===3;}},
+        {l:'Every <details> has a <summary>', f:function(d){var x=d.querySelectorAll('details');return x.length===3&&Array.prototype.every.call(x,function(e){return !!e.querySelector('summary');});}},
+        {l:'<summary> is the first child each time', f:function(d){var x=d.querySelectorAll('details');return x.length===3&&Array.prototype.every.call(x,function(e){return e.firstElementChild&&e.firstElementChild.tagName==='SUMMARY';});}},
+        {l:'Every item has answer content', f:function(d){var x=d.querySelectorAll('details');return x.length===3&&Array.prototype.every.call(x,function(e){return e.textContent.trim().length>txt(e.querySelector('summary')).length+3;});}},
+        {l:'Exactly one item is open by default', f:function(d){return d.querySelectorAll('details[open]').length===1;}},
+        {l:'No JavaScript onclick left', f:function(d){return d.querySelectorAll('[onclick]').length===0;}}
+      ]},
+
+    { id:'S5', title:'Three ways to attach CSS', lvl:'m',
+      scen:'A code review asks you to demonstrate you understand where each kind of CSS belongs — and which one wins.',
+      brief:'Write one document that uses <b>all three</b> methods: a link to an external stylesheet, an internal style block, and one inline style. Add a comment saying which of the three will win on the element that has all three.',
+      start:'<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <title>Cascade demo</title>\n</head>\n<body>\n\n</body>\n</html>',
+      hint:'External = <link rel="stylesheet">. Internal = a <style> block in the head. Inline = a style attribute. The inline one wins. Use an HTML comment to say so.',
+      checks:[
+        {l:'Links an external stylesheet', f:function(d){return !!d.querySelector('link[rel="stylesheet"][href]');}},
+        {l:'Has an internal <style> block with a rule', f:function(d){return cssOf(d).indexOf('{')>0;}},
+        {l:'Has at least one inline style attribute', f:function(d){return d.querySelectorAll('body [style]').length>0;}},
+        {l:'The same element type is targeted by all three', f:function(d){var css=cssOf(d);var inl=d.querySelector('body [style]');if(!inl)return false;var tag=inl.tagName.toLowerCase();return new RegExp('(^|[},\\s])'+tag+'\\s*\\{','m').test(css);}},
+        {l:'Explains the winner in a comment', f:function(d,r){return /<!--[^]*inline[^]*-->/i.test(r);}},
+        {l:'Valid document skeleton', f:function(d,r){return /^\s*<!doctype\s+html>/i.test(r)&&!!d.querySelector('html[lang]')&&!!d.querySelector('meta[charset]');}}
+      ]},
+
+    { id:'S6', title:'The universal reset', lvl:'a',
+      scen:'Three cards set to 33.33% width with padding are wrapping onto a second row. Nothing in the layout is wrong — the box model is.',
+      brief:'Write the <b>universal reset</b> every project starts with: zero default margin and padding, and border-box sizing applied to every element <b>and its pseudo-elements</b>.',
+      start:'<style>\n  /* write the reset here */\n\n</style>\n<div class="card">One</div>',
+      hint:'The selector list is *, *::before, *::after. Three declarations: margin, padding, box-sizing.',
+      checks:[
+        {l:'Uses the universal selector *', f:function(d){return /(^|[},\s])\*\s*[,{]/.test(cssOf(d));}},
+        {l:'Includes ::before and ::after', f:function(d){var c=cssOf(d);return /\*::before/.test(c)&&/\*::after/.test(c);}},
+        {l:'Resets margin to 0', f:function(d){return /margin\s*:\s*0/.test(cssOf(d));}},
+        {l:'Resets padding to 0', f:function(d){return /padding\s*:\s*0/.test(cssOf(d));}},
+        {l:'Sets box-sizing: border-box', f:function(d){return /box-sizing\s*:\s*border-box/.test(cssOf(d));}}
+      ]},
+
+    { id:'S7', title:'Four selectors, one stylesheet', lvl:'a',
+      scen:'You are handed markup and told to style it using each selector type exactly where it belongs — and to justify the choice.',
+      brief:'Style the given markup using <b>all four selector types</b>: universal for a reset, type for base styling, class for the reusable pieces, and id for the single unique region. Two different elements must share the same class.',
+      start:'<style>\n\n</style>\n\n<header id="masthead">\n  <h1>Store</h1>\n</header>\n<p class="lead">Welcome</p>\n<p>Ordinary paragraph</p>\n<button class="lead">Shop</button>',
+      hint:'* {} for the reset, p {} for type, .lead {} for the shared class, #masthead {} for the id. The class must appear on both the p and the button.',
+      checks:[
+        {l:'Universal selector rule present', f:function(d){return /(^|[},\s])\*\s*[,{]/.test(cssOf(d));}},
+        {l:'A type selector rule (e.g. p or h1)', f:function(d){return /(^|[},\n])\s*(p|h1|button|header)\s*\{/.test(cssOf(d));}},
+        {l:'A class selector rule', f:function(d){return /\.[a-z][\w-]*\s*(,[^{]*)?\{/i.test(cssOf(d));}},
+        {l:'An id selector rule', f:function(d){return /#[a-z][\w-]*\s*(,[^{]*)?\{/i.test(cssOf(d));}},
+        {l:'The same class is used on two different element types', f:function(d){var map={};var found=false;Array.prototype.forEach.call(d.querySelectorAll('[class]'),function(el){String(el.className).trim().split(/\s+/).forEach(function(c){if(!c)return;if(map[c]&&map[c]!==el.tagName)found=true;map[c]=map[c]||el.tagName;});});return found;}},
+        {l:'Each rule actually declares a property', f:function(d){var c=cssOf(d);return (c.match(/\{[^}]*:[^}]*\}/g)||[]).length>=4;}}
+      ]},
+
+    { id:'S8', title:'Win the specificity fight', lvl:'a',
+      scen:'A third-party widget ships with #widget .title { color: grey }. You must recolour that title — and you are not allowed to touch their CSS or use !important.',
+      brief:'The markup is fixed. Write a selector in your own stylesheet that <b>beats</b> <code>#widget .title</code> without using <code>!important</code> and without inline styles.',
+      start:'<style>\n  #widget .title { color: grey; }\n\n  /* your winning rule below */\n\n</style>\n\n<div id="widget">\n  <h2 class="title headline">Product name</h2>\n</div>',
+      hint:'Their score is 0,1,1,0. You need higher. You cannot add an id to the element, but you can use the id that already exists more than once — or add the second class that is already on the element.',
+      checks:[
+        {l:'Original grey rule left untouched', f:function(d){return /#widget\s+\.title\s*\{[^}]*grey/i.test(cssOf(d));}},
+        {l:'No !important used anywhere', f:function(d){return !/!important/i.test(cssOf(d));}},
+        {l:'No inline style attributes', f:function(d){return d.querySelectorAll('[style]').length===0;}},
+        {l:'A second colour rule was added', f:function(d){var c=cssOf(d);return (c.match(/color\s*:/g)||[]).length>=2;}},
+        {l:'Your selector out-scores 0,1,1,0', f:function(d){
+            var css=cssOf(d);
+            var rules=css.match(/[^{}]+\{[^}]*\}/g)||[];
+            var target={a:0,b:1,c:1,d:0,imp:false};
+            return rules.some(function(r){
+              var sel=r.split('{')[0].trim();
+              if(/#widget\s+\.title\s*$/.test(sel)) return false;
+              if(!/color\s*:/.test(r)) return false;
+              var s=specScore(sel);
+              return cmp(s,target)>0;
+            });
+        }}
+      ]},
+
+    { id:'S9', title:'Name classes that survive', lvl:'a',
+      scen:'Six months in, the brand colour changed from red to blue. Half the class names in the stylesheet now lie about what they do.',
+      brief:'Rewrite this stylesheet so <b>every class name describes purpose, not appearance</b>, and update the markup to match. No name may contain a colour, a size or a position.',
+      start:'<style>\n  .red-text { color: crimson; }\n  .big-font { font-size: 26px; }\n  .left-box { float: left; }\n</style>\n\n<p class="red-text">Payment failed</p>\n<h2 class="big-font">Dashboard</h2>\n<div class="left-box">Menu</div>',
+      hint:'crimson text warning the user = .alert. A 26px heading = .page-title. A floated menu = .sidebar. Then change the class attributes in the markup too.',
+      checks:[
+        {l:'No class name contains a colour word', f:function(d){return !Array.prototype.some.call(d.querySelectorAll('[class]'),function(e){return /(red|blue|green|crimson|grey|gray|yellow|orange|purple|black|white)/i.test(e.className);});}},
+        {l:'No class name contains a size word', f:function(d){return !Array.prototype.some.call(d.querySelectorAll('[class]'),function(e){return /(big|small|large|tiny|huge|font|px)/i.test(e.className);});}},
+        {l:'No class name contains a position word', f:function(d){return !Array.prototype.some.call(d.querySelectorAll('[class]'),function(e){return /(left|right|top|bottom|center)/i.test(e.className);});}},
+        {l:'Three classes still applied in the markup', f:function(d){return d.querySelectorAll('[class]').length>=3;}},
+        {l:'Stylesheet rules match the new names', f:function(d){var css=cssOf(d);var ok=true;Array.prototype.forEach.call(d.querySelectorAll('[class]'),function(e){String(e.className).trim().split(/\s+/).forEach(function(c){if(c&&css.indexOf('.'+c)<0)ok=false;});});return ok;}},
+        {l:'The three original declarations survive', f:function(d){var c=cssOf(d);return /color\s*:/.test(c)&&/font-size\s*:/.test(c)&&/float\s*:/.test(c);}}
+      ]},
+
+    { id:'S10', title:'Rich media card', lvl:'a',
+      scen:'The content team wants a card that shows a captioned photo, a machine-readable publish date and a progress bar — and they want zero JavaScript.',
+      brief:'Build one card using the HTML5 tags most developers forget: <b>figure with figcaption, time with a datetime attribute, data with a value, and a progress element</b>. Wrap it in an article with a heading.',
+      start:'<article>\n  <!-- build the card here -->\n\n</article>',
+      hint:'<figure><img><figcaption></figure> · <time datetime="2026-09-11"> · <data value="2499"> · <progress value="70" max="100">',
+      checks:[
+        {l:'Wrapped in an <article> with a heading', f:function(d){return !!d.querySelector('article')&&!!d.querySelector('article h2, article h3');}},
+        {l:'<figure> containing an image', f:function(d){return !!d.querySelector('figure img');}},
+        {l:'<figcaption> inside the figure', f:function(d){return !!d.querySelector('figure figcaption')&&txt(d.querySelector('figure figcaption')).length>3;}},
+        {l:'Image has alt, width and height', f:function(d){var i=d.querySelector('figure img');return !!i&&(i.getAttribute('alt')||'').length>3&&i.hasAttribute('width')&&i.hasAttribute('height');}},
+        {l:'<time> with a valid datetime', f:function(d){var t=d.querySelector('time');return !!t&&/^\d{4}-\d{2}-\d{2}/.test(t.getAttribute('datetime')||'');}},
+        {l:'<data> with a numeric value', f:function(d){var x=d.querySelector('data[value]');return !!x&&/^[0-9.]+$/.test(x.getAttribute('value')||'');}},
+        {l:'<progress> with value and max', f:function(d){var p=d.querySelector('progress');return !!p&&p.hasAttribute('value')&&p.hasAttribute('max');}},
+        {l:'No inline styles', f:function(d){return d.querySelectorAll('[style]').length===0;}}
+      ]},
+
+    { id:'S11', title:'Boss challenge — the pricing section', lvl:'b',
+      scen:'A screening task. You receive a design and a checklist, and an automated audit runs before a human reviews it.',
+      brief:'Build a complete pricing section: a semantic section with a heading, <b>three article cards sharing one class</b>, each with a heading, a machine-readable price, a feature list and a real button carrying its plan id. Style it with a universal reset, a type rule, class rules and exactly one id rule. <b>No inline styles, no !important, no ids used more than once.</b>',
+      start:'<style>\n\n</style>\n\n<!-- build the pricing section below -->\n',
+      hint:'Structure: section#pricing > h2 + three article.plan blocks. Each plan: h3, data[value], ul of li, button[type][data-plan-id]. CSS: the * reset, a type rule, .plan and other class rules, and #pricing.',
+      checks:[
+        {l:'A <section> with a heading', f:function(d){return !!d.querySelector('section')&&!!d.querySelector('section h2');}},
+        {l:'Exactly three <article> cards', f:function(d){return d.querySelectorAll('section article').length===3;}},
+        {l:'All three share the same class', f:function(d){var a=d.querySelectorAll('section article');if(a.length!==3)return false;var f=String(a[0].className).trim().split(/\s+/)[0];return !!f&&Array.prototype.every.call(a,function(x){return String(x.className).split(/\s+/).indexOf(f)>=0;});}},
+        {l:'Each card has its own heading', f:function(d){var a=d.querySelectorAll('section article');return a.length===3&&Array.prototype.every.call(a,function(x){return !!x.querySelector('h3');});}},
+        {l:'Each price uses <data value>', f:function(d){var a=d.querySelectorAll('section article');return a.length===3&&Array.prototype.every.call(a,function(x){var v=x.querySelector('data[value]');return !!v&&/^[0-9.]+$/.test(v.getAttribute('value'));});}},
+        {l:'Each card has a feature list with 2+ items', f:function(d){var a=d.querySelectorAll('section article');return a.length===3&&Array.prototype.every.call(a,function(x){return x.querySelectorAll('ul li').length>=2;});}},
+        {l:'Each card has a real button with type and data-* id', f:function(d){var a=d.querySelectorAll('section article');return a.length===3&&Array.prototype.every.call(a,function(x){var b=x.querySelector('button');return !!b&&!!b.getAttribute('type')&&Array.prototype.some.call(b.attributes,function(at){return /^data-/.test(at.name)&&at.value.length>0;});});}},
+        {l:'Universal reset with border-box', f:function(d){var c=cssOf(d);return /(^|[},\s])\*\s*[,{]/.test(c)&&/box-sizing\s*:\s*border-box/.test(c);}},
+        {l:'At least one type and two class rules', f:function(d){var c=cssOf(d);return /(^|[},\n])\s*(section|article|h2|h3|ul|li|button)\s*\{/.test(c)&&(c.match(/\.[a-z][\w-]*\s*[,{]/gi)||[]).length>=2;}},
+        {l:'Exactly one id rule in the CSS', f:function(d){return (cssOf(d).match(/#[a-z][\w-]*\s*[,{ ]/gi)||[]).length===1;}},
+        {l:'No inline styles and no !important', f:function(d){return d.querySelectorAll('[style]').length===0&&!/!important/i.test(cssOf(d));}},
+        {l:'Every id in the markup is unique', f:function(d){var seen={},ok=true;Array.prototype.forEach.call(d.querySelectorAll('[id]'),function(e){if(seen[e.id])ok=false;seen[e.id]=1;});return ok;}}
+      ]}
+  ];
+
+  var chList = document.getElementById('chList');
+  var chIdx = 0, attempts = {}, solved = {};
+  var chCode = document.getElementById('chCode');
+  var chPrev = document.getElementById('chPrev');
+  var chChecks = document.getElementById('chChecks');
+  var chVerdict = document.getElementById('chVerdict');
+  var chHintBox = document.getElementById('chHintBox');
+
+  CH.forEach(function (c, i) {
+    var b = document.createElement('button');
+    b.textContent = c.id;
+    b.addEventListener('click', function () { loadCh(i); });
+    chList.appendChild(b);
+  });
+
+  function updateScore() {
+    document.getElementById('score').innerHTML = 'solved <b>' + Object.keys(solved).length + '</b> / ' + CH.length;
+    Array.prototype.forEach.call(chList.children, function (b, i) {
+      b.classList.toggle('solved', !!solved[CH[i].id]);
+      b.classList.toggle('on', i === chIdx);
+    });
+  }
+  function preview() {
+    chPrev.srcdoc = '<style>body{font-family:system-ui,sans-serif;padding:14px;color:#111;background:#fff;line-height:1.5}'
+      + 'img{max-width:100%;height:auto;background:#e6ecef}'
+      + 'article{border:1px solid #ccc;border-radius:8px;padding:10px;margin:8px 0}'
+      + '</style>' + chCode.value;
+  }
+  function renderChecks(res) {
+    var c = CH[chIdx], html = '';
+    c.checks.forEach(function (ck, i) {
+      var st = res ? (res[i] ? 'pass' : 'fail') : 'idle';
+      var mk = res ? (res[i] ? '✓' : '✕') : '·';
+      html += '<div class="chk ' + st + '"><span class="mk">' + mk + '</span><span>' + esc(ck.l) + '</span></div>';
+    });
+    chChecks.innerHTML = html;
+  }
+  function loadCh(i) {
+    chIdx = i;
+    var c = CH[i];
+    document.getElementById('chTitle').textContent = c.id + ' · ' + c.title;
+    var lv = document.getElementById('chLvl');
+    lv.className = 'lvl ' + c.lvl;
+    lv.textContent = c.lvl === 'm' ? 'MODERATE' : (c.lvl === 'a' ? 'ADVANCED' : 'BOSS');
+    document.getElementById('chScenario').innerHTML = '<span class="l">Real scenario</span>' + c.scen;
+    document.getElementById('chBrief').innerHTML = c.brief;
+    chCode.value = c.start;
+    chVerdict.textContent = ''; chVerdict.className = 'verdict';
+    chHintBox.className = 'hint'; chHintBox.textContent = c.hint;
+    renderChecks(null); preview(); updateScore();
+  }
+  function runChecks() {
+    var c = CH[chIdx], raw = chCode.value, doc = P(raw);
+    var res = c.checks.map(function (ck) {
+      try { return !!ck.f(doc, raw); } catch (e) { return false; }
+    });
+    renderChecks(res);
+    var passed = res.filter(Boolean).length;
+    if (passed === res.length) {
+      solved[c.id] = true;
+      chVerdict.className = 'verdict ok';
+      chVerdict.textContent = '✓ All ' + res.length + ' requirements met.';
+    } else {
+      attempts[c.id] = (attempts[c.id] || 0) + 1;
+      chVerdict.className = 'verdict no';
+      chVerdict.textContent = passed + ' of ' + res.length + ' passed — keep going.';
+      if (attempts[c.id] >= 2) chHintBox.className = 'hint show';
+    }
+    updateScore();
+  }
+  chCode.addEventListener('input', preview);
+  document.getElementById('chRun').addEventListener('click', runChecks);
+  document.getElementById('chReset').addEventListener('click', function () { loadCh(chIdx); });
+  document.getElementById('chHint').addEventListener('click', function () { chHintBox.classList.toggle('show'); });
+  loadCh(0);
+
+  /* ============================================================
+     LOGIC DRILLS
+     ============================================================ */
+  var LOGIC = [
+    { q:'<style> p { color: blue } </style>\n<link rel="stylesheet" href="a.css">\n\n/* a.css contains:  p { color: green } */',
+      ask:'What colour is the paragraph?',
+      a:'<p><b>Green.</b> Internal and external stylesheets carry identical weight — neither one automatically beats the other. The &lt;link&gt; appears after the &lt;style&gt; block, so it is applied last and wins.</p><p>Swap the two lines and the answer becomes blue. <b>Location does not decide this. Order does.</b></p>' },
+    { q:'<button class="btn" id="buy" style="color:green">Buy</button>\n\n#buy  { color: red; }\n.btn  { color: blue !important; }',
+      ask:'What colour is the button text?',
+      a:'<p><b>Blue.</b> The ranking is: !important beats everything, including an inline style. So .btn wins despite being the weakest selector on paper.</p><p>Remove the !important and the answer becomes green, because inline styles outrank an id.</p>' },
+    { q:'.card .title      { color: red; }\n#main .title      { color: blue; }\nh2.title.headline { color: green; }',
+      ask:'The element is: <h2 class="title headline"> inside <div id="main" class="card">. Which wins?',
+      a:'<p><b>Blue.</b> Score them: .card .title is 0,0,2,0 · #main .title is 0,1,1,0 · h2.title.headline is 0,0,2,1.</p><p>Read left to right. The id column decides it immediately — <b>one id beats any number of classes</b>, and the columns never carry over.</p>' },
+    { q:'* { color: purple; }\np { color: black; }',
+      ask:'A paragraph inside the page — what colour?',
+      a:'<p><b>Black.</b> The universal selector scores 0,0,0,0 — the lowest possible. Any real selector, even a single element name, outranks it.</p><p>That is precisely why * is safe for a reset: it sets a baseline that everything else can override without a fight.</p>' },
+    { q:'<input type="checkbox" checked="false">',
+      ask:'Is the checkbox ticked?',
+      a:'<p><b>Yes, it is ticked.</b> checked is a boolean attribute — the browser reads its <i>presence</i>, never its value. "false", "no", "0" and an empty string all mean the same thing: present.</p><p>To untick it you must remove the attribute completely. The same applies to disabled, required, readonly and multiple.</p>' },
+    { q:'<article>\n  <h2>Chapter One</h2>\n</article>\n\n<section>\n  <p>Some text</p>\n</section>',
+      ask:'Which of the two is being used incorrectly, and why?',
+      a:'<p><b>The section.</b> A &lt;section&gt; is a thematic grouping and is expected to carry a heading — without one it contributes nothing to the document outline, and a plain &lt;div&gt; would have been the honest choice.</p><p>The article is fine: it is self-contained and it has a heading.</p>' },
+    { q:'.container { width: 300px; padding: 20px; border: 5px solid; }',
+      ask:'How wide is the box on screen, and how do you make it 300px?',
+      a:'<p><b>350px</b> — width 300 + padding 20 each side + border 5 each side. This is the default content-box model, and it is why three 33.33% columns with padding always wrap.</p><p>Add <b>box-sizing: border-box</b> and the rendered width becomes exactly 300px, with the padding and border growing inward.</p>' },
+    { q:'<div class="btn" tabindex="0" onclick="save()">Save</div>',
+      ask:'tabindex makes it focusable. Is it now accessible?',
+      a:'<p><b>No.</b> tabindex gets you focus, but that is only one of four things a real button provides. It still does not fire on Enter or Space, it is announced as a generic element with no role, and it has no disabled state.</p><p>You would have to add a keydown handler, role="button" and aria-disabled by hand — all to recreate what &lt;button&gt; gives you free.</p>' },
+    { q:'#nav .link  { color: grey; }\n.link.active { color: red; }',
+      ask:'A link with class="link active" inside #nav — what colour?',
+      a:'<p><b>Grey.</b> #nav .link scores 0,1,1,0 while .link.active scores 0,0,2,0. The id column is compared first and settles it.</p><p>This is the everyday pain of styling with ids: your perfectly reasonable state class cannot win, and people reach for !important instead of removing the id.</p>' },
+    { q:'<img src="hero.jpg" alt="hero image">',
+      ask:'Two separate faults. Name both.',
+      a:'<p><b>One:</b> the alt text says "hero image" — a screen reader announces "image, hero image". Alt text should describe what the picture communicates, never that it is a picture.</p><p><b>Two:</b> no width and height, so the browser cannot reserve space. When the image finally loads, everything below it jumps down — a layout shift, and a direct hit on Core Web Vitals.</p>' }
+  ];
+
+  var logicWrap = document.getElementById('logicWrap');
+  LOGIC.forEach(function (d, i) {
+    var el = document.createElement('div');
+    el.className = 'mini';
+    el.style.marginBottom = '13px';
+    el.innerHTML = '<span class="tag">Drill ' + (i + 1) + '</span>'
+      + '<pre style="margin:6px 0 10px">' + esc(d.q) + '</pre>'
+      + '<h4>' + d.ask + '</h4>'
+      + '<button class="btn sm" style="margin-top:10px">Reveal answer</button>'
+      + '<div class="why" style="display:none;margin-top:11px;font-size:14.2px;color:var(--ink-2);border-top:1px solid var(--line-soft);padding-top:10px">' + d.a + '</div>';
+    var btn = el.querySelector('button');
+    var why = el.querySelector('.why');
+    btn.addEventListener('click', function () {
+      var open = why.style.display === 'block';
+      why.style.display = open ? 'none' : 'block';
+      btn.textContent = open ? 'Reveal answer' : 'Hide answer';
+    });
+    logicWrap.appendChild(el);
+  });
+
+  updateScore();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flexbox, Position, Grid and Media Queries</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#F5F7F8; --card:#FFFFFF; --sunk:#EDF2F3;
+    --ink:#12181C; --ink-2:#3D4A52; --ink-3:#6B7C86;
+    --line:#DCE3E6; --line-soft:#E9EEF0;
+    --accent:#0E6E68; --accent-soft:#DCEEEC;
+    --amber:#A85A11; --amber-soft:#F7E9D8;
+    --blue:#1F5FA8;  --blue-s:#E0EAF7;
+    --plum:#7A3E86;  --plum-s:#F1E5F4;
+    --red:#B03A2E;   --red-s:#FBE6E3;
+    --green:#1E7A4C; --green-s:#DDF0E5;
+    --code-bg:#101820; --code-ink:#D7E3E6;
+    --shadow:0 1px 2px rgba(18,24,28,.06), 0 8px 24px rgba(18,24,28,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#0D1418; --card:#141D22; --sunk:#101A1F;
+      --ink:#E8EFF1; --ink-2:#AEBEC5; --ink-3:#7E9099;
+      --line:#26343B; --line-soft:#1D282E;
+      --accent:#5CC8BE; --accent-soft:#12312F;
+      --amber:#E0A15C; --amber-soft:#2E2213;
+      --blue:#79B4EE;  --blue-s:#14263A;
+      --plum:#CE9ED9;  --plum-s:#2C1D31;
+      --red:#E88070;   --red-s:#331714;
+      --green:#5FC98C; --green-s:#0F2C1D;
+      --code-bg:#070C0F; --code-ink:#D7E3E6;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0D1418; --card:#141D22; --sunk:#101A1F;
+    --ink:#E8EFF1; --ink-2:#AEBEC5; --ink-3:#7E9099;
+    --line:#26343B; --line-soft:#1D282E;
+    --accent:#5CC8BE; --accent-soft:#12312F;
+    --amber:#E0A15C; --amber-soft:#2E2213;
+    --blue:#79B4EE;  --blue-s:#14263A;
+    --plum:#CE9ED9;  --plum-s:#2C1D31;
+    --red:#E88070;   --red-s:#331714;
+    --green:#5FC98C; --green-s:#0F2C1D;
+    --code-bg:#070C0F; --code-ink:#D7E3E6;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--paper); color:var(--ink); margin:0;
+    font-family:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:"Archivo","IBM Plex Sans",system-ui,sans-serif;text-wrap:balance;margin:0;letter-spacing:-.02em}
+  p{margin:0}
+  svg{max-width:100%;height:auto;display:block}
+  code,.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+
+  .deck{max-width:1180px;margin:0 auto;padding:0 20px 96px}
+  .slide{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--shadow);padding:clamp(24px,3.2vw,48px);margin:24px 0;
+    min-height:clamp(420px,74vh,730px);display:flex;flex-direction:column;gap:20px;
+  }
+  .slide.hidden{display:none}
+
+  .eyebrow{
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
+  .slide h2{font-size:clamp(25px,3.3vw,40px);font-weight:800;line-height:1.12}
+  .sub{color:var(--ink-2);font-size:clamp(15px,1.35vw,18px);max-width:66ch}
+  .sub b{color:var(--ink);font-weight:600}
+  .grow{flex:1}
+
+  .title-slide{justify-content:center;gap:24px;position:relative;overflow:hidden}
+  .title-slide h1{font-size:clamp(36px,6vw,74px);font-weight:800;line-height:1.03}
+  .title-slide h1 .thin{display:block;font-weight:600;color:var(--ink-3);font-size:.36em;margin-bottom:.55em}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{font-family:"IBM Plex Mono",monospace;font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);color:var(--ink-2);background:var(--paper)}
+  .chip b{color:var(--accent);font-weight:600}
+
+  .grid{display:grid;gap:15px}
+  .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  @media (max-width:860px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+  .card{border:1px solid var(--line);border-radius:10px;padding:17px;background:var(--paper);display:flex;flex-direction:column;gap:7px}
+  .card h3{font-size:16.5px;font-weight:700}
+  .card p{color:var(--ink-2);font-size:14.5px}
+  .card .tag{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+  .card.b{background:var(--blue-s);border-color:var(--blue)} .card.b .tag{color:var(--blue)}
+  .card.g{background:var(--green-s);border-color:var(--green)} .card.g .tag{color:var(--green)}
+  .card.p{background:var(--plum-s);border-color:var(--plum)} .card.p .tag{color:var(--plum)}
+  .card.a{background:var(--amber-soft);border-color:var(--amber)} .card.a .tag{color:var(--amber)}
+  .card.r{background:var(--red-s);border-color:var(--red)} .card.r .tag{color:var(--red)}
+
+  ul.clean{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:11px}
+  ul.clean li{display:flex;gap:11px;font-size:clamp(14.5px,1.35vw,17px);color:var(--ink-2);line-height:1.45}
+  ul.clean li b{color:var(--ink);font-weight:600}
+  ul.clean li::before{content:"";flex:none;width:7px;height:7px;margin-top:.55em;border-radius:2px;background:var(--accent);transform:rotate(45deg)}
+
+  pre{margin:0;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:16px 18px;overflow-x:auto;font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.68;border:1px solid var(--line)}
+  pre .c{color:#7E9099;font-style:italic}
+  pre .t{color:#7FD1C7}
+  pre .a{color:#9FC6E8}
+  pre .s{color:#E0A15C}
+  pre .hl{background:rgba(224,161,92,.16);display:inline-block;width:100%}
+  .fname{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);letter-spacing:.05em;margin-bottom:7px;display:block}
+
+  .callout{border-left:3px solid var(--amber);background:var(--amber-soft);padding:13px 17px;border-radius:0 8px 8px 0;color:var(--ink-2);font-size:15px}
+  .callout b{color:var(--ink)}
+  .callout.q{border-left-color:var(--plum);background:var(--plum-s)}
+  .callout.g{border-left-color:var(--green);background:var(--green-s)}
+
+  .scroll-x{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:14.5px}
+  th{text-align:left;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);padding:0 12px 9px 0;border-bottom:1px solid var(--line);font-weight:600;white-space:nowrap}
+  td{padding:9px 12px 9px 0;border-bottom:1px solid var(--line-soft);color:var(--ink-2);vertical-align:top}
+  td:first-child{color:var(--ink);font-weight:600;white-space:nowrap}
+  td code,th code{color:var(--accent)}
+
+  .navbar{
+    position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);
+    border-top:1px solid var(--line);display:flex;align-items:center;gap:13px;
+    padding:10px max(20px, calc(50vw - 590px));box-shadow:0 -6px 18px -12px rgba(0,0,0,.4);
+  }
+  .navbar button{font-family:"IBM Plex Mono",monospace;font-size:12.5px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:7px 13px;cursor:pointer}
+  .navbar button:hover{border-color:var(--accent);color:var(--accent)}
+  .navbar button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .counter{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+  .bar{flex:1;height:3px;background:var(--line-soft);border-radius:2px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s ease}
+  .navbar .hint{font-size:12px;color:var(--ink-3)}
+  @media (max-width:700px){.navbar .hint{display:none}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+  @media print{
+    .navbar{display:none}
+    .slide{page-break-after:always;box-shadow:none;min-height:0}
+    .slide.hidden{display:flex}
+  }
+
+  /* ---- additions for CSS properties / box model ---- */
+  .swatchrow{display:flex;gap:9px;flex-wrap:wrap}
+  .sw{flex:1;min-width:92px;border-radius:9px;border:1px solid var(--line);overflow:hidden;background:var(--card)}
+  .sw .fill{height:52px}
+  .sw .nm{font-family:"IBM Plex Mono",monospace;font-size:10.5px;padding:7px 9px;color:var(--ink-2);line-height:1.35}
+  .sw .nm b{display:block;color:var(--ink);font-size:11.5px}
+
+  .demo{border:1px dashed var(--accent);border-radius:10px;padding:16px 18px;background:var(--card);position:relative}
+  .demo::before{content:"LIVE ON THIS SLIDE";position:absolute;top:-9px;left:16px;background:var(--accent);color:var(--card);
+    font-family:"IBM Plex Mono",monospace;font-size:9px;letter-spacing:.13em;padding:2px 9px;border-radius:5px;font-weight:600}
+
+  .scale li{display:flex;align-items:baseline;gap:14px;padding:5px 0;border-bottom:1px solid var(--line-soft)}
+  .scale li .v{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);width:88px;flex:none}
+  .scale li .t{color:var(--ink);font-weight:700;line-height:1.1}
+  ul.scale{list-style:none;margin:0;padding:0}
+
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:5px 16px;font-size:14.5px;align-items:baseline}
+  .kv dt{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--accent);font-weight:600;white-space:nowrap}
+  .kv dd{margin:0;color:var(--ink-2)}
+
+  .clock{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+  @media (max-width:860px){.clock{grid-template-columns:repeat(2,1fr)}}
+  .cl{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)}
+  .cl .h{font-family:"IBM Plex Mono",monospace;font-size:12px;padding:8px 11px;background:var(--sunk);color:var(--ink);border-bottom:1px solid var(--line);font-weight:600}
+  .cl .b{padding:11px;display:grid;place-items:center}
+  .cl .cap{font-size:12.5px;color:var(--ink-2);padding:0 11px 11px;text-align:center}
+
+  .big-num{font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:clamp(26px,3.6vw,46px);color:var(--accent);line-height:1}
+  .eq{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:"IBM Plex Mono",monospace;font-size:clamp(14px,1.6vw,20px);font-weight:600}
+  .eq .op{color:var(--ink-3)}
+  .eq .pill{padding:6px 12px;border-radius:8px;border:2px solid}
+  .eq .pc{background:var(--blue-s);border-color:var(--blue);color:var(--blue)}
+  .eq .pp{background:var(--green-s);border-color:var(--green);color:var(--green)}
+  .eq .pb{background:var(--sunk);border-color:var(--ink-2);color:var(--ink)}
+  .eq .pt{background:var(--amber-soft);border-color:var(--amber);color:var(--amber)}
+
+  /* ---- module 04 additions: flex / position / grid / media ---- */
+  .fxdemo{background:var(--sunk);border-radius:10px;padding:14px;border:1px solid var(--line)}
+  .fxdemo .fx{display:flex;gap:8px;min-height:92px;background:var(--card);border:1px dashed var(--line);border-radius:8px;padding:9px}
+  .fxdemo .it{background:var(--accent-soft);border:2px solid var(--accent);border-radius:7px;
+    display:grid;place-items:center;font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:700;color:var(--accent);padding:10px 14px}
+  .fxdemo .it.t{padding:6px 14px} .fxdemo .it.m{padding:18px 14px} .fxdemo .it.l{padding:30px 14px}
+  .fxdemo .lab{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);margin-bottom:7px;display:block}
+
+  .axis{position:relative;border:2px solid var(--line);border-radius:9px;padding:20px;background:var(--card)}
+  .axline{position:absolute;background:var(--plum)}
+  .axlbl{position:absolute;font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:700;color:var(--plum);background:var(--card);padding:0 5px}
+
+  .posframe{width:100%;height:330px;border:2px solid var(--line);border-radius:10px;background:#fff}
+  .switchrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .switchrow label{display:flex;align-items:center;gap:7px;font-size:12.5px;padding:7px 11px;border:1px solid var(--line);
+    border-radius:8px;background:var(--card);cursor:pointer;color:var(--ink-2)}
+  .switchrow label.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+  .switchrow input{accent-color:var(--accent);width:15px;height:15px}
+
+  .gdemo{display:grid;gap:8px;background:var(--card);border:1px dashed var(--line);border-radius:8px;padding:9px}
+  .gdemo > span{background:var(--blue-s);border:2px solid var(--blue);border-radius:7px;padding:12px 8px;text-align:center;
+    font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:700;color:var(--blue)}
+
+  .mqbar{display:flex;gap:0;border-radius:9px;overflow:hidden;border:1px solid var(--line)}
+  .mqbar div{padding:11px 10px;font-family:"IBM Plex Mono",monospace;font-size:11.5px;text-align:center;color:var(--ink-2);background:var(--card);border-right:1px solid var(--line)}
+  .mqbar div:last-child{border-right:0}
+  .mqbar div b{display:block;color:var(--ink);font-size:13px;margin-bottom:2px}
+  .mqbar div.hi{background:var(--accent-soft);color:var(--accent)} .mqbar div.hi b{color:var(--accent)}
+
+  .warnbox{border-left:3px solid var(--red);background:var(--red-s);padding:13px 17px;border-radius:0 8px 8px 0;color:var(--ink-2);font-size:15px}
+  .warnbox b{color:var(--red)}
+
+  /* ---- three-depth tier layers ---- */
+  .tier{display:none;border-radius:0 10px 10px 0;padding:14px 18px;font-size:15px;line-height:1.55;margin-top:2px}
+  .tier .tl{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.14em;
+    text-transform:uppercase;font-weight:700;margin-bottom:6px}
+  .tier b{font-weight:700}
+  .tier code{font-family:"IBM Plex Mono",monospace;font-size:.9em}
+  .tier-plain{background:var(--green-s);border-left:4px solid var(--green);color:var(--ink-2)}
+  .tier-plain .tl{color:var(--green)} .tier-plain b{color:var(--ink)} .tier-plain code{color:var(--green)}
+  .tier-deep{background:var(--plum-s);border-left:4px solid var(--plum);color:var(--ink-2)}
+  .tier-deep .tl{color:var(--plum)} .tier-deep b{color:var(--ink)} .tier-deep code{color:var(--plum)}
+  body.show-plain .tier-plain{display:block}
+  body.show-deep  .tier-deep{display:block}
+  .navbar button.tbtn{font-size:12px;padding:7px 11px}
+  .navbar button.tbtn.on{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .navbar button#tPlain.on{background:var(--green);border-color:var(--green)}
+  .navbar button#tDeep.on{background:var(--plum);border-color:var(--plum)}
+  @media print{ .tier{display:block!important} }
+</style>
+</head>
+<body>
+
+<main class="deck" id="deck">
+
+<!-- 1 -->
+<section class="slide title-slide">
+  <div class="eyebrow">Module 04</div>
+  <h1><span class="thin">Flexbox · Position · Grid · Media queries</span>Putting things where you want them</h1>
+  <p class="sub">Four systems, and each one answers a different question. <b>Flexbox arranges along a line. Grid arranges in two directions at once. Position takes an element out of the flow entirely. Media queries change the answer at a different screen size.</b> Knowing which question you are asking is most of the skill.</p>
+  <div class="chips">
+    <span class="chip"><b>01</b>&nbsp; Flexbox, alignment, ordering</span>
+    <span class="chip"><b>02</b>&nbsp; Position — live</span>
+    <span class="chip"><b>03</b>&nbsp; Grid basics</span>
+    <span class="chip"><b>04</b>&nbsp; Media queries</span>
+  </div>
+  <div class="grow"></div>
+</section>
+
+<!-- 2 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Flexbox</div>
+  <h2>One idea. Everything else follows from it.</h2>
+  <p class="sub">Flexbox has two axes. <b>Every property either works along the main axis or across the cross axis</b> — and which is which is decided entirely by <code>flex-direction</code>. Learn this and you never guess between <code>justify</code> and <code>align</code> again.</p>
+  <div class="grid g2">
+    <div>
+      <span class="fname">flex-direction: row &nbsp;·&nbsp; the default</span>
+      <div class="fxdemo">
+        <div class="axis" style="padding:34px 20px 20px">
+          <div class="axline" style="left:20px;right:20px;top:14px;height:3px"></div>
+          <div class="axlbl" style="left:34px;top:6px">MAIN AXIS  →  horizontal</div>
+          <div class="axline" style="top:34px;bottom:20px;left:30px;width:3px"></div>
+          <div class="axlbl" style="left:40px;bottom:24px;transform:none">CROSS  ↓</div>
+          <div class="fx" style="margin-left:34px">
+            <div class="it">1</div><div class="it">2</div><div class="it">3</div>
+          </div>
+        </div>
+      </div>
+      <p class="sub" style="font-size:14px;margin-top:10px"><code>justify-content</code> moves them left and right. <code>align-items</code> moves them up and down.</p>
+    </div>
+    <div>
+      <span class="fname">flex-direction: column &nbsp;·&nbsp; the axes swap</span>
+      <div class="fxdemo">
+        <div class="axis" style="padding:34px 20px 20px">
+          <div class="axline" style="top:34px;bottom:20px;left:30px;width:3px"></div>
+          <div class="axlbl" style="left:12px;top:26px">MAIN ↓</div>
+          <div class="axline" style="left:20px;right:20px;top:14px;height:3px"></div>
+          <div class="axlbl" style="left:70px;top:6px">CROSS  →</div>
+          <div class="fx" style="flex-direction:column;margin-left:34px;min-height:0">
+            <div class="it t">1</div><div class="it t">2</div>
+          </div>
+        </div>
+      </div>
+      <p class="sub" style="font-size:14px;margin-top:10px">Same two properties. <b>Opposite effects.</b> <code>justify-content</code> now moves them up and down.</p>
+    </div>
+  </div>
+  <div class="callout q"><b>The sentence to make them repeat:</b> "justify works along the main axis, align works across it." Not "justify is horizontal" — that is only true by accident, in a row.</div>
+</section>
+
+<!-- 3 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Flexbox</div>
+  <h2>justify-content — six values, along the main axis</h2>
+  <div class="grid g3" style="gap:13px">
+    <div class="fxdemo"><span class="lab">flex-start &nbsp;(default)</span>
+      <div class="fx" style="justify-content:flex-start;min-height:62px"><div class="it t">1</div><div class="it t">2</div><div class="it t">3</div></div></div>
+    <div class="fxdemo"><span class="lab">center</span>
+      <div class="fx" style="justify-content:center;min-height:62px"><div class="it t">1</div><div class="it t">2</div><div class="it t">3</div></div></div>
+    <div class="fxdemo"><span class="lab">flex-end</span>
+      <div class="fx" style="justify-content:flex-end;min-height:62px"><div class="it t">1</div><div class="it t">2</div><div class="it t">3</div></div></div>
+  </div>
+  <div class="grid g3" style="gap:13px">
+    <div class="fxdemo"><span class="lab">space-between &nbsp;— no outer gap</span>
+      <div class="fx" style="justify-content:space-between;min-height:62px"><div class="it t">1</div><div class="it t">2</div><div class="it t">3</div></div></div>
+    <div class="fxdemo"><span class="lab">space-around &nbsp;— half gap outside</span>
+      <div class="fx" style="justify-content:space-around;min-height:62px"><div class="it t">1</div><div class="it t">2</div><div class="it t">3</div></div></div>
+    <div class="fxdemo"><span class="lab">space-evenly &nbsp;— equal everywhere</span>
+      <div class="fx" style="justify-content:space-evenly;min-height:62px"><div class="it t">1</div><div class="it t">2</div><div class="it t">3</div></div></div>
+  </div>
+  <div class="callout"><b>The three space-* values differ only at the ends.</b> <code>between</code> puts nothing outside the first and last. <code>around</code> gives each item an equal margin, so the outer gaps look half-size. <code>evenly</code> makes every gap identical, including the outer ones. <b><code>space-between</code> is the one you will use for a navbar</b> — logo hard left, menu hard right.</div>
+</section>
+
+<!-- 4 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Flexbox</div>
+  <h2>align-items — across the cross axis</h2>
+  <div class="grid g3" style="gap:13px">
+    <div class="fxdemo"><span class="lab">stretch &nbsp;(default)</span>
+      <div class="fx" style="align-items:stretch;height:118px"><div class="it">1</div><div class="it">2</div><div class="it">3</div></div></div>
+    <div class="fxdemo"><span class="lab">flex-start</span>
+      <div class="fx" style="align-items:flex-start;height:118px"><div class="it t">1</div><div class="it m">2</div><div class="it t">3</div></div></div>
+    <div class="fxdemo"><span class="lab">center</span>
+      <div class="fx" style="align-items:center;height:118px"><div class="it t">1</div><div class="it m">2</div><div class="it t">3</div></div></div>
+  </div>
+  <div class="grid g3" style="gap:13px">
+    <div class="fxdemo"><span class="lab">flex-end</span>
+      <div class="fx" style="align-items:flex-end;height:118px"><div class="it t">1</div><div class="it m">2</div><div class="it t">3</div></div></div>
+    <div class="fxdemo"><span class="lab">baseline &nbsp;— text lines up</span>
+      <div class="fx" style="align-items:baseline;height:118px"><div class="it t" style="font-size:11px">1</div><div class="it t" style="font-size:22px">2</div><div class="it t" style="font-size:15px">3</div></div></div>
+    <div class="fxdemo"><span class="lab">align-self on one child</span>
+      <div class="fx" style="align-items:flex-start;height:118px"><div class="it t">1</div><div class="it t" style="align-self:flex-end;border-color:var(--amber);background:var(--amber-soft);color:var(--amber)">2</div><div class="it t">3</div></div></div>
+  </div>
+  <div class="grid g2">
+    <div class="callout g"><b>Why <code>stretch</code> is the default and why it matters:</b> it is what makes a row of cards all the same height automatically, however much text each one holds. You get equal-height cards for free — that used to require JavaScript.</div>
+    <div class="callout"><b><code>align-self</code> overrides the container for one child.</b> It takes exactly the same values as <code>align-items</code>. Use it for the single item that should break the rule — a "pull to the bottom" action button, for example.</div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Flexbox</div>
+  <h2>The centring answer, and why it is only two lines</h2>
+  <div class="grid g2">
+    <div>
+      <pre><span class="t">.box</span> {
+  <span class="a">display</span>: <span class="s">flex</span>;
+  <span class="a">justify-content</span>: <span class="s">center</span>;  <span class="c">/* main  → horizontal */</span>
+  <span class="a">align-items</span>: <span class="s">center</span>;      <span class="c">/* cross → vertical   */</span>
+}</pre>
+      <p class="sub" style="margin-top:16px">For two decades "how do I centre a div vertically" was the most-asked question on the web. This is the answer. <b>It works at any size, with any amount of content, without knowing the height of anything.</b></p>
+      <div class="callout" style="margin-top:14px"><b>The container needs a height.</b> If the parent is only as tall as its content, there is no vertical space to centre within — and nothing appears to happen. That is the usual reason this "doesn't work".</div>
+    </div>
+    <div>
+      <span class="fname">Live — this really is centred</span>
+      <div class="fxdemo">
+        <div class="fx" style="justify-content:center;align-items:center;height:210px;background:var(--sunk)">
+          <div class="it" style="padding:22px 30px">centred</div>
+        </div>
+      </div>
+      <div class="grid g2" style="margin-top:13px;gap:13px">
+        <div class="fxdemo"><span class="lab">column direction</span>
+          <div class="fx" style="flex-direction:column;justify-content:center;align-items:center;height:96px"><div class="it t">A</div><div class="it t">B</div></div></div>
+        <div class="fxdemo"><span class="lab">same code, still centred</span>
+          <div class="fx" style="justify-content:center;align-items:center;height:96px"><div class="it t">one</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Flexbox</div>
+  <h2>Wrapping — and the property everyone forgets</h2>
+  <div class="grid g2">
+    <div>
+      <span class="fname">flex-wrap: nowrap &nbsp;(default) — items are squashed</span>
+      <div class="fxdemo">
+        <div class="fx" style="flex-wrap:nowrap;min-height:60px">
+          <div class="it t" style="white-space:nowrap">item one</div><div class="it t" style="white-space:nowrap">item two</div>
+          <div class="it t" style="white-space:nowrap">item three</div><div class="it t" style="white-space:nowrap">item four</div>
+        </div>
+      </div>
+      <span class="fname" style="margin-top:14px">flex-wrap: wrap — they move to a new line</span>
+      <div class="fxdemo">
+        <div class="fx" style="flex-wrap:wrap;min-height:60px">
+          <div class="it t" style="white-space:nowrap">item one</div><div class="it t" style="white-space:nowrap">item two</div>
+          <div class="it t" style="white-space:nowrap">item three</div><div class="it t" style="white-space:nowrap">item four</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <ul class="clean">
+        <li><b>By default flex refuses to wrap.</b> Items shrink below their natural size instead — which is why a navbar squashes into unreadable slivers on a phone rather than stacking.</li>
+        <li><b><code>flex-wrap: wrap</code> is one word that makes most layouts responsive</b> before you write a single media query.</li>
+        <li><b><code>align-content</code> is not <code>align-items</code>.</b> It positions the <i>lines</i> as a group, and it does <b>nothing at all</b> unless the items have actually wrapped onto more than one line.</li>
+      </ul>
+      <div class="callout" style="margin-top:14px"><b>The shorthand:</b> <code>flex-flow: row wrap</code> sets direction and wrap together.</div>
+      <div class="warnbox" style="margin-top:12px"><b>The single most common flex bug:</b> a long word or an image refuses to shrink and pushes the layout sideways. A flex item will not shrink below its content's minimum size unless you tell it to — add <code>min-width: 0</code> to the item.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Flexbox</div>
+  <h2>The children: grow, shrink, basis</h2>
+  <p class="sub"><code>flex</code> on a child is three values in one. <b>Understanding the third is what separates people who use flexbox from people who fight it.</b></p>
+  <div class="scroll-x">
+    <table>
+      <tr><th>Part</th><th>Question it answers</th><th>Default</th><th>Meaning</th></tr>
+      <tr><td><code>flex-grow</code></td><td>If there is spare space, do I take some?</td><td><code>0</code></td><td>A ratio. <code>2</code> takes twice the share of <code>1</code>.</td></tr>
+      <tr><td><code>flex-shrink</code></td><td>If we are over budget, do I give some back?</td><td><code>1</code></td><td><code>0</code> means "never shrink me" — the fix for a squashed logo.</td></tr>
+      <tr><td><code>flex-basis</code></td><td>What size do I start from, before any of that?</td><td><code>auto</code></td><td><code>auto</code> means my content's size. <code>0</code> means ignore my content.</td></tr>
+    </table>
+  </div>
+  <div class="grid g2">
+    <div>
+      <span class="fname">flex: 1 &nbsp;— equal columns, whatever the content</span>
+      <div class="fxdemo">
+        <div class="fx" style="min-height:58px">
+          <div class="it t" style="flex:1;min-width:0">1</div>
+          <div class="it t" style="flex:1;min-width:0">a much longer label</div>
+          <div class="it t" style="flex:1;min-width:0">3</div>
+        </div>
+      </div>
+      <p class="sub" style="font-size:13.5px;margin-top:8px"><code>flex: 1</code> means <code>1 1 0</code>. Basis is <b>zero</b>, so content length is ignored and every child ends up identical.</p>
+    </div>
+    <div>
+      <span class="fname">flex: auto &nbsp;— share the spare space, keep content weight</span>
+      <div class="fxdemo">
+        <div class="fx" style="min-height:58px">
+          <div class="it t" style="flex:auto;min-width:0">1</div>
+          <div class="it t" style="flex:auto;min-width:0">a much longer label</div>
+          <div class="it t" style="flex:auto;min-width:0">3</div>
+        </div>
+      </div>
+      <p class="sub" style="font-size:13.5px;margin-top:8px"><code>flex: auto</code> means <code>1 1 auto</code>. Basis is the content, so the long one stays wider. <b>Same spare space, shared — different starting point.</b></p>
+    </div>
+  </div>
+  <div class="callout g"><b>The two you will actually write:</b> <code>flex: 1</code> for equal columns · <code>flex: 0 0 auto</code> for "do not touch this, ever" — the logo, the icon, the fixed-width sidebar.</div>
+</section>
+
+<!-- 8 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Ordering</div>
+  <h2>order — and the accessibility trap under it</h2>
+  <div class="grid g2">
+    <div>
+      <span class="fname">The DOM order, unchanged</span>
+      <pre style="font-size:12px"><span class="t">&lt;div&gt;</span>A<span class="t">&lt;/div&gt;</span>
+<span class="t">&lt;div&gt;</span>B<span class="t">&lt;/div&gt;</span>
+<span class="t">&lt;div&gt;</span>C<span class="t">&lt;/div&gt;</span></pre>
+      <span class="fname" style="margin-top:12px">With order applied</span>
+      <div class="fxdemo">
+        <div class="fx" style="min-height:58px">
+          <div class="it t" style="order:3">A<span style="display:block;font-size:9.5px;font-weight:400">order: 3</span></div>
+          <div class="it t" style="order:1">B<span style="display:block;font-size:9.5px;font-weight:400">order: 1</span></div>
+          <div class="it t" style="order:2">C<span style="display:block;font-size:9.5px;font-weight:400">order: 2</span></div>
+        </div>
+      </div>
+      <p class="sub" style="font-size:13.5px;margin-top:10px">Default is <code>0</code>. Lower numbers come first. Negative values are legal, so <code>order: -1</code> pulls one item to the front without touching the others.</p>
+    </div>
+    <div>
+      <div class="warnbox">
+        <b>This is the part that gets skipped, and it matters.</b><br><br>
+        <code>order</code> changes only what is <b>painted</b>. It does not change the document. So:
+        <ul class="clean" style="margin-top:11px">
+          <li>A screen reader still reads <b>A, B, C</b> — the visual order is invisible to it.</li>
+          <li>Tab moves focus <b>A → B → C</b>, so keyboard focus appears to jump around the screen at random.</li>
+          <li>Copying the text still gives <b>A B C</b>.</li>
+        </ul>
+      </div>
+      <div class="callout g" style="margin-top:14px"><b>The rule professionals follow:</b> use <code>order</code> for <b>presentational reshuffling only</b> — a sidebar that moves below the article on a phone, where reading order barely changes. If the reading order genuinely differs, <b>change the HTML</b>, not the CSS.</div>
+      <div class="callout q" style="margin-top:12px"><b>Exam-ready answer:</b> "<code>order</code> and <code>flex-direction: row-reverse</code> both change visual order without changing DOM order, so both decouple the visual sequence from the focus and reading sequence."</div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Flexbox</div>
+  <h2>Four patterns you will build again and again</h2>
+  <div class="grid g2">
+    <div>
+      <span class="fname">1 · Navbar — logo left, menu right</span>
+      <div class="fxdemo">
+        <div class="fx" style="justify-content:space-between;align-items:center;min-height:0">
+          <div class="it t">logo</div>
+          <div style="display:flex;gap:7px"><div class="it t" style="font-size:11px">Home</div><div class="it t" style="font-size:11px">About</div></div>
+        </div>
+      </div>
+      <pre style="font-size:11.5px;margin-top:9px"><span class="a">display</span>:<span class="s">flex</span>; <span class="a">justify-content</span>:<span class="s">space-between</span>; <span class="a">align-items</span>:<span class="s">center</span>;</pre>
+    </div>
+    <div>
+      <span class="fname">2 · Push one item to the end — no wrapper needed</span>
+      <div class="fxdemo">
+        <div class="fx" style="align-items:center;min-height:0">
+          <div class="it t" style="font-size:11px">File</div><div class="it t" style="font-size:11px">Edit</div>
+          <div class="it t" style="font-size:11px;margin-left:auto;border-color:var(--amber);background:var(--amber-soft);color:var(--amber)">Sign out</div>
+        </div>
+      </div>
+      <pre style="font-size:11.5px;margin-top:9px"><span class="c">/* on the item itself */</span>
+<span class="a">margin-left</span>: <span class="s">auto</span>;</pre>
+    </div>
+  </div>
+  <div class="grid g2">
+    <div>
+      <span class="fname">3 · Card with its button pinned to the bottom</span>
+      <div class="fxdemo">
+        <div style="display:flex;gap:9px">
+          <div style="flex:1;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:11px;height:128px">
+            <div style="font-size:12.5px;font-weight:700;color:var(--ink)">Short</div>
+            <div style="flex:1"></div>
+            <div class="it t" style="font-size:11px">Buy</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:11px;height:128px">
+            <div style="font-size:12.5px;font-weight:700;color:var(--ink)">A longer title that runs onto two lines</div>
+            <div style="flex:1"></div>
+            <div class="it t" style="font-size:11px">Buy</div>
+          </div>
+        </div>
+      </div>
+      <pre style="font-size:11.5px;margin-top:9px"><span class="c">/* a spacer div, or on the button: */</span>
+<span class="a">margin-top</span>: <span class="s">auto</span>;</pre>
+    </div>
+    <div>
+      <span class="fname">4 · Sidebar fixed, content fills the rest</span>
+      <div class="fxdemo">
+        <div class="fx" style="min-height:104px">
+          <div class="it" style="flex:0 0 96px;font-size:11px">0 0 96px</div>
+          <div class="it" style="flex:1;min-width:0;font-size:11px;background:var(--green-s);border-color:var(--green);color:var(--green)">flex: 1</div>
+        </div>
+      </div>
+      <p class="sub" style="font-size:13px;margin-top:9px"><b><code>flex: 0 0 96px</code></b> — never grow, never shrink, always 96px. This is the correct way to pin a sidebar width.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · Position</div>
+  <h2>Positioned against <i>what?</i> — the question that decides everything</h2>
+  <p class="sub">Four of the five values take <code>top</code>, <code>right</code>, <code>bottom</code>, <code>left</code>. What changes between them is <b>what those offsets are measured from</b>. Get that straight and position stops being mysterious.</p>
+  <div class="scroll-x">
+    <table>
+      <tr><th>Value</th><th>Offsets measured from</th><th>Still takes up space?</th><th>Scrolls with the page?</th></tr>
+      <tr><td><code>static</code></td><td>Nothing — offsets are ignored entirely</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td><code>relative</code></td><td><b>Where it would have been</b></td><td><b>Yes — its original space is kept</b></td><td>Yes</td></tr>
+      <tr><td><code>absolute</code></td><td>The nearest <b>positioned ancestor</b></td><td><b>No — removed from the flow</b></td><td>Yes, with that ancestor</td></tr>
+      <tr><td><code>fixed</code></td><td>The <b>viewport</b></td><td>No</td><td><b>No — it stays put</b></td></tr>
+      <tr><td><code>sticky</code></td><td>Its <b>scroll container</b>, past a threshold</td><td><b>Yes</b></td><td>Until it hits the threshold, then stops</td></tr>
+    </table>
+  </div>
+  <div class="grid g2">
+    <div class="callout q"><b>"Positioned ancestor" means:</b> the closest parent, grandparent or beyond whose <code>position</code> is anything other than <code>static</code>. If there is none, <code>absolute</code> measures from the page itself. <b>This is why <code>position: relative</code> with no offsets at all is such a common line</b> — it exists purely to become the anchor for a child.</div>
+    <div class="callout"><b>The two that keep their space are the two that stay in the flow:</b> <code>relative</code> and <code>sticky</code>. The two that are lifted out — <code>absolute</code> and <code>fixed</code> — leave a hole behind them, and everything below moves up to fill it.</div>
+  </div>
+</section>
+
+<!-- 11 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · Position · Live</div>
+  <h2>Scroll this. All five, at once.</h2>
+  <p class="sub">The frame below is a real scrollable page. <b>Scroll inside it and watch what each box does</b> — the blue one stays pinned to the frame, the green one sticks and then releases, the others move normally.</p>
+  <div class="grid g2">
+    <div>
+      <iframe class="posframe" id="posDemo" title="A live scrolling demonstration of all five position values"></iframe>
+      <p class="sub" style="font-size:13px;margin-top:9px"><b>Scroll inside the frame, not the slide.</b> The frame is its own viewport, which is exactly why <code>fixed</code> pins to it rather than to your screen.</p>
+    </div>
+    <div>
+      <ul class="clean">
+        <li><b>relative</b> — nudged 12px down and right from where it would have sat. Notice the dotted outline showing the space it still occupies.</li>
+        <li><b>absolute</b> — a badge pinned to the top-right corner of its card. It scrolls away with the card, because it is anchored to the card.</li>
+        <li><b>fixed</b> — the blue bar. It ignores scrolling completely and stays welded to the frame's viewport.</li>
+        <li><b>sticky</b> — the green header. It scrolls up normally, hits <code>top: 0</code>, then stops and holds — until its section ends and it is pushed away by the next one.</li>
+      </ul>
+      <div class="callout g" style="margin-top:16px"><b>Point at the sticky one and say this:</b> sticky is not a third thing. It is <code>relative</code> until it reaches the threshold, and <code>fixed</code> afterwards. That is the whole behaviour, and it is the reason it keeps its space in the flow — a fixed header does not, which is why fixed headers need padding on the body to compensate and sticky ones do not.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · Position · Live</div>
+  <h2>Break it on purpose — the three gotchas</h2>
+  <p class="sub">Each switch below breaks one thing in the live frame. <b>Flip them one at a time and watch the failure happen</b> — every one of these is a bug your learners will file a ticket about within a month.</p>
+  <div class="grid g2">
+    <div>
+      <iframe class="posframe" id="posDemo2" style="height:300px" title="A live demonstration of three common position bugs"></iframe>
+      <div class="switchrow" id="posSwitches">
+        <label data-k="norel"><input type="checkbox"> Remove <code>position:relative</code> from the card</label>
+        <label data-k="nothreshold"><input type="checkbox"> Remove <code>top</code> from the sticky header</label>
+        <label data-k="overflow"><input type="checkbox"> Put <code>overflow:hidden</code> on the sticky's parent</label>
+      </div>
+    </div>
+    <div>
+      <div class="card r">
+        <span class="tag">Gotcha 1 · the escaping badge</span>
+        <p>Take <code>position:relative</code> off the card and the absolutely-positioned badge <b>flies to the corner of the page</b>. It is not broken — it simply looked further up the tree and found nothing, so it anchored to the page. <b>An absolute child with no positioned parent is the classic "why is it in the wrong corner" bug.</b></p>
+      </div>
+      <div class="card a">
+        <span class="tag">Gotcha 2 · sticky that never sticks</span>
+        <p>Remove <code>top</code> and <code>position:sticky</code> does <b>absolutely nothing</b> — silently. Sticky needs a threshold to stick <i>at</i>. No error, no warning, it just scrolls away like a normal element.</p>
+      </div>
+      <div class="card r">
+        <span class="tag">Gotcha 3 · the killer</span>
+        <p>Any ancestor with <code>overflow: hidden</code>, <code>auto</code> or <code>scroll</code> <b>silently disables sticky</b> inside it. This is the single hardest position bug to find, because the offending rule is usually three files away and was added for a completely unrelated reason.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · Position</div>
+  <h2>z-index only works on positioned elements</h2>
+  <div class="grid g2">
+    <div>
+      <ul class="clean">
+        <li><b><code>z-index</code> is ignored on a <code>static</code> element.</b> If your z-index "does nothing", this is almost always why — add <code>position: relative</code> and it starts working. (Flex and grid children are the exception: they accept z-index without being positioned.)</li>
+        <li><b>A stacking context traps its children.</b> A child with <code>z-index: 9999</code> inside a parent with <code>z-index: 1</code> can never rise above a sibling of that parent with <code>z-index: 2</code>. The whole group moves as one.</li>
+        <li><b>These silently create a stacking context:</b> <code>opacity</code> less than 1, any <code>transform</code>, <code>filter</code>, <code>will-change</code>, and <code>position: fixed</code> or <code>sticky</code>. Adding a hover animation can therefore break a dropdown that worked yesterday.</li>
+      </ul>
+      <div class="callout"><b>The cure for the z-index arms race:</b> stop inventing numbers. Define a scale once — <code>--z-dropdown: 100; --z-sticky: 200; --z-modal: 300</code> — and use only those. <code>z-index: 99999</code> in a codebase is a confession, not a solution.</div>
+    </div>
+    <div>
+      <span class="fname">Live — the trap, side by side</span>
+      <div class="fxdemo">
+        <div style="display:flex;gap:14px">
+          <div style="flex:1;position:relative;height:150px;background:var(--card);border:1px solid var(--line);border-radius:8px;overflow:hidden">
+            <div style="position:absolute;inset:12px 12px auto 12px;height:60px;background:var(--blue-s);border:2px solid var(--blue);border-radius:6px;display:grid;place-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--blue);z-index:2">z-index: 2</div>
+            <div style="position:absolute;inset:44px 12px auto 30px;height:60px;background:var(--amber-soft);border:2px solid var(--amber);border-radius:6px;display:grid;place-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--amber);z-index:1">z-index: 1</div>
+            <span style="position:absolute;bottom:6px;left:10px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-3)">both positioned — works</span>
+          </div>
+          <div style="flex:1;position:relative;height:150px;background:var(--card);border:1px solid var(--line);border-radius:8px;overflow:hidden">
+            <div style="margin:12px;height:60px;background:var(--blue-s);border:2px solid var(--blue);border-radius:6px;display:grid;place-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--blue);z-index:9999">z-index: 9999</div>
+            <div style="position:absolute;inset:44px 12px auto 30px;height:60px;background:var(--amber-soft);border:2px solid var(--amber);border-radius:6px;display:grid;place-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--amber);z-index:1">z-index: 1</div>
+            <span style="position:absolute;bottom:6px;left:10px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--red)">9999 is static — ignored</span>
+          </div>
+        </div>
+      </div>
+      <p class="sub" style="font-size:13.5px;margin-top:11px">On the right the blue box has <code>z-index: 9999</code> and still loses to a <code>z-index: 1</code>. It is <code>static</code>, so the number was never read at all.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 14 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · Grid</div>
+  <h2>Grid or flexbox? One question.</h2>
+  <div class="grid g2">
+    <div class="card b">
+      <span class="tag">Flexbox</span>
+      <h3>One direction at a time</h3>
+      <p>You have a set of things and you care how they sit <b>along a line</b>. The items decide their own sizes; the container distributes what is left.</p>
+      <p style="margin-top:7px"><b>Reach for it when:</b> a navbar, a toolbar, a row of buttons, a card's internal stack, anything where the number of items varies and you just want them arranged sensibly.</p>
+    </div>
+    <div class="card g">
+      <span class="tag">Grid</span>
+      <h3>Two directions at once</h3>
+      <p>You have a <b>structure</b> in mind — rows <i>and</i> columns that line up across the whole layout. The container defines the shape; items are placed into it.</p>
+      <p style="margin-top:7px"><b>Reach for it when:</b> a page skeleton, a photo gallery, a dashboard, a pricing table — anywhere things must align both across and down.</p>
+    </div>
+  </div>
+  <div class="grid g2">
+    <div>
+      <span class="fname">The same six items, in flex</span>
+      <div class="fxdemo">
+        <div class="fx" style="flex-wrap:wrap;min-height:0">
+          <div class="it t" style="flex:1 1 90px">1</div><div class="it t" style="flex:1 1 90px">2</div>
+          <div class="it t" style="flex:1 1 90px">3</div><div class="it t" style="flex:1 1 90px">4</div>
+          <div class="it t" style="flex:1 1 90px">5</div>
+        </div>
+      </div>
+      <p class="sub" style="font-size:13px;margin-top:8px">The last row <b>stretches to fill</b>. Rows do not line up with each other.</p>
+    </div>
+    <div>
+      <span class="fname">The same six items, in grid</span>
+      <div class="fxdemo">
+        <div class="gdemo" style="grid-template-columns:repeat(3,1fr)">
+          <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+        </div>
+      </div>
+      <p class="sub" style="font-size:13px;margin-top:8px">Columns line up <b>exactly</b>, and the empty cell stays empty. That is the difference.</p>
+    </div>
+  </div>
+  <div class="callout g"><b>They are not rivals.</b> Real pages use grid for the page skeleton and flexbox inside each region. Grid places the header, sidebar, main and footer; flexbox arranges the buttons inside the header.</div>
+</section>
+
+<!-- 15 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · Grid</div>
+  <h2>Four declarations cover most of grid</h2>
+  <div class="grid g2">
+    <div>
+      <pre><span class="t">.grid</span> {
+  <span class="a">display</span>: <span class="s">grid</span>;
+  <span class="a">grid-template-columns</span>: <span class="t">repeat</span>(<span class="s">3</span>, <span class="s">1fr</span>);
+  <span class="a">gap</span>: <span class="s">16px</span>;
+}</pre>
+      <dl class="kv" style="margin-top:16px">
+        <dt>display: grid</dt><dd>Turns the container into a grid. Children become grid items.</dd>
+        <dt>grid-template-columns</dt><dd>Defines the columns. This is the one that does the work.</dd>
+        <dt>gap</dt><dd>Space between tracks. Never collapses, never applies to the outer edge.</dd>
+        <dt>grid-column</dt><dd>On a child — how many columns it spans.</dd>
+      </dl>
+      <div class="callout" style="margin-top:14px"><b><code>fr</code> means "one share of the space that is left"</b> after fixed sizes and gaps are taken out. <code>1fr 2fr</code> gives a third and two thirds. Unlike <code>%</code> it already accounts for the gap, so the row never overflows.</div>
+    </div>
+    <div>
+      <span class="fname">repeat(3, 1fr) — three equal columns</span>
+      <div class="fxdemo"><div class="gdemo" style="grid-template-columns:repeat(3,1fr)"><span>1</span><span>2</span><span>3</span></div></div>
+      <span class="fname" style="margin-top:12px">1fr 2fr — a third and two thirds</span>
+      <div class="fxdemo"><div class="gdemo" style="grid-template-columns:1fr 2fr"><span>1fr</span><span>2fr</span></div></div>
+      <span class="fname" style="margin-top:12px">220px 1fr — fixed sidebar, fluid main</span>
+      <div class="fxdemo"><div class="gdemo" style="grid-template-columns:140px 1fr"><span>sidebar</span><span>main</span></div></div>
+      <span class="fname" style="margin-top:12px">grid-column: span 2 — one item spans two</span>
+      <div class="fxdemo"><div class="gdemo" style="grid-template-columns:repeat(3,1fr)">
+        <span style="grid-column:span 2;background:var(--green-s);border-color:var(--green);color:var(--green)">span 2</span><span>3</span>
+        <span>4</span><span>5</span><span>6</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 16 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · Grid</div>
+  <h2>The one line worth memorising</h2>
+  <div class="grid g2">
+    <div>
+      <pre style="font-size:13.5px"><span class="a">grid-template-columns</span>:
+  <span class="t">repeat</span>(<span class="s">auto-fit</span>, <span class="t">minmax</span>(<span class="s">220px</span>, <span class="s">1fr</span>));</pre>
+      <p class="sub" style="margin-top:16px"><b>That is a fully responsive gallery with no media query at all.</b> Read it as an instruction to the browser:</p>
+      <ul class="clean" style="margin-top:12px">
+        <li><b>minmax(220px, 1fr)</b> — never make a column narrower than 220px, but let it grow to share the space.</li>
+        <li><b>auto-fit</b> — fit as many of those as will go, then wrap. Recount every time the container resizes.</li>
+      </ul>
+      <div class="callout g" style="margin-top:14px"><b>Why this beats media queries here:</b> it responds to the <b>container's</b> width, not the screen's. Drop the same grid into a narrow sidebar and it reflows correctly — a media query would still be reading the window and get it wrong.</div>
+      <div class="callout q" style="margin-top:12px"><b>auto-fit vs auto-fill:</b> with few items, <code>auto-fit</code> <b>stretches them</b> to fill the row; <code>auto-fill</code> leaves empty invisible columns and the items stay narrow. Nine times out of ten you want <code>auto-fit</code>.</div>
+    </div>
+    <div>
+      <span class="fname">Resize this window — the columns recount themselves</span>
+      <div class="fxdemo">
+        <div class="gdemo" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
+          <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span>
+        </div>
+      </div>
+      <p class="sub" style="font-size:13.5px;margin-top:11px">No breakpoints were written. The browser is doing the arithmetic on every resize.</p>
+      <span class="fname" style="margin-top:16px">The page skeleton, in five lines</span>
+      <pre style="font-size:11.5px"><span class="t">.page</span> {
+  <span class="a">display</span>: <span class="s">grid</span>;
+  <span class="a">grid-template-columns</span>: <span class="s">240px 1fr</span>;
+  <span class="a">grid-template-rows</span>: <span class="s">auto 1fr auto</span>;
+  <span class="a">min-height</span>: <span class="s">100vh</span>;
+}
+<span class="t">header</span>, <span class="t">footer</span> { <span class="a">grid-column</span>: <span class="s">1 / -1</span>; }</pre>
+      <p class="sub" style="font-size:13px;margin-top:9px"><code>1 / -1</code> means "first line to last line" — full width, whatever the column count is.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 17 -->
+<section class="slide">
+  <div class="eyebrow">Part 4 · Media queries</div>
+  <h2>The anatomy of a media query</h2>
+  <div class="scroll-x">
+    <svg viewBox="0 0 940 180" role="img" aria-label="A media query broken into its at-rule, media type, condition and rule block">
+      <rect x="20" y="52" width="130" height="46" rx="8" fill="var(--plum-s)" stroke="var(--plum)" stroke-width="2"/>
+      <text x="85" y="81" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="16" font-weight="700" fill="var(--plum)">@media</text>
+      <text x="85" y="122" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink-3)">the at-rule</text>
+
+      <rect x="164" y="52" width="110" height="46" rx="8" fill="var(--blue-s)" stroke="var(--blue)" stroke-width="2"/>
+      <text x="219" y="81" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="16" font-weight="700" fill="var(--blue)">screen</text>
+      <text x="219" y="122" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink-3)">media type</text>
+      <text x="219" y="140" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--ink-3)">(optional — omit it)</text>
+
+      <text x="288" y="82" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="600" fill="var(--ink-3)">and</text>
+
+      <rect x="330" y="52" width="250" height="46" rx="8" fill="var(--green-s)" stroke="var(--green)" stroke-width="2"/>
+      <text x="455" y="81" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="16" font-weight="700" fill="var(--green)">(min-width: 768px)</text>
+      <text x="455" y="122" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink-3)">the condition — brackets are compulsory</text>
+
+      <rect x="596" y="52" width="324" height="46" rx="8" fill="var(--amber-soft)" stroke="var(--amber)" stroke-width="2"/>
+      <text x="758" y="81" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="700" fill="var(--amber)">{  .sidebar { display: block }  }</text>
+      <text x="758" y="122" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink-3)">ordinary rules, applied only when true</text>
+
+      <text x="20" y="32" font-family="IBM Plex Sans, sans-serif" font-size="12.5" font-weight="600" fill="var(--ink)">A media query is an if-statement for your stylesheet.</text>
+    </svg>
+  </div>
+  <div class="grid g2">
+    <div>
+      <h3 style="font-size:17px;margin-bottom:9px">The conditions worth knowing</h3>
+      <dl class="kv">
+        <dt>min-width</dt><dd>Applies at this width <b>and wider</b>. The mobile-first direction.</dd>
+        <dt>max-width</dt><dd>Applies at this width <b>and narrower</b>. The desktop-first direction.</dd>
+        <dt>orientation</dt><dd><code>portrait</code> or <code>landscape</code>.</dd>
+        <dt>prefers-color-scheme</dt><dd><code>dark</code> — how dark mode is actually built.</dd>
+        <dt>prefers-reduced-motion</dt><dd><code>reduce</code> — switch off animation for users who asked.</dd>
+        <dt>print</dt><dd>A media <i>type</i>, not a feature: <code>@media print</code> styles the printed page.</dd>
+      </dl>
+    </div>
+    <div>
+      <div class="warnbox"><b>Without this line, none of it works on a phone.</b><br>
+      <pre style="font-size:11.5px;margin-top:9px"><span class="t">&lt;meta</span> <span class="a">name=</span><span class="s">"viewport"</span> <span class="a">content=</span><span class="s">"width=device-width, initial-scale=1"</span><span class="t">&gt;</span></pre>
+      <p style="margin-top:9px">Without it a phone pretends to be 980px wide and zooms out, so <code>max-width: 600px</code> never matches and your breakpoints appear to do nothing at all. <b>Check this first, every single time, before debugging anything responsive.</b></p></div>
+      <div class="callout g" style="margin-top:14px"><b>Modern range syntax</b> is now widely supported and reads much better:<br>
+      <code>@media (width >= 768px)</code> &nbsp;·&nbsp; <code>@media (400px <= width <= 900px)</code></div>
+    </div>
+  </div>
+</section>
+
+<!-- 18 -->
+<section class="slide">
+  <div class="eyebrow">Part 4 · Media queries</div>
+  <h2>Mobile first — and why the direction matters</h2>
+  <div class="grid g2">
+    <div class="card g">
+      <span class="tag">Mobile first · min-width</span>
+      <pre style="font-size:12px"><span class="c">/* base: the phone. No query. */</span>
+<span class="t">.grid</span> { <span class="a">display</span>: <span class="s">grid</span>; <span class="a">gap</span>: <span class="s">16px</span>; }
+
+<span class="t">@media</span> (<span class="a">min-width</span>: <span class="s">640px</span>) {
+  <span class="t">.grid</span> { <span class="a">grid-template-columns</span>: <span class="t">repeat</span>(<span class="s">2</span>,<span class="s">1fr</span>) }
+}
+<span class="t">@media</span> (<span class="a">min-width</span>: <span class="s">1024px</span>) {
+  <span class="t">.grid</span> { <span class="a">grid-template-columns</span>: <span class="t">repeat</span>(<span class="s">4</span>,<span class="s">1fr</span>) }
+}</pre>
+      <p style="margin-top:8px">Each query <b>adds</b> to the one before. The phone never downloads or parses rules it has to undo.</p>
+    </div>
+    <div class="card r">
+      <span class="tag">Desktop first · max-width</span>
+      <pre style="font-size:12px"><span class="c">/* base: the desktop */</span>
+<span class="t">.grid</span> { <span class="a">display</span>:<span class="s">grid</span>; <span class="a">grid-template-columns</span>: <span class="t">repeat</span>(<span class="s">4</span>,<span class="s">1fr</span>) }
+
+<span class="t">@media</span> (<span class="a">max-width</span>: <span class="s">1023px</span>) {
+  <span class="t">.grid</span> { <span class="a">grid-template-columns</span>: <span class="t">repeat</span>(<span class="s">2</span>,<span class="s">1fr</span>) }
+}
+<span class="t">@media</span> (<span class="a">max-width</span>: <span class="s">639px</span>) {
+  <span class="t">.grid</span> { <span class="a">grid-template-columns</span>: <span class="s">1fr</span> }
+}</pre>
+      <p style="margin-top:8px">Each query <b>undoes</b> the last. Notice the off-by-one values — <code>1023</code>, <code>639</code> — needed to avoid two rules matching at once.</p>
+    </div>
+  </div>
+  <div class="grid g2">
+    <div class="callout g"><b>Why the industry standardised on min-width:</b> the phone is the constrained device. Giving it the simplest stylesheet and <i>adding</i> complexity for bigger screens means the weakest device does the least work — and you never write <code>1023px</code>.</div>
+    <div class="callout"><b>Order matters, and there is no magic.</b> Media queries add <b>no specificity whatsoever</b>. Two matching rules of equal specificity are settled by source order alone — so a min-width block placed <i>above</i> the base rule it is meant to override will simply lose. <b>Put your queries at the bottom, largest last.</b></div>
+  </div>
+</section>
+
+<!-- 19 -->
+<section class="slide">
+  <div class="eyebrow">Part 4 · Media queries</div>
+  <h2>Where breakpoints actually come from</h2>
+  <p class="sub">Not from a list of phone models. <b>You resize the browser slowly and stop where the design stops looking right</b> — that width is your breakpoint. Devices change every year; the point where three cards stop fitting does not.</p>
+  <div class="mqbar">
+    <div class="hi"><b>0 – 639</b>Phone<br><span style="font-size:10.5px">one column, stacked</span></div>
+    <div><b>640 – 767</b>Large phone<br><span style="font-size:10.5px">two columns appear</span></div>
+    <div><b>768 – 1023</b>Tablet<br><span style="font-size:10.5px">sidebar returns</span></div>
+    <div><b>1024 – 1279</b>Laptop<br><span style="font-size:10.5px">full layout</span></div>
+    <div><b>1280 +</b>Desktop<br><span style="font-size:10.5px">cap the width</span></div>
+  </div>
+  <div class="grid g2">
+    <div>
+      <ul class="clean">
+        <li><b>Three or four breakpoints is plenty</b> for almost any product. If you need seven, the layout is fighting you — reach for <code>auto-fit</code> or <code>clamp</code> instead.</li>
+        <li><b>Use <code>em</code> in the query, not <code>px</code>.</b> <code>(min-width: 40em)</code> scales with the user's font setting; a px breakpoint ignores it and can trap a large-text user in the phone layout on a desktop.</li>
+        <li><b>Test between the breakpoints, not at them.</b> Everything looks fine at exactly 768px because that is where you were looking. 900px is where things break.</li>
+      </ul>
+    </div>
+    <div>
+      <span class="fname">A complete, realistic breakpoint set</span>
+      <pre style="font-size:12px"><span class="c">/* base — phone, no query */</span>
+
+<span class="t">@media</span> (<span class="a">min-width</span>: <span class="s">40em</span>)  { <span class="c">/*  640px */</span> }
+<span class="t">@media</span> (<span class="a">min-width</span>: <span class="s">48em</span>)  { <span class="c">/*  768px */</span> }
+<span class="t">@media</span> (<span class="a">min-width</span>: <span class="s">64em</span>)  { <span class="c">/* 1024px */</span> }
+<span class="t">@media</span> (<span class="a">min-width</span>: <span class="s">80em</span>)  { <span class="c">/* 1280px */</span> }</pre>
+      <div class="callout" style="margin-top:14px"><b>Divide by 16 to convert.</b> 640 ÷ 16 = 40em. The root font size is 16px by default, and that is the number <code>em</code> is measured against inside a media query — <b>always the root, never the element's own font size.</b></div>
+    </div>
+  </div>
+</section>
+
+<!-- 20 -->
+<section class="slide">
+  <div class="eyebrow">Part 4 · Implementation</div>
+  <h2>One real page, three widths</h2>
+  <p class="sub">This is the whole stylesheet for a working responsive layout. <b>Read it top to bottom: it is a phone layout, then two additions.</b></p>
+  <div class="grid g2">
+    <div>
+      <pre style="font-size:11.5px"><span class="c">/* ---------- base: phone ---------- */</span>
+<span class="t">.layout</span> {
+  <span class="a">display</span>: <span class="s">grid</span>;
+  <span class="a">gap</span>: <span class="s">16px</span>;
+  <span class="a">padding</span>: <span class="s">16px</span>;
+}
+<span class="t">.nav ul</span> {
+  <span class="a">display</span>: <span class="s">flex</span>;
+  <span class="a">flex-direction</span>: <span class="s">column</span>;  <span class="c">/* stacked */</span>
+  <span class="a">gap</span>: <span class="s">8px</span>;
+}
+<span class="t">.aside</span> { <span class="a">order</span>: <span class="s">2</span>; }   <span class="c">/* below main */</span>
+
+<span class="c">/* ---------- 40em: tablet ---------- */</span>
+<span class="t">@media</span> (<span class="a">min-width</span>: <span class="s">40em</span>) {
+  <span class="t">.nav ul</span> { <span class="a">flex-direction</span>: <span class="s">row</span>; }
+  <span class="t">.cards</span> {
+    <span class="a">grid-template-columns</span>: <span class="t">repeat</span>(<span class="s">2</span>, <span class="s">1fr</span>);
+  }
+}
+
+<span class="c">/* ---------- 64em: laptop ---------- */</span>
+<span class="t">@media</span> (<span class="a">min-width</span>: <span class="s">64em</span>) {
+  <span class="t">.layout</span> {
+    <span class="a">grid-template-columns</span>: <span class="s">1fr 260px</span>;
+    <span class="a">max-width</span>: <span class="s">1200px</span>;
+    <span class="a">margin-inline</span>: <span class="s">auto</span>;
+  }
+  <span class="t">.aside</span> { <span class="a">order</span>: <span class="s">0</span>; }  <span class="c">/* back beside main */</span>
+  <span class="t">.cards</span> {
+    <span class="a">grid-template-columns</span>: <span class="t">repeat</span>(<span class="s">3</span>, <span class="s">1fr</span>);
+  }
+}</pre>
+    </div>
+    <div>
+      <ul class="clean">
+        <li><b>The phone layout has no media query.</b> It is simply the rules at the top. That is what "mobile first" means in practice.</li>
+        <li><b>Each query only says what <i>changes</i>.</b> The 64em block never repeats <code>gap</code> or <code>padding</code> — those are already inherited from the base.</li>
+        <li><b>The nav flips direction, not display.</b> <code>flex-direction: column</code> to <code>row</code> is one property, and the gap keeps working in both.</li>
+        <li><b><code>order</code> moves the sidebar below the article on a phone</b> and back beside it on a laptop — and here that is legitimate, because the reading order barely changes.</li>
+        <li><b><code>margin-inline: auto</code></b> is the modern <code>margin: 0 auto</code>. It sets only the horizontal margins, so it never fights a vertical margin you set elsewhere.</li>
+      </ul>
+      <div class="callout g" style="margin-top:14px"><b>Notice what is missing:</b> no <code>display:none</code> hiding content from phone users. Hiding is a last resort — a phone user wants the same information, arranged differently.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 21 -->
+<section class="slide">
+  <div class="eyebrow">Part 4 · Media queries</div>
+  <h2>The queries you should write fewer of</h2>
+  <p class="sub">Modern CSS solves many responsive problems without a breakpoint at all. <b>Reach for these first, and keep media queries for genuine layout changes.</b></p>
+  <div class="grid g3">
+    <div class="card g">
+      <span class="tag">Instead of font breakpoints</span>
+      <pre style="font-size:11.5px"><span class="a">font-size</span>:
+  <span class="t">clamp</span>(<span class="s">1.5rem</span>, <span class="s">4vw</span>, <span class="s">3rem</span>);</pre>
+      <p style="margin-top:7px">Fluid between a floor and a ceiling. Replaces three breakpoints with one line.</p>
+    </div>
+    <div class="card g">
+      <span class="tag">Instead of column breakpoints</span>
+      <pre style="font-size:11.5px"><span class="a">grid-template-columns</span>:
+  <span class="t">repeat</span>(<span class="s">auto-fit</span>,
+    <span class="t">minmax</span>(<span class="s">220px</span>, <span class="s">1fr</span>));</pre>
+      <p style="margin-top:7px">The browser recounts the columns on every resize. No breakpoints to maintain.</p>
+    </div>
+    <div class="card g">
+      <span class="tag">Instead of wrapping breakpoints</span>
+      <pre style="font-size:11.5px"><span class="a">display</span>: <span class="s">flex</span>;
+<span class="a">flex-wrap</span>: <span class="s">wrap</span>;
+<span class="c">/* items: flex: 1 1 220px */</span></pre>
+      <p style="margin-top:7px">Items wrap when they no longer fit. One declaration, fully responsive.</p>
+    </div>
+  </div>
+  <div class="grid g2">
+    <div class="card b">
+      <span class="tag">And the one that changes everything</span>
+      <h3>Container queries</h3>
+      <pre style="font-size:11.5px"><span class="t">.card-area</span> { <span class="a">container-type</span>: <span class="s">inline-size</span>; }
+
+<span class="t">@container</span> (<span class="a">min-width</span>: <span class="s">400px</span>) {
+  <span class="t">.card</span> { <span class="a">display</span>: <span class="s">flex</span>; }
+}</pre>
+      <p style="margin-top:8px">A media query asks <b>how big is the screen</b>. A container query asks <b>how big is the space I am actually in</b> — so the same card component works in a wide main column and a narrow sidebar without knowing where it was placed. Baseline across all major browsers since 2023.</p>
+    </div>
+    <div>
+      <div class="callout q"><b>The honest summary to give them:</b> media queries are for <b>layout structure</b> — when the page skeleton genuinely changes shape. For everything else — type size, column counts, wrapping — modern CSS is already responsive, and a breakpoint is usually a sign you reached for the old tool out of habit.</div>
+      <div class="callout" style="margin-top:14px"><b>Still required, still not optional:</b> <code>prefers-reduced-motion</code> and <code>prefers-color-scheme</code>. These are media queries that have nothing to do with screen size, and both are accessibility features users have explicitly asked for in their operating system.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 22 -->
+<section class="slide">
+  <div class="eyebrow">Close</div>
+  <h2>What to carry out of this module</h2>
+  <div class="grid g2">
+    <div>
+      <ul class="clean">
+        <li><b>justify along the main axis, align across it.</b> <code>flex-direction</code> decides which is which — not the words horizontal and vertical.</li>
+        <li><b><code>flex: 1</code> is <code>1 1 0</code>.</b> The zero basis is why it makes every child equal regardless of content.</li>
+        <li><b><code>order</code> changes paint order only.</b> Screen readers and Tab still follow the HTML — so use it for presentation, never for meaning.</li>
+        <li><b>Absolute is measured from the nearest non-static ancestor.</b> That is what <code>position: relative</code> with no offsets is for.</li>
+        <li><b>Sticky needs a threshold</b>, and any ancestor with <code>overflow</code> set will silently kill it.</li>
+      </ul>
+    </div>
+    <div>
+      <ul class="clean">
+        <li><b><code>z-index</code> is ignored on static elements</b>, and a stacking context traps its children no matter how large their numbers are.</li>
+        <li><b>Flex for one direction, grid for two.</b> Real pages use grid outside and flex inside.</li>
+        <li><b><code>repeat(auto-fit, minmax(220px, 1fr))</code></b> is a responsive gallery with no breakpoints.</li>
+        <li><b>Mobile first, <code>min-width</code>, queries at the bottom.</b> Media queries add no specificity — source order is all you have.</li>
+        <li><b>Check the viewport meta tag first</b> when responsive CSS "does nothing" on a phone.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="grow"></div>
+  <div class="callout g"><b>Next:</b> the practice lab — a flexbox playground with per-item controls, a live position bench where you can break sticky three different ways, a grid builder, and a draggable breakpoint simulator. Plus eleven auto-checked challenges and ten prediction drills built on exactly this material.</div>
+</section>
+</main>
+
+<nav class="navbar">
+  <button id="prev" aria-label="Previous slide">← Prev</button>
+  <button id="next" aria-label="Next slide">Next →</button>
+  <span class="counter" id="counter">1 / 1</span>
+  <span class="bar"><i id="fill"></i></span>
+  <button id="mode" aria-label="Toggle slide or scroll view">Scroll view</button>
+  <button id="tPlain" class="tbtn" aria-label="Toggle the plain-English layer">1 · Ground floor</button>
+  <button id="tDeep" class="tbtn" aria-label="Toggle the interview-depth layer">2 · Deeper</button>
+  <span class="hint">Arrows to navigate · 1 and 2 for depth</span>
+</nav>
+
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter = document.getElementById('counter');
+  var fill = document.getElementById('fill');
+  var modeBtn = document.getElementById('mode');
+  var i = 0, one = true;
+
+  function render() {
+    if (one) {
+      slides.forEach(function (s, n) { s.classList.toggle('hidden', n !== i); });
+      window.scrollTo(0, 0);
+    } else {
+      slides.forEach(function (s) { s.classList.remove('hidden'); });
+    }
+    counter.textContent = (i + 1) + ' / ' + slides.length;
+    fill.style.width = ((i + 1) / slides.length * 100) + '%';
+  }
+  function go(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    if (!one) slides[i].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    render();
+  }
+  document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+  document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+  modeBtn.addEventListener('click', function () {
+    one = !one; modeBtn.textContent = one ? 'Scroll view' : 'Slide view'; render();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(i + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+    if (e.key === 'Home') { e.preventDefault(); go(0); }
+    if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+  });
+  render();
+})();
+</script>
+
+<script>
+/* ---- live position demos on slides 11 and 12 ---- */
+(function () {
+  function frameDoc(opts) {
+    opts = opts || {};
+    return '<!DOCTYPE html><html><head><meta charset="utf-8"><style>' +
+      'body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#F5F7F8;color:#12181C;font-size:13px}' +
+      '.pad{padding:14px}' +
+      '.fixedbar{position:fixed;top:0;left:0;right:0;background:#1F5FA8;color:#fff;padding:9px 14px;' +
+        'font-family:ui-monospace,Menlo,monospace;font-size:11.5px;font-weight:700;z-index:5}' +
+      '.spacer{height:38px}' +
+      '.card{position:relative;background:#fff;border:2px solid #DCE3E6;border-radius:9px;padding:16px;margin:12px 0;max-width:58%}' +
+      '.card.norel{position:static}' +
+      '.badge{position:absolute;top:-10px;right:-10px;background:#7A3E86;color:#fff;border-radius:999px;' +
+        'padding:4px 11px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;font-weight:700}' +
+      '.sec{background:#fff;border:2px solid #DCE3E6;border-radius:9px;margin:12px 0;overflow:visible}' +
+      '.sec.clip{overflow:hidden}' +
+      '.stick{position:sticky;top:38px;background:#1E7A4C;color:#fff;padding:9px 14px;' +
+        'font-family:ui-monospace,Menlo,monospace;font-size:11.5px;font-weight:700;border-radius:7px 7px 0 0;z-index:2}' +
+      '.stick.nothresh{top:auto}' +
+      '.rel{position:relative;top:12px;left:12px;background:#E0EAF7;border:2px solid #1F5FA8;color:#1F5FA8;' +
+        'border-radius:7px;padding:10px 13px;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;font-weight:700}' +
+      '.ghost{border:2px dotted #9BB0BC;border-radius:7px;padding:10px 13px;color:#6B7C86;' +
+        'font-family:ui-monospace,Menlo,monospace;font-size:10.5px;height:0;overflow:hidden;margin-bottom:30px}' +
+      '.filler{color:#6B7C86;line-height:1.6;padding:10px 14px}' +
+      'h4{margin:16px 14px 4px;font-size:12px;color:#6B7C86;font-family:ui-monospace,Menlo,monospace;text-transform:uppercase;letter-spacing:.1em}' +
+      '</style></head><body>' +
+
+      '<div class="fixedbar">position: fixed &nbsp;·&nbsp; pinned to this frame, ignores scrolling</div>' +
+      '<div class="spacer"></div>' +
+
+      '<h4>relative</h4>' +
+      '<div class="pad" style="padding-top:0">' +
+        '<div class="ghost">its original space is still here</div>' +
+        '<div class="rel">position: relative &nbsp;· top:12px left:12px</div>' +
+      '</div>' +
+
+      '<h4>absolute</h4>' +
+      '<div class="pad" style="padding-top:0">' +
+        '<div class="card' + (opts.norel ? ' norel' : '') + '">' +
+          '<span class="badge">absolute</span>' +
+          'This card is <b>position: ' + (opts.norel ? 'static' : 'relative') + '</b>.<br>' +
+          'The badge is anchored to ' + (opts.norel ? '<b>the page</b> — look at the top-right corner' : 'this card') + '.' +
+        '</div>' +
+      '</div>' +
+
+      '<h4>sticky</h4>' +
+      '<div class="pad" style="padding-top:0">' +
+        '<div class="sec' + (opts.overflow ? ' clip' : '') + '">' +
+          '<div class="stick' + (opts.nothreshold ? ' nothresh' : '') + '">' +
+            'position: sticky' + (opts.nothreshold ? ' &nbsp;· no top value' : ' &nbsp;· top: 38px') +
+            (opts.overflow ? ' &nbsp;· parent clips' : '') +
+          '</div>' +
+          '<div class="filler">Scroll on. This header rides up, meets the blue bar, and holds there while the rest of this section passes underneath it.<br><br>' +
+          'Keep scrolling. It is still holding.<br><br>Still holding.<br><br>' +
+          'Now the section is about to end — watch the header get pushed off by the one below it. That is the part people do not expect: sticky is bounded by its own parent.<br><br>' +
+          'Almost there.<br><br>And gone.</div>' +
+        '</div>' +
+        '<div class="sec">' +
+          '<div class="stick">a second sticky header</div>' +
+          '<div class="filler">Each sticky element is trapped inside its own parent. That is how the classic sticky-section-headers list works.<br><br>More text so there is something to scroll.<br><br>And a little more.<br><br>The end.</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="height:40px"></div>' +
+      '</body></html>';
+  }
+
+  var f1 = document.getElementById('posDemo');
+  if (f1) f1.srcdoc = frameDoc({});
+
+  var f2 = document.getElementById('posDemo2');
+  var sw = document.getElementById('posSwitches');
+  if (f2 && sw) {
+    var state = { norel: false, nothreshold: false, overflow: false };
+    f2.srcdoc = frameDoc(state);
+    sw.addEventListener('change', function (e) {
+      var lab = e.target.closest('label'); if (!lab) return;
+      state[lab.dataset.k] = e.target.checked;
+      lab.classList.toggle('on', e.target.checked);
+      f2.srcdoc = frameDoc(state);
+    });
+  }
+})();
+</script>
+
+
+<script>
+/* ============================================================================
+   THREE DEPTHS, ONE DECK.
+
+   Every content slide can carry two extra layers, both hidden by default so
+   the main flow is exactly as it was:
+
+     · GROUND FLOOR  — plain English, no jargon, for anyone meeting the idea
+                       for the first time. Opened when the room looks lost.
+     · INTERVIEW DEPTH — the version that scores marks in an interview, for
+                       anyone who already knew the slide's content.
+
+   The trainer toggles either layer with the navbar buttons or keys 1 and 2.
+   Learners reading ahead can open the deep layer themselves.
+   ========================================================================= */
+(function () {
+  var TIERS = {
+    2: { plain:'A flex container is a queue of people. <b>flex-direction</b> decides whether the queue runs across the room or down it. <b>justify-content</b> slides the whole queue along the way it runs. <b>align-items</b> shuffles people sideways within it. Change the direction and those two words swap jobs — that is genuinely the only hard part of flexbox.',
+         deep:'The interview question is "what is the difference between justify-content and align-items?" The answer that scores mentions the <b>axes</b>, not horizontal and vertical, and notes that <code>flex-direction</code> decides which is which. Add that <code>justify-items</code> does not exist in flexbox (it does in grid) and you have said something most candidates do not.' },
+
+    3: { plain:'All six values answer one question: <b>where does the leftover space go?</b> <code>flex-start</code> puts it all after the items, <code>flex-end</code> all before, <code>center</code> splits it. The three <code>space-*</code> values share it out between the items instead.',
+         deep:'In production, use <code>gap</code> for the space <i>between</i> items and <code>justify-content</code> only for where the group sits. Mixing both is how you end up with spacing you cannot reason about. <code>space-around</code> gives every item an equal margin on both sides, which is why the outer gaps look half-size — <code>space-evenly</code> is usually what the designer actually drew.' },
+
+    4: { plain:'<code>stretch</code> is the default, and it is the reason a row of cards all come out the same height without you doing anything. The other values line the items up at the top, middle or bottom of the row.',
+         deep:'<code>baseline</code> aligns the first text baselines, which is what you want for a row of labels at different font sizes — not <code>center</code>. And <code>stretch</code> only applies when the item has no cross-size of its own: give a card an explicit <code>height</code> and it silently stops stretching.' },
+
+    5: { plain:'Two lines centre anything, in both directions. The one catch: the box you are centring <i>inside</i> needs a height, or there is no spare room to move the content into.',
+         deep:'<code>place-items: center</code> is the one-line shorthand, and it works in grid too. For a full-screen centre prefer <code>min-height: 100dvh</code> over <code>100vh</code> — <code>dvh</code> accounts for mobile browser chrome that collapses on scroll, which is why <code>100vh</code> layouts jump on a phone.' },
+
+    6: { plain:'Flex normally <b>squashes</b> items rather than moving them to a new line. One word — <code>wrap</code> — fixes most phone layouts before you write any media query at all.',
+         deep:'<code>min-width: 0</code> is the cure for the overflow, and the reason is worth knowing: a flex item\'s automatic minimum size is <code>min-content</code>, not zero, so it refuses to shrink past its longest word. The grid equivalent is <code>minmax(0, 1fr)</code>. This single line is the most common cause of a page that scrolls sideways on mobile.' },
+
+    7: { plain:'Two recipes cover almost everything. <code>flex: 1</code> makes children share the space equally. <code>flex: 0 0 auto</code> makes a child refuse to change size at all. Learn those two now; the theory can wait.',
+         deep:'The named values: <code>flex:1</code> is <code>1 1 0%</code> · <code>flex:auto</code> is <code>1 1 auto</code> · <code>flex:none</code> is <code>0 0 auto</code> · <code>flex:initial</code> is <code>0 1 auto</code>. Interview: "why do <code>flex:1</code> children come out equal even with different content?" Because the basis is <b>0</b>, so the entire width is free space and only the grow factor decides.' },
+
+    8: { plain:'<code>order</code> changes what you <b>see</b>. It does not change the HTML. So someone pressing Tab still moves through the page in the original order — which is why the focus outline appears to jump around the screen.',
+         deep:'Name the standards and you sound like someone who has shipped accessible work: this breaks <b>WCAG 1.3.2 Meaningful Sequence</b> and <b>2.4.3 Focus Order</b>. <code>row-reverse</code>, <code>column-reverse</code> and grid\'s <code>dense</code> packing all have the identical problem — visual order decoupled from DOM order.' },
+
+    9: { plain:'Four recipes you will use constantly. Learn them as patterns to copy first — you do not need to understand why they work before you can use them correctly.',
+         deep:'<code>margin-left: auto</code> works because auto margins absorb <b>all</b> free space on the main axis <i>before</i> <code>justify-content</code> gets to distribute any. That is the same mechanism that makes <code>margin: 0 auto</code> centre a block element — and it is why setting both an auto margin and <code>justify-content</code> gives you a result that looks like the justify value is being ignored.' },
+
+    10:{ plain:'Only two questions matter for each value: <b>does it still take up space?</b> and <b>what are the top/left numbers measured from?</b> Answer those two and you have understood position.',
+         deep:'The spec term is <b>containing block</b>. For <code>absolute</code> it is the <i>padding box</i> of the nearest positioned ancestor — not the border box, and not the content box. And <code>transform</code>, <code>filter</code>, <code>will-change</code> and <code>contain</code> also create one, which is why a transformed parent silently captures a <code>fixed</code> child that was supposed to pin to the viewport.' },
+
+    11:{ plain:'Watch the blue bar while you scroll. It never moves. Everything else slides past it. That is all <code>fixed</code> means — welded to the window, not to the page.',
+         deep:'What you are seeing is <code>fixed</code> relative to the iframe\'s viewport. On a real page, any ancestor with a <code>transform</code> becomes the containing block instead and the fixed element is captured by it — a bug that appears the moment someone adds a hover animation to a wrapper. Mobile browsers also treat fixed inconsistently during scroll momentum.' },
+
+    12:{ plain:'Three switches, three bugs. The important thing to notice: <b>every one of them is silent.</b> Nothing turns red, nothing appears in the console. The feature simply stops working.',
+         deep:'The sticky debugging checklist, in order: (1) is there a threshold — <code>top</code> or <code>bottom</code>? (2) does <i>any</i> ancestor have <code>overflow</code> set to anything but visible? (3) does the parent have enough height for it to travel through? (4) is the parent a flex container where the item is being stretched to the full height, leaving nothing to scroll? All four are real, and they are the order to check them in.' },
+
+    13:{ plain:'Big numbers do not win. An element has to be <b>positioned</b> before the browser even reads its <code>z-index</code>. That is why <code>z-index: 9999</code> so often does nothing.',
+         deep:'Things that silently create a stacking context: the root element, a positioned element with a z-index, <code>opacity</code> below 1, any <code>transform</code>, <code>filter</code>, <code>backdrop-filter</code>, <code>will-change</code>, <code>mix-blend-mode</code>, <code>contain: paint</code>, and flex or grid children with a z-index. <code>isolation: isolate</code> is the deliberate way to create one with no other side effects — a genuinely useful thing to know by name.' },
+
+    14:{ plain:'One line of things → <b>flex</b>. A proper table of rows and columns that must line up → <b>grid</b>. That one sentence gets you the right answer nearly every time.',
+         deep:'The phrasing that scores: <b>flex is content-first</b> — items size themselves and the container distributes what is left. <b>Grid is layout-first</b> — the container defines the shape and items are placed into it. Follow it with "so I use grid for the page skeleton and flex inside each region", which is what real codebases do.' },
+
+    15:{ plain:'<code>display: grid</code>, then say how many columns you want. That is about 80% of everything you will ever do with grid.',
+         deep:'<code>fr</code> distributes the space left <i>after</i> gaps and fixed tracks are subtracted — <code>%</code> does not, which is exactly why <code>25% × 4</code> plus a gap overflows and <code>repeat(4, 1fr)</code> never does. <code>grid-column: 1 / -1</code> uses negative line numbers counted from the end, so it stays full-width however many columns you later add.' },
+
+    16:{ plain:'This one line gives you a gallery that rearranges itself. You do not have to understand it today — copy it, use it, and come back to it later.',
+         deep:'<code>auto-fit</code> collapses empty tracks to zero and the surviving <code>1fr</code> stretch to fill; <code>auto-fill</code> keeps the empty tracks. With <code>minmax(220px, 1fr)</code> and one item, auto-fit gives full width and auto-fill gives 220px. Container queries now overlap with this use case — but auto-fit needs no <code>container-type</code> declaration and no naming, so it is still the lighter tool.' },
+
+    17:{ plain:'A media query is an <b>if-statement for your stylesheet</b>. "If the screen is at least this wide, also apply these rules." Nothing more complicated than that.',
+         deep:'The media type defaults to <code>all</code>, so writing <code>screen and</code> is usually noise. The range syntax — <code>@media (width >= 768px)</code> — is baseline across browsers now and reads far better in a review. Its sibling worth knowing is <code>@supports</code>, which tests whether a property is understood rather than how wide the screen is.' },
+
+    18:{ plain:'Write the phone version first, with no media query at all. Then add rules for bigger screens underneath. That is the whole of "mobile first".',
+         deep:'It is not just a preference. <code>min-width</code> means the phone parses fewer rules and never applies-then-overrides. And <code>max-width</code> forces off-by-one values like <code>1023px</code>, which genuinely break at fractional zoom levels — at 1023.5px neither query matches and the element falls back to its base rule.' },
+
+    19:{ plain:'Do not memorise phone models. Resize the browser slowly and stop where the design starts looking wrong. <b>That width is your breakpoint.</b>',
+         deep:'<code>em</code> inside a media query is always measured against the <b>root</b> 16px, never the element\'s own font size — a misconception worth correcting out loud. Using em means a user who has raised their default font size reaches the simpler layout sooner, which is almost always what they actually want.' },
+
+    20:{ plain:'Read it top to bottom. The first block is the phone. Everything after it is an addition for bigger screens. Nothing is ever undone.',
+         deep:'<code>margin-inline</code> is a <b>logical property</b>: it maps to left and right in English and flips automatically in Arabic or Hebrew. Same family — <code>padding-block</code>, <code>inset-inline</code>, <code>border-inline-start</code>. Using them is how a layout supports right-to-left languages for free, and mentioning that in an interview lands well.' },
+
+    21:{ plain:'Modern CSS handles a lot of responsiveness by itself now. Fewer breakpoints means less to maintain and fewer places to get it wrong.',
+         deep:'Write <code>clamp()</code> with a <code>rem</code> term in the middle — <code>clamp(1.5rem, 1rem + 2vw, 3rem)</code>, not <code>clamp(1.5rem, 4vw, 3rem)</code>. A pure <code>vw</code> preferred value does not respond to browser zoom, which fails <b>WCAG 1.4.4 Resize Text</b>. The <code>rem</code> term restores that.' }
+  };
+
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+
+  function panel(kind, html) {
+    var d = document.createElement('div');
+    d.className = 'tier tier-' + kind;
+    d.innerHTML = '<span class="tl">' +
+      (kind === 'plain' ? 'Ground floor · if this is new to you' : 'Going deeper · if you already knew this') +
+      '</span>' + html;
+    return d;
+  }
+
+  Object.keys(TIERS).forEach(function (k) {
+    var s = slides[+k - 1]; if (!s) return;
+    var t = TIERS[k];
+    var anchor = s.querySelector('.grow');       // keep the spacer last on title slides
+    var frag = document.createDocumentFragment();
+    if (t.plain) frag.appendChild(panel('plain', t.plain));
+    if (t.deep)  frag.appendChild(panel('deep',  t.deep));
+    if (anchor) s.insertBefore(frag, anchor); else s.appendChild(frag);
+  });
+
+  var on = { plain:false, deep:false };
+  function apply() {
+    document.body.classList.toggle('show-plain', on.plain);
+    document.body.classList.toggle('show-deep',  on.deep);
+    var bp = document.getElementById('tPlain'), bd = document.getElementById('tDeep');
+    if (bp) bp.classList.toggle('on', on.plain);
+    if (bd) bd.classList.toggle('on', on.deep);
+  }
+  var bp = document.getElementById('tPlain'), bd = document.getElementById('tDeep');
+  if (bp) bp.addEventListener('click', function () { on.plain = !on.plain; apply(); });
+  if (bd) bd.addEventListener('click', function () { on.deep  = !on.deep;  apply(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === '1') { on.plain = !on.plain; apply(); }
+    if (e.key === '2') { on.deep  = !on.deep;  apply(); }
+  });
+  apply();
+})();
+</script>
+
+</body>
+</html>

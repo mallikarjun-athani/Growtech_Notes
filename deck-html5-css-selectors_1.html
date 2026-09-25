@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTML5, CSS and Selectors</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#F5F7F8; --card:#FFFFFF; --sunk:#EDF2F3;
+    --ink:#12181C; --ink-2:#3D4A52; --ink-3:#6B7C86;
+    --line:#DCE3E6; --line-soft:#E9EEF0;
+    --accent:#0E6E68; --accent-soft:#DCEEEC;
+    --amber:#A85A11; --amber-soft:#F7E9D8;
+    --blue:#1F5FA8;  --blue-s:#E0EAF7;
+    --plum:#7A3E86;  --plum-s:#F1E5F4;
+    --red:#B03A2E;   --red-s:#FBE6E3;
+    --green:#1E7A4C; --green-s:#DDF0E5;
+    --code-bg:#101820; --code-ink:#D7E3E6;
+    --shadow:0 1px 2px rgba(18,24,28,.06), 0 8px 24px rgba(18,24,28,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#0D1418; --card:#141D22; --sunk:#101A1F;
+      --ink:#E8EFF1; --ink-2:#AEBEC5; --ink-3:#7E9099;
+      --line:#26343B; --line-soft:#1D282E;
+      --accent:#5CC8BE; --accent-soft:#12312F;
+      --amber:#E0A15C; --amber-soft:#2E2213;
+      --blue:#79B4EE;  --blue-s:#14263A;
+      --plum:#CE9ED9;  --plum-s:#2C1D31;
+      --red:#E88070;   --red-s:#331714;
+      --green:#5FC98C; --green-s:#0F2C1D;
+      --code-bg:#070C0F; --code-ink:#D7E3E6;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0D1418; --card:#141D22; --sunk:#101A1F;
+    --ink:#E8EFF1; --ink-2:#AEBEC5; --ink-3:#7E9099;
+    --line:#26343B; --line-soft:#1D282E;
+    --accent:#5CC8BE; --accent-soft:#12312F;
+    --amber:#E0A15C; --amber-soft:#2E2213;
+    --blue:#79B4EE;  --blue-s:#14263A;
+    --plum:#CE9ED9;  --plum-s:#2C1D31;
+    --red:#E88070;   --red-s:#331714;
+    --green:#5FC98C; --green-s:#0F2C1D;
+    --code-bg:#070C0F; --code-ink:#D7E3E6;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--paper); color:var(--ink); margin:0;
+    font-family:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:"Archivo","IBM Plex Sans",system-ui,sans-serif;text-wrap:balance;margin:0;letter-spacing:-.02em}
+  p{margin:0}
+  svg{max-width:100%;height:auto;display:block}
+  code,.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+
+  .deck{max-width:1180px;margin:0 auto;padding:0 20px 96px}
+  .slide{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--shadow);padding:clamp(24px,3.2vw,48px);margin:24px 0;
+    min-height:clamp(420px,74vh,730px);display:flex;flex-direction:column;gap:20px;
+  }
+  .slide.hidden{display:none}
+
+  .eyebrow{
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
+  .slide h2{font-size:clamp(25px,3.3vw,40px);font-weight:800;line-height:1.12}
+  .sub{color:var(--ink-2);font-size:clamp(15px,1.35vw,18px);max-width:66ch}
+  .sub b{color:var(--ink);font-weight:600}
+  .grow{flex:1}
+
+  .title-slide{justify-content:center;gap:24px;position:relative;overflow:hidden}
+  .title-slide h1{font-size:clamp(36px,6vw,74px);font-weight:800;line-height:1.03}
+  .title-slide h1 .thin{display:block;font-weight:600;color:var(--ink-3);font-size:.36em;margin-bottom:.55em}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{font-family:"IBM Plex Mono",monospace;font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);color:var(--ink-2);background:var(--paper)}
+  .chip b{color:var(--accent);font-weight:600}
+
+  .grid{display:grid;gap:15px}
+  .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  @media (max-width:860px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+  .card{border:1px solid var(--line);border-radius:10px;padding:17px;background:var(--paper);display:flex;flex-direction:column;gap:7px}
+  .card h3{font-size:16.5px;font-weight:700}
+  .card p{color:var(--ink-2);font-size:14.5px}
+  .card .tag{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+  .card.b{background:var(--blue-s);border-color:var(--blue)} .card.b .tag{color:var(--blue)}
+  .card.g{background:var(--green-s);border-color:var(--green)} .card.g .tag{color:var(--green)}
+  .card.p{background:var(--plum-s);border-color:var(--plum)} .card.p .tag{color:var(--plum)}
+  .card.a{background:var(--amber-soft);border-color:var(--amber)} .card.a .tag{color:var(--amber)}
+  .card.r{background:var(--red-s);border-color:var(--red)} .card.r .tag{color:var(--red)}
+
+  ul.clean{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:11px}
+  ul.clean li{display:flex;gap:11px;font-size:clamp(14.5px,1.35vw,17px);color:var(--ink-2);line-height:1.45}
+  ul.clean li b{color:var(--ink);font-weight:600}
+  ul.clean li::before{content:"";flex:none;width:7px;height:7px;margin-top:.55em;border-radius:2px;background:var(--accent);transform:rotate(45deg)}
+
+  pre{margin:0;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:16px 18px;overflow-x:auto;font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.68;border:1px solid var(--line)}
+  pre .c{color:#7E9099;font-style:italic}
+  pre .t{color:#7FD1C7}
+  pre .a{color:#9FC6E8}
+  pre .s{color:#E0A15C}
+  pre .hl{background:rgba(224,161,92,.16);display:inline-block;width:100%}
+  .fname{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);letter-spacing:.05em;margin-bottom:7px;display:block}
+
+  .callout{border-left:3px solid var(--amber);background:var(--amber-soft);padding:13px 17px;border-radius:0 8px 8px 0;color:var(--ink-2);font-size:15px}
+  .callout b{color:var(--ink)}
+  .callout.q{border-left-color:var(--plum);background:var(--plum-s)}
+  .callout.g{border-left-color:var(--green);background:var(--green-s)}
+
+  .scroll-x{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:14.5px}
+  th{text-align:left;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);padding:0 12px 9px 0;border-bottom:1px solid var(--line);font-weight:600;white-space:nowrap}
+  td{padding:9px 12px 9px 0;border-bottom:1px solid var(--line-soft);color:var(--ink-2);vertical-align:top}
+  td:first-child{color:var(--ink);font-weight:600;white-space:nowrap}
+  td code,th code{color:var(--accent)}
+
+  .navbar{
+    position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);
+    border-top:1px solid var(--line);display:flex;align-items:center;gap:13px;
+    padding:10px max(20px, calc(50vw - 590px));box-shadow:0 -6px 18px -12px rgba(0,0,0,.4);
+  }
+  .navbar button{font-family:"IBM Plex Mono",monospace;font-size:12.5px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:7px 13px;cursor:pointer}
+  .navbar button:hover{border-color:var(--accent);color:var(--accent)}
+  .navbar button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .counter{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+  .bar{flex:1;height:3px;background:var(--line-soft);border-radius:2px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s ease}
+  .navbar .hint{font-size:12px;color:var(--ink-3)}
+  @media (max-width:700px){.navbar .hint{display:none}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+  @media print{
+    .navbar{display:none}
+    .slide{page-break-after:always;box-shadow:none;min-height:0}
+    .slide.hidden{display:flex}
+  }
+</style>
+</head>
+<body>
+
+<main class="deck" id="deck">
+
+<!-- 1 -->
+<section class="slide title-slide">
+  <div class="eyebrow">Module 02</div>
+  <h1><span class="thin">HTML5 tags and attributes · CSS fundamentals</span>Structure, then style</h1>
+  <p class="sub">HTML5 gave the web a vocabulary of meaning. CSS gave it a way to describe appearance without touching that meaning. <b>This module covers both, and the four selectors that connect them.</b></p>
+  <div class="chips">
+    <span class="chip"><b>01</b>&nbsp; HTML5 tags</span>
+    <span class="chip"><b>02</b>&nbsp; Attributes</span>
+    <span class="chip"><b>03</b>&nbsp; Inline · Internal · External</span>
+    <span class="chip"><b>04</b>&nbsp; Selectors &amp; specificity</span>
+  </div>
+  <div class="grow"></div>
+</section>
+
+<!-- 2 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · HTML5 tags</div>
+  <h2>What HTML5 actually changed</h2>
+  <p class="sub">HTML5 was not a new syntax. It was a new <b>vocabulary</b> — plus the ability to do natively what previously needed a plugin.</p>
+  <div class="grid g2">
+    <div class="card r">
+      <span class="tag">Before HTML5</span>
+      <h3>Everything was a div</h3>
+      <pre style="font-size:12px"><span class="t">&lt;div</span> <span class="a">id=</span><span class="s">"header"</span><span class="t">&gt;</span>
+<span class="t">&lt;div</span> <span class="a">id=</span><span class="s">"nav"</span><span class="t">&gt;</span>
+<span class="t">&lt;div</span> <span class="a">id=</span><span class="s">"content"</span><span class="t">&gt;</span>
+<span class="t">&lt;div</span> <span class="a">id=</span><span class="s">"footer"</span><span class="t">&gt;</span></pre>
+      <p style="margin-top:6px">The <i>id</i> carried the meaning — but only for the developer. The browser, Google and screen readers saw four identical boxes.</p>
+    </div>
+    <div class="card g">
+      <span class="tag">With HTML5</span>
+      <h3>The element carries the meaning</h3>
+      <pre style="font-size:12px"><span class="t">&lt;header&gt;</span>
+<span class="t">&lt;nav&gt;</span>
+<span class="t">&lt;main&gt;</span>
+<span class="t">&lt;footer&gt;</span></pre>
+      <p style="margin-top:6px">Same layout, same CSS effort. But now the meaning is <b>machine-readable</b> — landmarks for assistive tech, structure for search engines.</p>
+    </div>
+  </div>
+  <div class="callout"><b>The one-line summary:</b> HTML5 moved meaning out of your naming convention and into the language itself.</div>
+</section>
+
+<!-- 3 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · HTML5 tags</div>
+  <h2>The structural tags, on a real page</h2>
+  <div class="scroll-x">
+    <svg viewBox="0 0 940 400" role="img" aria-label="A wireframe of a web page with each region labelled by its HTML5 semantic element">
+      <rect x="20" y="20" width="900" height="62" rx="8" fill="var(--blue-s)" stroke="var(--blue)" stroke-width="2"/>
+      <text x="40" y="46" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="var(--blue)">&lt;header&gt;</text>
+      <text x="40" y="66" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--ink-3)">Site logo, title — the banner of the page</text>
+      <rect x="560" y="32" width="340" height="38" rx="6" fill="var(--card)" stroke="var(--blue)" stroke-width="1.5" stroke-dasharray="5 4"/>
+      <text x="578" y="56" font-family="IBM Plex Mono, monospace" font-size="12.5" font-weight="600" fill="var(--blue)">&lt;nav&gt;</text>
+      <text x="632" y="56" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink-3)">links to other pages</text>
+
+      <rect x="20" y="94" width="640" height="230" rx="8" fill="var(--green-s)" stroke="var(--green)" stroke-width="2"/>
+      <text x="40" y="120" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="var(--green)">&lt;main&gt;</text>
+      <text x="40" y="140" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--ink-3)">The unique content of this page — only one per document</text>
+
+      <rect x="40" y="152" width="600" height="76" rx="6" fill="var(--card)" stroke="var(--green)" stroke-width="1.5"/>
+      <text x="58" y="176" font-family="IBM Plex Mono, monospace" font-size="12.5" font-weight="600" fill="var(--green)">&lt;article&gt;</text>
+      <text x="58" y="196" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink-3)">Self-contained — would still make sense if lifted out</text>
+      <text x="58" y="214" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink-3)">and posted somewhere else. A blog post, a product card.</text>
+
+      <rect x="40" y="238" width="600" height="70" rx="6" fill="var(--card)" stroke="var(--green)" stroke-width="1.5"/>
+      <text x="58" y="262" font-family="IBM Plex Mono, monospace" font-size="12.5" font-weight="600" fill="var(--green)">&lt;section&gt;</text>
+      <text x="58" y="282" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink-3)">A thematic group that belongs to this page and</text>
+      <text x="58" y="300" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink-3)">should carry a heading.</text>
+
+      <rect x="672" y="94" width="248" height="230" rx="8" fill="var(--plum-s)" stroke="var(--plum)" stroke-width="2"/>
+      <text x="692" y="120" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="var(--plum)">&lt;aside&gt;</text>
+      <text x="692" y="142" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink-3)">Related but not essential —</text>
+      <text x="692" y="160" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink-3)">a sidebar, related links,</text>
+      <text x="692" y="178" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink-3)">an advertisement.</text>
+
+      <rect x="20" y="336" width="900" height="50" rx="8" fill="var(--amber-soft)" stroke="var(--amber)" stroke-width="2"/>
+      <text x="40" y="358" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="var(--amber)">&lt;footer&gt;</text>
+      <text x="40" y="376" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--ink-3)">Copyright, contact, secondary links</text>
+    </svg>
+  </div>
+  <div class="callout q"><b>The test that settles article vs section:</b> could this block be published on its own, somewhere else, and still make sense? Yes → <b>article</b>. No → <b>section</b>.</div>
+</section>
+
+<!-- 4 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · HTML5 tags</div>
+  <h2>Beyond layout — the tags people forget exist</h2>
+  <div class="scroll-x">
+    <table>
+      <tr><th>Tag</th><th>What it does</th><th>Why it beats a div</th></tr>
+      <tr><td><code>&lt;figure&gt;</code> <code>&lt;figcaption&gt;</code></td><td>An image with a caption bound to it</td><td>The caption is programmatically tied to the image, not just sitting under it</td></tr>
+      <tr><td><code>&lt;time&gt;</code></td><td><code>&lt;time datetime="2026-09-11"&gt;</code></td><td>Machines read the exact date; humans read whatever text you wrote</td></tr>
+      <tr><td><code>&lt;mark&gt;</code></td><td>Highlighted / relevant text</td><td>Carries meaning of relevance, not just a yellow background</td></tr>
+      <tr><td><code>&lt;details&gt;</code> <code>&lt;summary&gt;</code></td><td>A native accordion — opens and closes</td><td>Zero JavaScript, keyboard accessible out of the box</td></tr>
+      <tr><td><code>&lt;progress&gt;</code> <code>&lt;meter&gt;</code></td><td>Task progress / a measured value in a range</td><td>Announced correctly with its current and maximum value</td></tr>
+      <tr><td><code>&lt;dialog&gt;</code></td><td>A native modal with focus trapping</td><td>Replaces hundreds of lines of modal JavaScript</td></tr>
+      <tr><td><code>&lt;picture&gt;</code></td><td>Different images for different screens</td><td>Serves a small image to phones without JavaScript</td></tr>
+      <tr><td><code>&lt;audio&gt;</code> <code>&lt;video&gt;</code></td><td>Native media with <code>controls</code></td><td>No plugin, no library — this is what killed Flash</td></tr>
+    </table>
+  </div>
+  <div class="callout"><b>Demo worth doing:</b> write six lines of <code>&lt;details&gt;&lt;summary&gt;</code> and get a working, keyboard-accessible accordion with no CSS and no JavaScript.</div>
+</section>
+
+<!-- 5 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · HTML5 tags</div>
+  <h2>HTML5 input types do real work</h2>
+  <p class="sub">Changing one attribute changes the mobile keyboard, adds free validation, and gives the user a native picker. <b>This is the cheapest usability win in front-end development.</b></p>
+  <div class="grid g4">
+    <div class="card b"><span class="tag">type="email"</span><h3>@ keyboard</h3><p>Validates the format free of charge.</p></div>
+    <div class="card b"><span class="tag">type="tel"</span><h3>Number pad</h3><p>Big touch targets for phone entry.</p></div>
+    <div class="card b"><span class="tag">type="number"</span><h3>Stepper</h3><p>With <code>min</code>, <code>max</code>, <code>step</code>.</p></div>
+    <div class="card b"><span class="tag">type="date"</span><h3>Native calendar</h3><p>No date-picker library needed.</p></div>
+    <div class="card b"><span class="tag">type="range"</span><h3>Slider</h3><p>For approximate values.</p></div>
+    <div class="card b"><span class="tag">type="color"</span><h3>Colour picker</h3><p>The OS picker, free.</p></div>
+    <div class="card b"><span class="tag">type="search"</span><h3>Clear button</h3><p>And search-styled keyboard.</p></div>
+    <div class="card b"><span class="tag">type="url"</span><h3>URL keyboard</h3><p>With protocol validation.</p></div>
+  </div>
+  <div class="callout"><b>Say this plainly:</b> a developer who writes <code>type="text"</code> for a phone number has made every mobile user's life harder for no reason.</div>
+</section>
+
+<!-- 6 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · Attributes</div>
+  <h2>Attributes configure an element</h2>
+  <p class="sub">An attribute always lives in the <b>opening tag</b> and is written as <code>name="value"</code>. They fall into four groups worth naming separately.</p>
+  <div class="grid g2">
+    <div class="card b">
+      <span class="tag">Group 1 · Specific</span>
+      <h3>Only meaningful on certain elements</h3>
+      <p><code>href</code> on a link · <code>src</code> and <code>alt</code> on an image · <code>type</code> on an input · <code>colspan</code> on a cell.</p>
+    </div>
+    <div class="card g">
+      <span class="tag">Group 2 · Global</span>
+      <h3>Valid on every element</h3>
+      <p><code>id</code> · <code>class</code> · <code>style</code> · <code>title</code> · <code>lang</code> · <code>hidden</code> · <code>tabindex</code> · <code>contenteditable</code> · <code>draggable</code></p>
+    </div>
+    <div class="card a">
+      <span class="tag">Group 3 · Boolean</span>
+      <h3>Present or absent — no value</h3>
+      <p><code>required</code> · <code>disabled</code> · <code>checked</code> · <code>readonly</code> · <code>multiple</code> · <code>autofocus</code></p>
+    </div>
+    <div class="card p">
+      <span class="tag">Group 4 · Custom</span>
+      <h3>Your own data, legally</h3>
+      <p><code>data-*</code> — anything after <code>data-</code> is valid HTML and readable from JavaScript via <code>dataset</code>.</p>
+    </div>
+  </div>
+  <div class="callout"><span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin-bottom:5px;font-weight:600">The boolean trap</span><b><code>disabled="false"</code> still disables the element.</b> Boolean attributes are read by presence, never by value. To enable it, remove the attribute entirely.</div>
+</section>
+
+<!-- 7 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · Attributes</div>
+  <h2>data-* — the professional way to attach data</h2>
+  <div class="grid g2">
+    <div>
+      <span class="fname">markup</span>
+      <pre><span class="t">&lt;button</span>
+  <span class="a">class=</span><span class="s">"add"</span>
+  <span class="a">data-product-id=</span><span class="s">"8842"</span>
+  <span class="a">data-price=</span><span class="s">"2499"</span>
+  <span class="a">data-in-stock=</span><span class="s">"true"</span><span class="t">&gt;</span>
+  Add to cart
+<span class="t">&lt;/button&gt;</span></pre>
+    </div>
+    <div>
+      <span class="fname">reading it in JavaScript</span>
+      <pre><span class="c">// note the camelCase conversion</span>
+btn.dataset.productId   <span class="c">// "8842"</span>
+btn.dataset.price       <span class="c">// "2499"</span>
+btn.dataset.inStock     <span class="c">// "true"</span>
+
+<span class="c">// every value is a STRING</span>
+<span class="t">Number</span>(btn.dataset.price) + 1  <span class="c">// 2500</span>
+btn.dataset.price + 1         <span class="c">// "24991"</span></pre>
+    </div>
+  </div>
+  <div class="grid g2">
+    <div class="card g"><span class="tag">Do</span><h3>Small hooks</h3><p>An id, a state flag, a config value the JavaScript needs to find.</p></div>
+    <div class="card r"><span class="tag">Don't</span><h3>Anything private</h3><p>It is fully visible in DevTools. Never a price the server trusts, never a role or permission.</p></div>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · CSS</div>
+  <h2>CSS is three things in a row</h2>
+  <div class="scroll-x">
+    <svg viewBox="0 0 940 250" role="img" aria-label="Diagram of CSS rule anatomy: selector, property and value inside a declaration block">
+      <rect x="30" y="52" width="880" height="92" rx="10" fill="var(--sunk)" stroke="var(--line)" stroke-width="1.5"/>
+      <text x="62" y="112" font-family="IBM Plex Mono, monospace" font-size="30" font-weight="600" fill="var(--blue)">.card</text>
+      <text x="182" y="112" font-family="IBM Plex Mono, monospace" font-size="30" fill="var(--ink-3)">{</text>
+      <text x="222" y="112" font-family="IBM Plex Mono, monospace" font-size="30" font-weight="600" fill="var(--green)">color</text>
+      <text x="338" y="112" font-family="IBM Plex Mono, monospace" font-size="30" fill="var(--ink-3)">:</text>
+      <text x="366" y="112" font-family="IBM Plex Mono, monospace" font-size="30" font-weight="600" fill="var(--plum)">crimson</text>
+      <text x="530" y="112" font-family="IBM Plex Mono, monospace" font-size="30" fill="var(--ink-3)">;</text>
+      <text x="562" y="112" font-family="IBM Plex Mono, monospace" font-size="30" fill="var(--ink-3)">}</text>
+
+      <path d="M92 140 L92 176" stroke="var(--blue)" stroke-width="1.6"/>
+      <text x="92" y="196" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11.5" letter-spacing="1.2" fill="var(--blue)">SELECTOR</text>
+      <text x="92" y="214" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--ink-3)">which elements</text>
+
+      <path d="M268 140 L268 176" stroke="var(--green)" stroke-width="1.6"/>
+      <text x="268" y="196" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11.5" letter-spacing="1.2" fill="var(--green)">PROPERTY</text>
+      <text x="268" y="214" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--ink-3)">what to change</text>
+
+      <path d="M444 140 L444 176" stroke="var(--plum)" stroke-width="1.6"/>
+      <text x="444" y="196" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11.5" letter-spacing="1.2" fill="var(--plum)">VALUE</text>
+      <text x="444" y="214" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--ink-3)">change it to what</text>
+
+      <text x="660" y="106" font-family="IBM Plex Sans, sans-serif" font-size="13.5" fill="var(--ink-2)">property + value</text>
+      <text x="660" y="126" font-family="IBM Plex Sans, sans-serif" font-size="13.5" font-weight="600" fill="var(--ink)">= one declaration</text>
+    </svg>
+  </div>
+  <div class="callout"><b>Vocabulary matters in interviews.</b> "Rule" is the whole block. "Declaration" is one property–value pair. "Selector" is the part before the brace. Most candidates call all three "the CSS".</div>
+</section>
+
+<!-- 9 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · CSS</div>
+  <h2>Three ways to attach CSS</h2>
+  <div class="grid g3">
+    <div class="card r">
+      <span class="tag">1 · Inline</span>
+      <h3>On the element</h3>
+      <pre style="font-size:11.5px"><span class="t">&lt;p</span> <span class="a">style=</span><span class="s">"color:red"</span><span class="t">&gt;</span>Hi<span class="t">&lt;/p&gt;</span></pre>
+      <p>Highest priority, zero reuse, impossible to override without <code>!important</code>. Used by JavaScript at runtime and in HTML email.</p>
+    </div>
+    <div class="card a">
+      <span class="tag">2 · Internal</span>
+      <h3>In a style block</h3>
+      <pre style="font-size:11.5px"><span class="t">&lt;style&gt;</span>
+  p { color: red; }
+<span class="t">&lt;/style&gt;</span></pre>
+      <p>Styles one page only. Useful for critical above-the-fold CSS. Cannot be cached separately from the page.</p>
+    </div>
+    <div class="card g">
+      <span class="tag">3 · External</span>
+      <h3>A separate file</h3>
+      <pre style="font-size:11.5px"><span class="t">&lt;link</span> <span class="a">rel=</span><span class="s">"stylesheet"</span>
+      <span class="a">href=</span><span class="s">"main.css"</span><span class="t">&gt;</span></pre>
+      <p>One file styles a thousand pages. Downloaded once, then cached. <b>The professional default.</b></p>
+    </div>
+  </div>
+  <div class="callout g"><b>Why external really wins:</b> it is not about tidiness. The browser caches that file, so page two of your site loads it from disk instead of the network. Inline styles are re-downloaded with every single page, every single time.</div>
+</section>
+
+<!-- 10 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · CSS</div>
+  <h2>Which one wins? Not what most people think</h2>
+  <p class="sub">Nearly everyone answers "internal beats external, because it is closer to the element". <b>That is wrong.</b></p>
+  <div class="grid g2">
+    <div>
+      <span class="fname">the actual rule</span>
+      <pre><span class="c">/* internal and external have the</span>
+<span class="c">   SAME weight. Order decides. */</span>
+
+<span class="t">&lt;style&gt;</span> p { color: blue; } <span class="t">&lt;/style&gt;</span>
+<span class="t">&lt;link</span> <span class="a">rel=</span><span class="s">"stylesheet"</span> <span class="a">href=</span><span class="s">"a.css"</span><span class="t">&gt;</span>
+
+<span class="c">/* a.css says p { color: green }</span>
+<span class="c">   → the text is GREEN.</span>
+<span class="c">   The link came last. */</span></pre>
+    </div>
+    <div>
+      <ul class="clean">
+        <li><b>Inline</b> beats both — it is attached directly to the element.</li>
+        <li><b>Internal and external are equal.</b> Whichever appears <i>later</i> in the document wins.</li>
+        <li><b>!important</b> overrides all of it — which is exactly why it should be a last resort.</li>
+        <li>When two rules have the same weight and the same specificity, <b>the last one written wins.</b></li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout q"><b>Ask the room before revealing:</b> "A style block says blue. A linked stylesheet below it says green. What colour is the text?" Most will say blue. The correct answer is green — and the reason is order, not location.</div>
+</section>
+
+<!-- 11 -->
+<section class="slide">
+  <div class="eyebrow">Part 4 · Selectors</div>
+  <h2>Four selectors do most of the work</h2>
+  <div class="scroll-x">
+    <table>
+      <tr><th>Name</th><th>Syntax</th><th>Selects</th><th>Typical use</th></tr>
+      <tr><td>Universal</td><td><code>*</code></td><td>Every single element</td><td>A global reset at the top of a stylesheet</td></tr>
+      <tr><td>Type</td><td><code>p</code>, <code>h1</code>, <code>button</code></td><td>Every element of that kind</td><td>Base styling — all paragraphs, all links</td></tr>
+      <tr><td>Class</td><td><code>.btn</code></td><td>Every element carrying that class</td><td><b>The workhorse.</b> Reusable, unlimited</td></tr>
+      <tr><td>ID</td><td><code>#header</code></td><td>The one element with that id</td><td>Rare in styling. Mostly for JS and anchors</td></tr>
+    </table>
+  </div>
+  <div class="grid g2">
+    <div>
+      <span class="fname">all four together</span>
+      <pre><span class="c">/* universal — reset everything */</span>
+<span class="a">*</span> { margin: 0; box-sizing: border-box; }
+
+<span class="c">/* type — every paragraph */</span>
+<span class="a">p</span> { line-height: 1.6; }
+
+<span class="c">/* class — reusable, use this one */</span>
+<span class="a">.btn</span> { padding: 10px 18px; }
+
+<span class="c">/* id — unique, avoid for styling */</span>
+<span class="a">#hero</span> { min-height: 400px; }</pre>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;justify-content:center">
+      <div class="card g"><span class="tag">Use constantly</span><h3>Class selectors</h3><p>One element can carry many classes. One class can style a thousand elements. This is how real stylesheets are written.</p></div>
+      <div class="card r"><span class="tag">Use sparingly</span><h3>ID selectors</h3><p>An id can only ever apply once, and its specificity is so high it becomes painful to override later.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 -->
+<section class="slide">
+  <div class="eyebrow">Part 4 · Selectors</div>
+  <h2>Specificity — the scoring system</h2>
+  <p class="sub">When two rules target the same element and both could apply, the browser scores them. <b>Higher score wins, regardless of order.</b></p>
+  <div class="scroll-x">
+    <svg viewBox="0 0 940 270" role="img" aria-label="Specificity scoring diagram showing inline styles, then ids, then classes, then elements in descending weight">
+      <rect x="24" y="30" width="212" height="104" rx="10" fill="var(--red-s)" stroke="var(--red)" stroke-width="2"/>
+      <text x="130" y="60" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.3" fill="var(--red)">INLINE STYLE</text>
+      <text x="130" y="98" text-anchor="middle" font-family="Archivo, sans-serif" font-size="30" font-weight="800" fill="var(--red)">1,0,0,0</text>
+      <text x="130" y="120" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--ink-3)">style="..."</text>
+
+      <rect x="260" y="30" width="212" height="104" rx="10" fill="var(--plum-s)" stroke="var(--plum)" stroke-width="2"/>
+      <text x="366" y="60" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.3" fill="var(--plum)">ID</text>
+      <text x="366" y="98" text-anchor="middle" font-family="Archivo, sans-serif" font-size="30" font-weight="800" fill="var(--plum)">0,1,0,0</text>
+      <text x="366" y="120" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--ink-3)">#header</text>
+
+      <rect x="496" y="30" width="212" height="104" rx="10" fill="var(--blue-s)" stroke="var(--blue)" stroke-width="2"/>
+      <text x="602" y="60" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.3" fill="var(--blue)">CLASS · ATTR · PSEUDO</text>
+      <text x="602" y="98" text-anchor="middle" font-family="Archivo, sans-serif" font-size="30" font-weight="800" fill="var(--blue)">0,0,1,0</text>
+      <text x="602" y="120" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--ink-3)">.btn · [type] · :hover</text>
+
+      <rect x="732" y="30" width="184" height="104" rx="10" fill="var(--green-s)" stroke="var(--green)" stroke-width="2"/>
+      <text x="824" y="60" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.3" fill="var(--green)">ELEMENT</text>
+      <text x="824" y="98" text-anchor="middle" font-family="Archivo, sans-serif" font-size="30" font-weight="800" fill="var(--green)">0,0,0,1</text>
+      <text x="824" y="120" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--ink-3)">p · div · ::before</text>
+
+      <path d="M24 156 L916 156" stroke="var(--line)" stroke-width="1.5"/>
+      <text x="24" y="184" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="var(--ink)">Compare left to right, like a version number.</text>
+      <text x="24" y="208" font-family="IBM Plex Sans, sans-serif" font-size="13.5" fill="var(--ink-2)">0,1,0,0 beats 0,0,9,9 — a single id outranks nine classes. The columns never carry over.</text>
+      <text x="24" y="232" font-family="IBM Plex Sans, sans-serif" font-size="13.5" fill="var(--ink-2)">The universal selector * scores 0,0,0,0 — it always loses to anything else.</text>
+      <text x="24" y="256" font-family="IBM Plex Sans, sans-serif" font-size="13.5" fill="var(--ink-2)">Equal scores? The rule written later wins.</text>
+    </svg>
+  </div>
+</section>
+
+<!-- 13 -->
+<section class="slide">
+  <div class="eyebrow">Part 4 · Selectors</div>
+  <h2>Specificity in practice</h2>
+  <p class="sub">Every one of these targets the same button. Work out the winner before revealing.</p>
+  <div class="scroll-x">
+    <table>
+      <tr><th>Selector</th><th>Score</th><th>Result</th></tr>
+      <tr><td><code>*</code></td><td><code>0,0,0,0</code></td><td>Loses to everything</td></tr>
+      <tr><td><code>button</code></td><td><code>0,0,0,1</code></td><td>One element</td></tr>
+      <tr><td><code>.btn</code></td><td><code>0,0,1,0</code></td><td>Beats any number of element selectors</td></tr>
+      <tr><td><code>button.btn</code></td><td><code>0,0,1,1</code></td><td>Beats <code>.btn</code> alone</td></tr>
+      <tr><td><code>.card .btn:hover</code></td><td><code>0,0,3,0</code></td><td>Three class-level parts</td></tr>
+      <tr><td><code>#buy</code></td><td><code>0,1,0,0</code></td><td><b>Beats all of the above</b></td></tr>
+      <tr><td><code>style="..."</code></td><td><code>1,0,0,0</code></td><td>Beats the id too</td></tr>
+      <tr><td><code>.btn { color: red !important }</code></td><td>—</td><td>Beats everything, including inline</td></tr>
+    </table>
+  </div>
+  <div class="callout"><b>The practical lesson:</b> style with classes and your stylesheet stays overridable. Reach for ids and <code>!important</code> and you will spend week six fighting your own week two.</div>
+</section>
+
+<!-- 14 -->
+<section class="slide">
+  <div class="eyebrow">Part 4 · Selectors</div>
+  <h2>The universal selector, used properly</h2>
+  <div class="grid g2">
+    <div>
+      <span class="fname">the reset almost every project starts with</span>
+      <pre><span class="a">*</span>,
+<span class="a">*::before</span>,
+<span class="a">*::after</span> {
+  margin: 0;
+  padding: 0;
+  <span class="hl">box-sizing: border-box;</span>
+}</pre>
+      <p class="sub" style="margin-top:12px">That highlighted line is the important one. It changes how <code>width</code> is calculated — from "content only" to "content plus padding plus border", which is how every human expects it to work.</p>
+    </div>
+    <div>
+      <div class="card r" style="margin-bottom:12px">
+        <span class="tag">Without border-box</span>
+        <h3>width: 200px + 20px padding</h3>
+        <p>Actual rendered width: <b>240px</b>. Your three 33% columns overflow the row and wrap.</p>
+      </div>
+      <div class="card g">
+        <span class="tag">With border-box</span>
+        <h3>width: 200px + 20px padding</h3>
+        <p>Actual rendered width: <b>200px</b>. Padding grows inward. Layouts stop fighting you.</p>
+      </div>
+      <div class="callout" style="margin-top:12px"><b>Performance note:</b> <code>*</code> is fine in a reset. Using it for real styling — <code>* { transition: all .3s }</code> — makes the browser process every element on the page and is a genuine performance mistake.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 -->
+<section class="slide">
+  <div class="eyebrow">Part 4 · Selectors</div>
+  <h2>Class naming that survives the project</h2>
+  <div class="grid g2">
+    <div class="card r">
+      <span class="tag">Names that break</span>
+      <h3>Describing appearance</h3>
+      <pre style="font-size:12px"><span class="a">.red-text</span> { color: red; }
+<span class="a">.big-font</span> { font-size: 24px; }
+<span class="a">.left-box</span> { float: left; }</pre>
+      <p style="margin-top:6px">The day the brand changes to blue, you are editing a class called <code>.red-text</code> to make things blue. Now the name lies.</p>
+    </div>
+    <div class="card g">
+      <span class="tag">Names that last</span>
+      <h3>Describing purpose</h3>
+      <pre style="font-size:12px"><span class="a">.alert</span>      { color: red; }
+<span class="a">.page-title</span> { font-size: 24px; }
+<span class="a">.sidebar</span>    { float: left; }</pre>
+      <p style="margin-top:6px">Change the colour and the name still tells the truth. <b>Name the job, never the look.</b></p>
+    </div>
+  </div>
+  <div class="callout q"><b>Interview question hidden here:</b> "How do you organise CSS on a large project?" Mentioning <b>purpose-based naming</b> and a convention like <b>BEM</b> (<code>.card__title--featured</code>) immediately signals you have worked on something bigger than a college project.</div>
+</section>
+
+<!-- 16 -->
+<section class="slide">
+  <div class="eyebrow">Wrap-up</div>
+  <h2>The eight things to carry forward</h2>
+  <div class="grid g2">
+    <ul class="clean">
+      <li><b>HTML5 gave meaning</b>, not new syntax — header, nav, main, article, section, aside, footer.</li>
+      <li><b>Article vs section:</b> could it stand alone somewhere else?</li>
+      <li><b>Input types are free usability</b> — the right one changes the keyboard and validates for you.</li>
+      <li><b>Boolean attributes</b> are read by presence. <code>disabled="false"</code> still disables.</li>
+    </ul>
+    <ul class="clean">
+      <li><b>data-*</b> is the only legal way to attach your own data — and it is never private.</li>
+      <li><b>External CSS wins</b> because it is cached, not because it is tidier.</li>
+      <li><b>Internal and external are equal</b> — the later one wins.</li>
+      <li><b>Style with classes.</b> Ids and <code>!important</code> are debts you repay later.</li>
+    </ul>
+  </div>
+  <div class="grow"></div>
+  <div class="callout g"><b>Next:</b> the practice deck — selector playground, specificity calculator, cascade lab and eleven auto-checked coding challenges built on exactly this material.</div>
+</section>
+
+</main>
+
+<nav class="navbar">
+  <button id="prev" aria-label="Previous slide">← Prev</button>
+  <button id="next" aria-label="Next slide">Next →</button>
+  <span class="counter" id="counter">1 / 1</span>
+  <span class="bar"><i id="fill"></i></span>
+  <button id="mode" aria-label="Toggle slide or scroll view">Scroll view</button>
+  <span class="hint">Arrow keys to navigate</span>
+</nav>
+
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter = document.getElementById('counter');
+  var fill = document.getElementById('fill');
+  var modeBtn = document.getElementById('mode');
+  var i = 0, one = true;
+
+  function render() {
+    if (one) {
+      slides.forEach(function (s, n) { s.classList.toggle('hidden', n !== i); });
+      window.scrollTo(0, 0);
+    } else {
+      slides.forEach(function (s) { s.classList.remove('hidden'); });
+    }
+    counter.textContent = (i + 1) + ' / ' + slides.length;
+    fill.style.width = ((i + 1) / slides.length * 100) + '%';
+  }
+  function go(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    if (!one) slides[i].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    render();
+  }
+  document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+  document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+  modeBtn.addEventListener('click', function () {
+    one = !one; modeBtn.textContent = one ? 'Scroll view' : 'Slide view'; render();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(i + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+    if (e.key === 'Home') { e.preventDefault(); go(0); }
+    if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+  });
+  render();
+})();
+</script>
+</body>
+</html>

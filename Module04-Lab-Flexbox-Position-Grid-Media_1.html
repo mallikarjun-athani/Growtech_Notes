@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Layout Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#F4F7F8; --card:#FFFFFF; --sunk:#EDF2F3;
+    --ink:#12181C; --ink-2:#3D4A52; --ink-3:#6B7C86;
+    --line:#D8E1E4; --line-soft:#E7EDEF;
+    --accent:#0E6E68; --accent-soft:#DBEEEC;
+    --amber:#A85A11; --amber-soft:#F8EADA;
+    --blue:#1F5FA8;  --blue-s:#E0EAF7;
+    --plum:#7A3E86;  --plum-s:#F1E5F4;
+    --red:#B03A2E;   --red-s:#FBE6E3;
+    --green:#1E7A4C; --green-s:#DDF0E5;
+    --code-bg:#101A20; --code-ink:#D5E2E6;
+    --shadow:0 1px 2px rgba(18,24,28,.05), 0 8px 24px rgba(18,24,28,.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#0C1317; --card:#131C21; --sunk:#0F171B;
+      --ink:#E9F0F2; --ink-2:#AEBEC5; --ink-3:#7D9099;
+      --line:#26343B; --line-soft:#1C272D;
+      --accent:#5CC8BE; --accent-soft:#123230;
+      --amber:#E0A15C; --amber-soft:#2F2313;
+      --blue:#79B4EE;  --blue-s:#14263A;
+      --plum:#CE9ED9;  --plum-s:#2C1D31;
+      --red:#E88070;   --red-s:#331714;
+      --green:#5FC98C; --green-s:#0F2C1D;
+      --code-bg:#070D10; --code-ink:#D5E2E6;
+      --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 32px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0C1317; --card:#131C21; --sunk:#0F171B;
+    --ink:#E9F0F2; --ink-2:#AEBEC5; --ink-3:#7D9099;
+    --line:#26343B; --line-soft:#1C272D;
+    --accent:#5CC8BE; --accent-soft:#123230;
+    --amber:#E0A15C; --amber-soft:#2F2313;
+    --blue:#79B4EE;  --blue-s:#14263A;
+    --plum:#CE9ED9;  --plum-s:#2C1D31;
+    --red:#E88070;   --red-s:#331714;
+    --green:#5FC98C; --green-s:#0F2C1D;
+    --code-bg:#070D10; --code-ink:#D5E2E6;
+    --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 32px rgba(0,0,0,.3);
+  }
+
+  *{box-sizing:border-box}
+  body{background:var(--paper);color:var(--ink);margin:0;
+    font-family:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4{font-family:"Archivo","IBM Plex Sans",system-ui,sans-serif;margin:0;text-wrap:balance;letter-spacing:-.02em}
+  p{margin:0}
+  code{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.88em;background:var(--sunk);padding:1px 6px;border-radius:4px;border:1px solid var(--line-soft)}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 20px 90px}
+
+  header.top{padding:44px 0 22px;border-bottom:2px solid var(--ink);margin-bottom:6px}
+  .kicker{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+  header.top h1{font-size:clamp(31px,5.2vw,50px);font-weight:800;line-height:1.03;margin-bottom:12px}
+  header.top .lede{font-size:clamp(15px,1.6vw,17.5px);color:var(--ink-2);max-width:72ch}
+  header.top .lede b{color:var(--ink);font-weight:600}
+
+  .nav{position:sticky;top:0;z-index:40;background:var(--paper);box-shadow:0 6px 16px -10px rgba(0,0,0,.35);padding:12px 0;border-bottom:1px solid var(--line);margin-bottom:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .nav button{font-family:"IBM Plex Sans",sans-serif;font-size:13.5px;font-weight:600;padding:8px 14px;border-radius:9px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2)}
+  .nav button.on{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .nav button:hover{border-color:var(--accent)}
+  .nav button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .score{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-3);white-space:nowrap}
+  .score b{color:var(--green);font-size:15px}
+
+  .view{display:none}
+  .view.on{display:block}
+
+  section{margin:34px 0}
+  h2.head{font-size:clamp(19px,2.5vw,26px);font-weight:800;padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:15px}
+  .intro{color:var(--ink-2);font-size:15.5px;max-width:74ch;margin-bottom:16px}
+  .intro b{color:var(--ink);font-weight:600}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:20px;box-shadow:var(--shadow)}
+  .note{border-left:3px solid var(--amber);background:var(--amber-soft);padding:12px 16px;border-radius:0 9px 9px 0;font-size:14.5px;color:var(--ink-2);margin:14px 0}
+  .note b{color:var(--ink)}
+  .note .l{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--amber);margin-bottom:4px;font-weight:600}
+  .note.q{border-left-color:var(--plum);background:var(--plum-s)}
+  .note.q .l{color:var(--plum)}
+
+  .btn{font-family:"IBM Plex Sans",sans-serif;font-size:13.5px;font-weight:600;padding:9px 15px;border-radius:9px;cursor:pointer;border:1px solid var(--line);background:var(--sunk);color:var(--ink)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .btn:hover{border-color:var(--accent)}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .btn[disabled]{opacity:.4;cursor:default}
+  .btn.sm{font-size:12px;padding:6px 11px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+  textarea,input.tx{
+    width:100%;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--line);
+    border-radius:10px;padding:13px 15px;
+    font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.65;resize:vertical;tab-size:2;
+  }
+  input.tx{padding:11px 15px;font-size:15px}
+  textarea:focus,input.tx:focus{outline:2px solid var(--accent);outline-offset:1px}
+  pre{margin:12px 0;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:"IBM Plex Mono",monospace;font-size:12.7px;line-height:1.7;border:1px solid var(--line)}
+  pre .c{color:#6E828B;font-style:italic}
+  pre .t{color:#79D3C9}
+  pre .a{color:#9FC6E8}
+  pre .s{color:#E8B57A}
+  .lbl{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:7px;display:block}
+
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .split > *{min-width:0}
+  @media (max-width:900px){.split{grid-template-columns:1fr}}
+
+  /* ---- selector playground ---- */
+  .stage{background:var(--sunk);border-radius:10px;padding:16px;min-height:300px;font-size:14px}
+  .stage .sh{background:var(--card);border:2px dashed var(--line);border-radius:9px;padding:12px;margin-bottom:10px}
+  .stage .sh .nm{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3);display:block;margin-bottom:6px}
+  .node{border:2px solid var(--line);border-radius:8px;padding:9px 12px;margin:6px 0;background:var(--card);transition:all .2s ease;position:relative}
+  .node .tg{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3)}
+  .node.hit{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+  @media (prefers-reduced-motion:reduce){.node{transition:none}}
+  .selin{display:flex;gap:9px;align-items:center;margin-bottom:12px}
+  .selin span{font-family:"IBM Plex Mono",monospace;font-size:18px;color:var(--accent);font-weight:600}
+  .hitcount{font-family:"IBM Plex Mono",monospace;font-size:13.5px;margin-top:10px;font-weight:600}
+  .hitcount.ok{color:var(--green)} .hitcount.no{color:var(--red)}
+  .presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .presets button{font-family:"IBM Plex Mono",monospace;font-size:11.5px;padding:5px 10px;border-radius:7px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2)}
+  .presets button:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* ---- specificity calc ---- */
+  .spec{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;background:var(--sunk);border-radius:10px;padding:14px 16px;margin-bottom:10px}
+  .spec .sel{font-family:"IBM Plex Mono",monospace;font-size:15px;color:var(--ink);word-break:break-all}
+  .spec .sc{display:flex;gap:5px}
+  .spec .sc i{font-family:"IBM Plex Mono",monospace;font-style:normal;font-size:15px;font-weight:700;width:34px;height:34px;border-radius:7px;display:grid;place-items:center;border:2px solid}
+  .sc i.i0{background:var(--red-s);border-color:var(--red);color:var(--red)}
+  .sc i.i1{background:var(--plum-s);border-color:var(--plum);color:var(--plum)}
+  .sc i.i2{background:var(--blue-s);border-color:var(--blue);color:var(--blue)}
+  .sc i.i3{background:var(--green-s);border-color:var(--green);color:var(--green)}
+  .winner{margin-top:12px;padding:13px 16px;border-radius:10px;background:var(--green-s);border-left:3px solid var(--green);font-size:15px;color:var(--ink)}
+  .winner b{color:var(--green)}
+
+  /* ---- cascade lab ---- */
+  .casc{display:grid;grid-template-columns:1fr 200px;gap:16px}
+  @media (max-width:820px){.casc{grid-template-columns:1fr}}
+  .swatch{border:2px solid var(--line);border-radius:10px;min-height:150px;display:grid;place-items:center;font-family:"Archivo",sans-serif;font-size:22px;font-weight:700;background:var(--card);transition:all .25s}
+  .toggles{display:flex;flex-direction:column;gap:9px}
+  .tog{display:flex;align-items:center;gap:10px;padding:10px 13px;border:1px solid var(--line);border-radius:9px;background:var(--sunk);cursor:pointer;font-size:13.5px}
+  .tog input{accent-color:var(--accent);width:17px;height:17px}
+  .tog.on{border-color:var(--accent);background:var(--accent-soft)}
+  .tog .mono{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3);display:block}
+
+  /* ---- tag matcher ---- */
+  .match{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:820px){.match{grid-template-columns:1fr}}
+  .mq{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--card);margin-bottom:10px}
+  .mq p{font-size:14.5px;color:var(--ink-2);margin-bottom:10px}
+  .mq .opts{display:flex;gap:6px;flex-wrap:wrap}
+  .mq .opts button{font-family:"IBM Plex Mono",monospace;font-size:12px;padding:6px 11px;border-radius:7px;cursor:pointer;border:1px solid var(--line);background:var(--sunk);color:var(--ink-2)}
+  .mq .opts button.right{background:var(--green-s);border-color:var(--green);color:var(--green);font-weight:700}
+  .mq .opts button.wrong{background:var(--red-s);border-color:var(--red);color:var(--red)}
+  .mq .why{margin-top:10px;font-size:13.5px;color:var(--ink-2);display:none;border-top:1px solid var(--line-soft);padding-top:9px}
+  .mq .why.show{display:block}
+
+  /* ---- challenges ---- */
+  .chlist{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+  .chlist button{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2);display:flex;gap:6px;align-items:center}
+  .chlist button.on{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .chlist button.solved{border-color:var(--green)}
+  .chlist button.solved::after{content:"✓";color:var(--green);font-weight:700}
+  .chlist button.on.solved::after{color:var(--card)}
+
+  .chead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+  .chead h3{font-size:19px;font-weight:800}
+  .lvl{font-family:"IBM Plex Mono",monospace;font-size:10px;padding:3px 9px;border-radius:6px;font-weight:600;letter-spacing:.06em}
+  .lvl.m{background:var(--blue-s);color:var(--blue)}
+  .lvl.a{background:var(--plum-s);color:var(--plum)}
+  .lvl.b{background:var(--red-s);color:var(--red)}
+  .brief{color:var(--ink-2);font-size:15px;margin-bottom:12px;max-width:76ch}
+  .brief b{color:var(--ink);font-weight:600}
+  .scenario{background:var(--blue-s);border-left:3px solid var(--blue);border-radius:0 9px 9px 0;padding:11px 15px;font-size:14px;color:var(--ink-2);margin-bottom:12px}
+  .scenario .l{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--blue);margin-bottom:4px;font-weight:600}
+
+  iframe.prev{width:100%;height:250px;border:1px solid var(--line);border-radius:10px;background:#fff}
+  .checks{margin-top:13px;background:var(--sunk);border-radius:10px;padding:14px 16px}
+  .chk{display:flex;gap:10px;align-items:flex-start;padding:5px 0;font-size:13.8px;color:var(--ink-2)}
+  .chk .mk{flex:none;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;margin-top:2px}
+  .chk.pass .mk{background:var(--green);color:#fff}
+  .chk.fail .mk{background:var(--red-s);color:var(--red);border:1.5px solid var(--red)}
+  .chk.idle .mk{background:var(--card);border:1.5px solid var(--line);color:var(--ink-3)}
+  .chk.pass{color:var(--ink)}
+  .verdict{margin-top:11px;font-size:15px;font-weight:700;min-height:24px}
+  .verdict.ok{color:var(--green)}
+  .verdict.no{color:var(--red)}
+  .hint{margin-top:11px;font-size:14px;color:var(--ink-2);background:var(--amber-soft);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:11px 15px;display:none}
+  .hint.show{display:block}
+
+  .g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+  .g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+  @media (max-width:820px){.g2,.g3{grid-template-columns:1fr}}
+  .mini{border:1px solid var(--line);border-radius:12px;padding:17px;background:var(--card)}
+  .mini h4{font-size:15.5px;margin-bottom:6px}
+  .mini p{font-size:14px;color:var(--ink-2)}
+  .mini .tag{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:600;display:block;margin-bottom:5px}
+
+  /* ================= shared control styling ================= */
+  .ctl{display:flex;flex-direction:column;gap:13px}
+  .ctl .grp{display:flex;flex-direction:column;gap:6px}
+  .ctl .grp > span.lbl{margin-bottom:0}
+  .seg{display:flex;flex-wrap:wrap;gap:5px}
+  .seg button{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;padding:6px 9px;border-radius:7px;
+    cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2)}
+  .seg button.on{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .seg button:hover{border-color:var(--accent)}
+  .rng{display:flex;align-items:center;gap:10px}
+  .rng input[type=range]{flex:1;accent-color:var(--accent)}
+  .rng b{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--accent);min-width:52px;text-align:right}
+
+  /* ================= flex playground ================= */
+  .fxwrap{display:grid;grid-template-columns:300px 1fr;gap:20px}
+  @media (max-width:980px){.fxwrap{grid-template-columns:1fr}}
+  .fxstage{background:var(--sunk);border-radius:11px;padding:16px;min-height:380px}
+  .fxbox{display:flex;background:var(--card);border:2px dashed var(--line);border-radius:9px;padding:12px;min-height:340px;transition:none}
+  .fxitem{background:var(--accent-soft);border:2px solid var(--accent);border-radius:8px;padding:14px 16px;
+    font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:700;color:var(--accent);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;min-width:0}
+  .fxitem small{font-size:9.5px;font-weight:600;opacity:.75;white-space:nowrap}
+  .fxitem.sel{background:var(--amber-soft);border-color:var(--amber);color:var(--amber);
+    box-shadow:0 0 0 3px color-mix(in srgb,var(--amber) 25%,transparent)}
+  .itempanel{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--card);margin-top:13px}
+  .itempanel h4{font-size:14px;margin-bottom:10px}
+
+  /* ================= position bench ================= */
+  .posgrid{display:grid;grid-template-columns:1fr 300px;gap:18px}
+  @media (max-width:980px){.posgrid{grid-template-columns:1fr}}
+  .posframe{width:100%;height:400px;border:2px solid var(--line);border-radius:11px;background:#fff;display:block}
+  .swlist{display:flex;flex-direction:column;gap:8px}
+  .swlist label{display:flex;align-items:flex-start;gap:9px;padding:10px 12px;border:1px solid var(--line);
+    border-radius:9px;background:var(--card);cursor:pointer;font-size:13px;color:var(--ink-2)}
+  .swlist label.on{border-color:var(--red);background:var(--red-s);color:var(--red)}
+  .swlist label input{accent-color:var(--red);width:16px;height:16px;margin-top:2px;flex:none}
+  .swlist label b{display:block;color:inherit;font-weight:700;margin-bottom:2px}
+  .swlist label span{font-size:11.5px;opacity:.85}
+
+  /* ================= grid builder ================= */
+  .grwrap{display:grid;grid-template-columns:320px 1fr;gap:20px}
+  @media (max-width:980px){.grwrap{grid-template-columns:1fr}}
+  .grstage{background:var(--sunk);border-radius:11px;padding:16px;min-height:280px}
+  .grbox{display:grid;background:var(--card);border:2px dashed var(--line);border-radius:9px;padding:12px}
+  .gritem{background:var(--blue-s);border:2px solid var(--blue);border-radius:8px;padding:16px 8px;text-align:center;
+    font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:700;color:var(--blue);min-width:0}
+  .gritem.wide{background:var(--green-s);border-color:var(--green);color:var(--green)}
+  .colcount{font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:700;color:var(--accent);margin-top:11px}
+
+  /* ================= breakpoint simulator ================= */
+  .mqtop{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+  .mqwidth{font-family:"IBM Plex Mono",monospace;font-size:22px;font-weight:800;color:var(--accent);min-width:98px}
+  .mqslider{flex:1;min-width:200px;accent-color:var(--accent)}
+  .mqjump{display:flex;gap:6px;flex-wrap:wrap}
+  .mqjump button{font-family:"IBM Plex Mono",monospace;font-size:11px;padding:6px 10px;border-radius:7px;cursor:pointer;
+    border:1px solid var(--line);background:var(--card);color:var(--ink-2)}
+  .mqjump button.on{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .mqhost{background:var(--sunk);border-radius:11px;padding:16px;display:flex;justify-content:center;overflow-x:auto}
+  .mqframe{border:2px solid var(--line);border-radius:10px;background:#fff;height:430px;flex:none;transition:width .15s ease}
+  @media (prefers-reduced-motion:reduce){.mqframe{transition:none}}
+  .mqlist{display:flex;flex-direction:column;gap:7px;margin-top:14px}
+  .mqrule{display:flex;gap:11px;align-items:flex-start;padding:10px 13px;border-radius:9px;border:1px solid var(--line);
+    background:var(--card);font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-3)}
+  .mqrule .st{flex:none;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;
+    background:var(--sunk);color:var(--ink-3);border:1.5px solid var(--line)}
+  .mqrule.active{border-color:var(--green);background:var(--green-s);color:var(--green)}
+  .mqrule.active .st{background:var(--green);color:#fff;border-color:var(--green)}
+  .mqrule i{font-style:normal;display:block;font-family:"IBM Plex Sans",sans-serif;font-size:11.5px;opacity:.85;margin-top:2px}
+
+  .cssout{margin-top:13px}
+  .cssout pre{margin:0}
+
+  /* ---- three lanes: same problem, different amounts of help ---- */
+  .lanes{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+  .lanes .cap{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-right:3px}
+  .lanes button{font-family:"IBM Plex Sans",sans-serif;font-size:12.5px;font-weight:600;padding:7px 13px;
+    border-radius:8px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2)}
+  .lanes button:hover{border-color:var(--accent)}
+  .lanes button.on{color:var(--card)}
+  .lanes button[data-l="guided"].on{background:var(--green);border-color:var(--green)}
+  .lanes button[data-l="standard"].on{background:var(--accent);border-color:var(--accent)}
+  .lanes button[data-l="stretch"].on{background:var(--plum);border-color:var(--plum)}
+  .lanenote{font-size:12.5px;color:var(--ink-3);margin-bottom:9px}
+  .stretchbox{display:none;border-left:3px solid var(--plum);background:var(--plum-s);border-radius:0 9px 9px 0;
+    padding:12px 16px;font-size:14px;color:var(--ink-2);margin-bottom:11px}
+  .stretchbox.show{display:block}
+  .stretchbox .l{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--plum);margin-bottom:4px;font-weight:600}
+  .stretchbox b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="kicker">Practice Lab · Flexbox · Position · Grid · Media Queries</div>
+  <h1>Layout Lab</h1>
+  <p class="lede">Four working tools and eleven auto-checked challenges. <b>Click any flex item and change just that one. Break sticky three different ways and watch it fail. Drag a real viewport across your breakpoints and see which query fires.</b> Then build the real thing.</p>
+</header>
+
+<nav class="nav" id="nav">
+  <button data-v="tools" class="on">Tools</button>
+  <button data-v="ch">Challenges</button>
+  <button data-v="logic">Logic drills</button>
+  <span class="score" id="score">solved <b>0</b> / 11</span>
+</nav>
+
+<!-- ================= TOOLS ================= -->
+<div class="view on" id="v-tools">
+
+  <section>
+    <h2 class="head">1 · Flexbox playground</h2>
+    <p class="intro">Set the container on the left. <b>Then click any item in the stage to select it</b> and give that one item its own <code>order</code>, <code>align-self</code> and <code>flex</code>. The generated CSS underneath is real — copy it straight out.</p>
+    <div class="panel">
+      <div class="fxwrap">
+        <div class="ctl">
+          <div class="grp"><span class="lbl">flex-direction</span>
+            <div class="seg" data-p="flexDirection">
+              <button data-v="row" class="on">row</button><button data-v="row-reverse">row-reverse</button>
+              <button data-v="column">column</button><button data-v="column-reverse">column-reverse</button>
+            </div></div>
+          <div class="grp"><span class="lbl">justify-content &nbsp;·&nbsp; main axis</span>
+            <div class="seg" data-p="justifyContent">
+              <button data-v="flex-start" class="on">flex-start</button><button data-v="center">center</button>
+              <button data-v="flex-end">flex-end</button><button data-v="space-between">space-between</button>
+              <button data-v="space-around">space-around</button><button data-v="space-evenly">space-evenly</button>
+            </div></div>
+          <div class="grp"><span class="lbl">align-items &nbsp;·&nbsp; cross axis</span>
+            <div class="seg" data-p="alignItems">
+              <button data-v="stretch" class="on">stretch</button><button data-v="flex-start">flex-start</button>
+              <button data-v="center">center</button><button data-v="flex-end">flex-end</button>
+              <button data-v="baseline">baseline</button>
+            </div></div>
+          <div class="grp"><span class="lbl">flex-wrap</span>
+            <div class="seg" data-p="flexWrap">
+              <button data-v="nowrap" class="on">nowrap</button><button data-v="wrap">wrap</button><button data-v="wrap-reverse">wrap-reverse</button>
+            </div></div>
+          <div class="grp"><span class="lbl">align-content &nbsp;·&nbsp; only with wrapped lines</span>
+            <div class="seg" data-p="alignContent">
+              <button data-v="normal" class="on">normal</button><button data-v="flex-start">flex-start</button>
+              <button data-v="center">center</button><button data-v="space-between">space-between</button>
+            </div></div>
+          <div class="grp"><span class="lbl">gap</span>
+            <div class="rng"><input type="range" id="fxGap" min="0" max="40" value="10" step="2"><b id="fxGapV">10px</b></div>
+          </div>
+          <div class="grp"><span class="lbl">how many items</span>
+            <div class="rng"><input type="range" id="fxN" min="2" max="9" value="4" step="1"><b id="fxNV">4</b></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="fxstage"><div class="fxbox" id="fxBox"></div></div>
+          <div class="itempanel" id="fxItemPanel">
+            <h4 id="fxSelTitle">Click an item in the stage to control it on its own</h4>
+            <div id="fxSelBody" style="display:none">
+              <div class="grp" style="margin-bottom:11px"><span class="lbl">order &nbsp;·&nbsp; default 0, lower comes first</span>
+                <div class="rng"><input type="range" id="fxOrder" min="-3" max="3" value="0" step="1"><b id="fxOrderV">0</b></div>
+              </div>
+              <div class="grp" style="margin-bottom:11px"><span class="lbl">align-self &nbsp;·&nbsp; overrides align-items for this one</span>
+                <div class="seg" id="fxSelf">
+                  <button data-v="auto" class="on">auto</button><button data-v="flex-start">flex-start</button>
+                  <button data-v="center">center</button><button data-v="flex-end">flex-end</button><button data-v="stretch">stretch</button>
+                </div></div>
+              <div class="grp"><span class="lbl">flex &nbsp;·&nbsp; grow shrink basis</span>
+                <div class="seg" id="fxFlex">
+                  <button data-v="0 1 auto" class="on">0 1 auto</button><button data-v="1 1 0%">1 (equal)</button>
+                  <button data-v="2 1 0%">2 (double)</button><button data-v="1 1 auto">auto</button><button data-v="0 0 auto">0 0 auto</button>
+                </div></div>
+              <button class="btn sm" id="fxClear" style="margin-top:12px">Clear this item's overrides</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cssout"><span class="lbl">Generated CSS</span><pre id="fxCss"></pre></div>
+      <div class="note">
+        <span class="l">Try this</span>
+        Set <b>flex-direction: column</b> and then change <b>justify-content</b>. It now moves items <b>up and down</b>, not left and right — because justify always follows the main axis, and the main axis just rotated. Then switch <b>align-content</b> with <code>nowrap</code> still set: nothing happens, because there is only one line.
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="head">2 · Position bench &nbsp;·&nbsp; live</h2>
+    <p class="intro">A real scrolling page. <b>Scroll inside the frame first and watch normal behaviour</b> — then flip a switch and watch that exact thing break. Every switch reproduces a bug you will meet in real work.</p>
+    <div class="panel">
+      <div class="posgrid">
+        <div>
+          <iframe class="posframe" id="posFrame" title="Live position demonstration"></iframe>
+          <p style="font-size:12.5px;color:var(--ink-3);margin-top:9px">Scroll <b>inside the frame</b>. It is its own viewport — which is precisely why <code>position: fixed</code> pins to it and not to your screen.</p>
+        </div>
+        <div>
+          <span class="lbl">Break something</span>
+          <div class="swlist" id="posSw">
+            <label data-k="norel"><input type="checkbox">
+              <span><b>Remove position:relative from the card</b>
+              The absolute badge loses its anchor and flies to the page corner.</span></label>
+            <label data-k="nothreshold"><input type="checkbox">
+              <span><b>Remove top from the sticky header</b>
+              Sticky with no threshold does nothing at all — silently.</span></label>
+            <label data-k="overflow"><input type="checkbox">
+              <span><b>overflow:hidden on the sticky's parent</b>
+              The hardest position bug to find. Any overflow on an ancestor kills sticky.</span></label>
+            <label data-k="nofixed"><input type="checkbox">
+              <span><b>Change fixed to absolute</b>
+              It stops ignoring the scroll and rides away with the page.</span></label>
+          </div>
+          <div class="note q" style="margin-top:14px">
+            <span class="l">The one to remember</span>
+            <b>Sticky = relative, then fixed.</b> It behaves normally until it reaches its threshold, then it holds — and it is always bounded by its own parent, which is why a sticky section header gets pushed away by the next section.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="head">3 · Grid builder</h2>
+    <p class="intro">Build a column track list and watch it apply. <b>Switch to auto-fit and then drag the item count</b> — the browser recounts the columns itself, with no breakpoint anywhere.</p>
+    <div class="panel">
+      <div class="grwrap">
+        <div class="ctl">
+          <div class="grp"><span class="lbl">column recipe</span>
+            <div class="seg" id="grMode">
+              <button data-v="equal" class="on">repeat(n, 1fr)</button>
+              <button data-v="ratio">1fr 2fr</button>
+              <button data-v="sidebar">240px 1fr</button>
+              <button data-v="autofit">auto-fit + minmax</button>
+              <button data-v="autofill">auto-fill + minmax</button>
+            </div></div>
+          <div class="grp" id="grColsWrap"><span class="lbl">columns</span>
+            <div class="rng"><input type="range" id="grCols" min="1" max="6" value="3" step="1"><b id="grColsV">3</b></div>
+          </div>
+          <div class="grp" id="grMinWrap" style="display:none"><span class="lbl">minmax floor</span>
+            <div class="rng"><input type="range" id="grMin" min="80" max="300" value="160" step="10"><b id="grMinV">160px</b></div>
+          </div>
+          <div class="grp"><span class="lbl">gap</span>
+            <div class="rng"><input type="range" id="grGap" min="0" max="36" value="12" step="2"><b id="grGapV">12px</b></div>
+          </div>
+          <div class="grp"><span class="lbl">items</span>
+            <div class="rng"><input type="range" id="grN" min="1" max="12" value="7" step="1"><b id="grNV">7</b></div>
+          </div>
+          <div class="grp"><span class="lbl">make item 1 span two columns</span>
+            <div class="seg" id="grSpan"><button data-v="no" class="on">no</button><button data-v="yes">grid-column: span 2</button></div>
+          </div>
+        </div>
+        <div>
+          <div class="grstage"><div class="grbox" id="grBox"></div>
+            <div class="colcount" id="grCount"></div>
+          </div>
+          <div class="cssout"><span class="lbl">Generated CSS</span><pre id="grCss"></pre></div>
+        </div>
+      </div>
+      <div class="note">
+        <span class="l">The comparison worth making</span>
+        Choose <b>auto-fit</b>, drop the item count to 2, and look. Now choose <b>auto-fill</b> with the same 2 items. <code>auto-fit</code> stretches them to fill the row; <code>auto-fill</code> keeps the empty columns and leaves them narrow. <b>That is the entire difference between the two.</b>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="head">4 · Breakpoint simulator</h2>
+    <p class="intro">A real responsive page in a real resizable viewport. <b>Drag the width and watch which media query turns green</b> — and watch the layout change at exactly the moment it fires. This is the fastest way to make breakpoints feel concrete.</p>
+    <div class="panel">
+      <div class="mqtop">
+        <span class="mqwidth" id="mqW">375px</span>
+        <input type="range" class="mqslider" id="mqSlider" min="320" max="1280" value="375" step="1" aria-label="Viewport width">
+        <div class="mqjump" id="mqJump">
+          <button data-w="375">375 phone</button><button data-w="640">640</button>
+          <button data-w="768">768</button><button data-w="1024">1024</button><button data-w="1280">1280</button>
+        </div>
+      </div>
+      <div class="mqhost"><iframe class="mqframe" id="mqFrame" style="width:375px" title="Responsive page preview"></iframe></div>
+      <div class="mqlist" id="mqRules"></div>
+      <div class="cssout"><span class="lbl">The stylesheet inside that frame</span><pre id="mqCss"></pre></div>
+      <div class="note">
+        <span class="l">What to point out</span>
+        Nothing happens between 375 and 639 — that whole range uses the <b>base</b> rules, written with no query at all. That is mobile first: the phone gets the simplest stylesheet, and every query <b>adds</b> to it. Notice too that the nav flips from a column to a row by changing <b>one property</b>.
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ================= CHALLENGES ================= -->
+<div class="view" id="v-ch">
+  <section>
+    <h2 class="head">Eleven coding challenges</h2>
+    <p class="intro">Write real CSS. Every requirement is checked against the document you produce — <b>not against a stored answer</b>, so any correct solution passes. The preview is live as you type.</p>
+    <div class="chlist" id="chList"></div>
+    <div class="panel">
+      <div class="chead">
+        <h3 id="chTitle">—</h3>
+        <span class="lvl m" id="chLvl">—</span>
+      </div>
+      <div class="scenario" id="chScenario"></div>
+      <p class="brief" id="chBrief"></p>
+      <div class="split">
+        <div>
+          <div class="lanes" id="chLanes">
+            <span class="cap">How much help</span>
+            <button data-l="guided">Guided</button>
+            <button data-l="standard" class="on">Standard</button>
+            <button data-l="stretch">Stretch</button>
+          </div>
+          <div class="lanenote" id="chLaneNote"></div>
+          <div class="stretchbox" id="chStretch"></div>
+          <span class="lbl">Your code</span>
+          <textarea id="chCode" rows="21" spellcheck="false"></textarea>
+          <div class="row" style="margin-top:10px">
+            <button class="btn primary" id="chRun">Run checks</button>
+            <button class="btn" id="chReset">Reset code</button>
+            <button class="btn" id="chHint">Show hint</button>
+          </div>
+        </div>
+        <div>
+          <span class="lbl">Live preview</span>
+          <iframe class="prev" id="chPrev" sandbox="" title="Live preview"></iframe>
+          <div class="checks" id="chChecks"></div>
+          <div class="verdict" id="chVerdict"></div>
+          <div class="hint" id="chHintBox"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ================= LOGIC DRILLS ================= -->
+<div class="view" id="v-logic">
+  <section>
+    <h2 class="head">Ten logic drills</h2>
+    <p class="intro">No typing. Read the code, <b>say the answer out loud</b>, then reveal. Every one of these is a mistake that reaches production regularly.</p>
+    <div id="logicWrap"></div>
+  </section>
+</div>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function $(id){return document.getElementById(id);}
+  function seg(el, cb){
+    el.addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      Array.prototype.forEach.call(el.querySelectorAll('button'), function (x) { x.classList.toggle('on', x === b); });
+      cb(b.dataset.v);
+    });
+  }
+
+  /* ---------------- view switching ---------------- */
+  var navBtns = Array.prototype.slice.call(document.querySelectorAll('#nav button'));
+  navBtns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      navBtns.forEach(function (x) { x.classList.toggle('on', x === b); });
+      ['tools', 'ch', 'logic'].forEach(function (v) { $('v-' + v).classList.toggle('on', v === b.dataset.v); });
+      window.scrollTo(0, 0);
+    });
+  });
+
+  /* ============================================================
+     TOOL 1 — FLEXBOX PLAYGROUND
+     ============================================================ */
+  var fx = { flexDirection:'row', justifyContent:'flex-start', alignItems:'stretch',
+             flexWrap:'nowrap', alignContent:'normal', gap:10, n:4 };
+  var items = [];            // per-item overrides
+  var sel = -1;
+  var LABELS = ['one','two','three','four','five','six','seven','eight','nine'];
+
+  function ensureItems() {
+    while (items.length < fx.n) items.push({ order:0, alignSelf:'auto', flex:'0 1 auto' });
+    items.length = fx.n;
+    if (sel >= fx.n) { sel = -1; showSel(); }
+  }
+
+  function fxRender() {
+    ensureItems();
+    var box = $('fxBox');
+    box.style.flexDirection = fx.flexDirection;
+    box.style.justifyContent = fx.justifyContent;
+    box.style.alignItems = fx.alignItems;
+    box.style.flexWrap = fx.flexWrap;
+    box.style.alignContent = fx.alignContent;
+    box.style.gap = fx.gap + 'px';
+
+    box.innerHTML = items.map(function (it, i) {
+      var extra = '';
+      if (it.order !== 0) extra += 'order:' + it.order + ';';
+      if (it.alignSelf !== 'auto') extra += 'align-self:' + it.alignSelf + ';';
+      if (it.flex !== '0 1 auto') extra += 'flex:' + it.flex + ';';
+      var notes = [];
+      if (it.order !== 0) notes.push('order:' + it.order);
+      if (it.alignSelf !== 'auto') notes.push(it.alignSelf);
+      if (it.flex !== '0 1 auto') notes.push('flex:' + it.flex.replace(' 1 0%', '').replace(' 0 auto', ' 0 auto'));
+      return '<div class="fxitem' + (i === sel ? ' sel' : '') + '" data-i="' + i + '" style="' + extra + '">'
+        + (i + 1) + (notes.length ? '<small>' + esc(notes.join(' · ')) + '</small>' : '')
+        + '</div>';
+    }).join('');
+
+    // generated CSS
+    var css = '<span class="t">.container</span> {\n  <span class="a">display</span>: <span class="s">flex</span>;\n';
+    if (fx.flexDirection !== 'row')      css += '  <span class="a">flex-direction</span>: <span class="s">' + fx.flexDirection + '</span>;\n';
+    if (fx.justifyContent !== 'flex-start') css += '  <span class="a">justify-content</span>: <span class="s">' + fx.justifyContent + '</span>;\n';
+    if (fx.alignItems !== 'stretch')     css += '  <span class="a">align-items</span>: <span class="s">' + fx.alignItems + '</span>;\n';
+    if (fx.flexWrap !== 'nowrap')        css += '  <span class="a">flex-wrap</span>: <span class="s">' + fx.flexWrap + '</span>;\n';
+    if (fx.alignContent !== 'normal')    css += '  <span class="a">align-content</span>: <span class="s">' + fx.alignContent + '</span>;\n';
+    if (fx.gap)                          css += '  <span class="a">gap</span>: <span class="s">' + fx.gap + 'px</span>;\n';
+    css += '}';
+    items.forEach(function (it, i) {
+      var d = '';
+      if (it.order !== 0)          d += '  <span class="a">order</span>: <span class="s">' + it.order + '</span>;\n';
+      if (it.alignSelf !== 'auto') d += '  <span class="a">align-self</span>: <span class="s">' + it.alignSelf + '</span>;\n';
+      if (it.flex !== '0 1 auto')  d += '  <span class="a">flex</span>: <span class="s">' + it.flex + '</span>;\n';
+      if (d) css += '\n\n<span class="t">.item-' + (i + 1) + '</span> {\n' + d + '}';
+    });
+    if (fx.alignContent !== 'normal' && fx.flexWrap === 'nowrap') {
+      css += '\n\n<span class="c">/* align-content is set but flex-wrap is nowrap,</span>'
+           + '\n<span class="c">   so there is only one line and it does nothing. */</span>';
+    }
+    $('fxCss').innerHTML = css;
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.seg[data-p]'), function (el) {
+    seg(el, function (v) { fx[el.dataset.p] = v; fxRender(); });
+  });
+  $('fxGap').addEventListener('input', function (e) { fx.gap = +e.target.value; $('fxGapV').textContent = fx.gap + 'px'; fxRender(); });
+  $('fxN').addEventListener('input', function (e) { fx.n = +e.target.value; $('fxNV').textContent = fx.n; fxRender(); });
+
+  function showSel() {
+    var has = sel >= 0;
+    $('fxSelBody').style.display = has ? 'block' : 'none';
+    $('fxSelTitle').textContent = has
+      ? 'Item ' + (sel + 1) + ' — these apply to this item only'
+      : 'Click an item in the stage to control it on its own';
+    if (!has) return;
+    var it = items[sel];
+    $('fxOrder').value = it.order; $('fxOrderV').textContent = it.order;
+    Array.prototype.forEach.call($('fxSelf').children, function (b) { b.classList.toggle('on', b.dataset.v === it.alignSelf); });
+    Array.prototype.forEach.call($('fxFlex').children, function (b) { b.classList.toggle('on', b.dataset.v === it.flex); });
+  }
+  $('fxBox').addEventListener('click', function (e) {
+    var it = e.target.closest('.fxitem'); if (!it) return;
+    var i = +it.dataset.i;
+    sel = (sel === i) ? -1 : i;
+    showSel(); fxRender();
+  });
+  $('fxOrder').addEventListener('input', function (e) {
+    if (sel < 0) return;
+    items[sel].order = +e.target.value; $('fxOrderV').textContent = e.target.value; fxRender();
+  });
+  seg($('fxSelf'), function (v) { if (sel >= 0) { items[sel].alignSelf = v; fxRender(); } });
+  seg($('fxFlex'), function (v) { if (sel >= 0) { items[sel].flex = v; fxRender(); } });
+  $('fxClear').addEventListener('click', function () {
+    if (sel < 0) return;
+    items[sel] = { order:0, alignSelf:'auto', flex:'0 1 auto' };
+    showSel(); fxRender();
+  });
+  fxRender();
+
+  /* ============================================================
+     TOOL 2 — POSITION BENCH
+     ============================================================ */
+  function posDoc(o) {
+    o = o || {};
+    return '<!DOCTYPE html><html><head><meta charset="utf-8"><style>' +
+      'body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#F5F7F8;color:#12181C;font-size:13px}' +
+      '.bar{position:' + (o.nofixed ? 'absolute' : 'fixed') + ';top:0;left:0;right:0;background:#1F5FA8;color:#fff;' +
+        'padding:9px 14px;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;font-weight:700;z-index:5}' +
+      '.sp{height:38px}' +
+      'h4{margin:16px 14px 4px;font-size:11px;color:#6B7C86;font-family:ui-monospace,Menlo,monospace;' +
+        'text-transform:uppercase;letter-spacing:.11em}' +
+      '.pad{padding:0 14px}' +
+      '.ghost{border:2px dotted #9BB0BC;border-radius:7px;color:#6B7C86;font-family:ui-monospace,Menlo,monospace;' +
+        'font-size:10px;padding:3px 9px;margin-bottom:26px}' +
+      '.rel{position:relative;top:12px;left:12px;background:#E0EAF7;border:2px solid #1F5FA8;color:#1F5FA8;border-radius:7px;' +
+        'padding:10px 13px;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;font-weight:700}' +
+      '.card{position:' + (o.norel ? 'static' : 'relative') + ';background:#fff;border:2px solid #DCE3E6;border-radius:9px;' +
+        'padding:15px;margin:10px 0;max-width:56%}' +
+      '.badge{position:absolute;top:-10px;right:-10px;background:#7A3E86;color:#fff;border-radius:999px;padding:4px 11px;' +
+        'font-family:ui-monospace,Menlo,monospace;font-size:10.5px;font-weight:700}' +
+      '.sec{background:#fff;border:2px solid #DCE3E6;border-radius:9px;margin:10px 0;overflow:' + (o.overflow ? 'hidden' : 'visible') + '}' +
+      '.stick{position:sticky;' + (o.nothreshold ? '' : 'top:38px;') + 'background:#1E7A4C;color:#fff;padding:9px 14px;' +
+        'font-family:ui-monospace,Menlo,monospace;font-size:11.5px;font-weight:700;border-radius:7px 7px 0 0;z-index:2}' +
+      '.fill{color:#6B7C86;line-height:1.65;padding:11px 14px}' +
+      '</style></head><body>' +
+      '<div class="bar">position: ' + (o.nofixed ? 'absolute' : 'fixed') + ' &nbsp;·&nbsp; ' +
+        (o.nofixed ? 'now scrolls away with the page' : 'welded to this frame') + '</div>' +
+      '<div class="sp"></div>' +
+      '<h4>relative — keeps its space</h4><div class="pad">' +
+        '<div class="ghost">the space it would have occupied</div>' +
+        '<div class="rel">position: relative · top:12 left:12</div></div>' +
+      '<h4>absolute — anchored to ' + (o.norel ? 'THE PAGE' : 'the card') + '</h4><div class="pad">' +
+        '<div class="card"><span class="badge">absolute</span>This card is <b>position: ' +
+        (o.norel ? 'static' : 'relative') + '</b>.<br>' +
+        (o.norel ? 'The badge had no positioned ancestor, so it anchored to the page. Look at the very top-right.'
+                 : 'So the badge anchors here, to this card.') + '</div></div>' +
+      '<h4>sticky' + (o.nothreshold ? ' — no top value, so it does nothing' : (o.overflow ? ' — parent clips, so it is dead' : ' — top: 38px')) + '</h4>' +
+      '<div class="pad"><div class="sec"><div class="stick">sticky header A' +
+        (o.nothreshold ? ' · no threshold' : '') + (o.overflow ? ' · parent overflow:hidden' : '') + '</div>' +
+        '<div class="fill">Scroll on. This header should ride up, meet the blue bar and hold there while the rest of this ' +
+        'section passes beneath it.<br><br>Still holding.<br><br>Still holding.<br><br>' +
+        'Now the section is ending — watch it get pushed away by the next one. Sticky is always bounded by its own parent.' +
+        '<br><br>Nearly.<br><br>Gone.</div></div>' +
+        '<div class="sec"><div class="stick">sticky header B</div>' +
+        '<div class="fill">Each sticky element is trapped inside its own parent — which is exactly how a list with sticky ' +
+        'section headings works.<br><br>More text.<br><br>A little more.<br><br>The end.</div></div></div>' +
+      '<div style="height:44px"></div></body></html>';
+  }
+  var posState = { norel:false, nothreshold:false, overflow:false, nofixed:false };
+  function posRender() { $('posFrame').srcdoc = posDoc(posState); }
+  $('posSw').addEventListener('change', function (e) {
+    var lab = e.target.closest('label'); if (!lab) return;
+    posState[lab.dataset.k] = e.target.checked;
+    lab.classList.toggle('on', e.target.checked);
+    posRender();
+  });
+  posRender();
+
+  /* ============================================================
+     TOOL 3 — GRID BUILDER
+     ============================================================ */
+  var gr = { mode:'equal', cols:3, min:160, gap:12, n:7, span:false };
+  function grTracks() {
+    switch (gr.mode) {
+      case 'equal':    return 'repeat(' + gr.cols + ', 1fr)';
+      case 'ratio':    return '1fr 2fr';
+      case 'sidebar':  return '240px 1fr';
+      case 'autofit':  return 'repeat(auto-fit, minmax(' + gr.min + 'px, 1fr))';
+      case 'autofill': return 'repeat(auto-fill, minmax(' + gr.min + 'px, 1fr))';
+    }
+    return '1fr';
+  }
+  function grRender() {
+    $('grColsWrap').style.display = gr.mode === 'equal' ? '' : 'none';
+    $('grMinWrap').style.display  = (gr.mode === 'autofit' || gr.mode === 'autofill') ? '' : 'none';
+
+    var box = $('grBox');
+    box.style.gridTemplateColumns = grTracks();
+    box.style.gap = gr.gap + 'px';
+    var html = '';
+    for (var i = 0; i < gr.n; i++) {
+      var wide = gr.span && i === 0;
+      html += '<div class="gritem' + (wide ? ' wide' : '') + '"' + (wide ? ' style="grid-column:span 2"' : '') + '>'
+            + (wide ? '1 · span 2' : (i + 1)) + '</div>';
+    }
+    box.innerHTML = html;
+
+    // count how many columns actually rendered
+    var n = getComputedStyle(box).gridTemplateColumns.split(' ').filter(function (x) { return x.trim(); }).length;
+    $('grCount').textContent = n + ' column' + (n === 1 ? '' : 's') + ' rendered at this width';
+
+    $('grCss').innerHTML =
+      '<span class="t">.grid</span> {\n' +
+      '  <span class="a">display</span>: <span class="s">grid</span>;\n' +
+      '  <span class="a">grid-template-columns</span>: <span class="s">' + esc(grTracks()) + '</span>;\n' +
+      '  <span class="a">gap</span>: <span class="s">' + gr.gap + 'px</span>;\n}' +
+      (gr.span ? '\n\n<span class="t">.grid > :first-child</span> {\n  <span class="a">grid-column</span>: <span class="s">span 2</span>;\n}' : '');
+  }
+  seg($('grMode'), function (v) { gr.mode = v; grRender(); });
+  seg($('grSpan'), function (v) { gr.span = (v === 'yes'); grRender(); });
+  $('grCols').addEventListener('input', function (e) { gr.cols = +e.target.value; $('grColsV').textContent = gr.cols; grRender(); });
+  $('grMin').addEventListener('input',  function (e) { gr.min  = +e.target.value; $('grMinV').textContent = gr.min + 'px'; grRender(); });
+  $('grGap').addEventListener('input',  function (e) { gr.gap  = +e.target.value; $('grGapV').textContent = gr.gap + 'px'; grRender(); });
+  $('grN').addEventListener('input',    function (e) { gr.n    = +e.target.value; $('grNV').textContent = gr.n; grRender(); });
+  window.addEventListener('resize', grRender);
+  grRender();
+
+  /* ============================================================
+     TOOL 4 — BREAKPOINT SIMULATOR
+     ============================================================ */
+  var MQ_CSS =
+    '/* ---------- base: phone, no query ---------- */\n' +
+    '.layout { display: grid; gap: 14px; padding: 14px; }\n' +
+    '.nav ul { display: flex; flex-direction: column; gap: 6px; }\n' +
+    '.cards { display: grid; gap: 12px; }\n' +
+    '.aside { order: 2; }\n\n' +
+    '/* ---------- 40em / 640px ---------- */\n' +
+    '@media (min-width: 40em) {\n' +
+    '  .nav ul { flex-direction: row; }\n' +
+    '  .cards  { grid-template-columns: repeat(2, 1fr); }\n' +
+    '}\n\n' +
+    '/* ---------- 48em / 768px ---------- */\n' +
+    '@media (min-width: 48em) {\n' +
+    '  .cards  { grid-template-columns: repeat(3, 1fr); }\n' +
+    '}\n\n' +
+    '/* ---------- 64em / 1024px ---------- */\n' +
+    '@media (min-width: 64em) {\n' +
+    '  .layout { grid-template-columns: 1fr 220px; }\n' +
+    '  .aside  { order: 0; }\n' +
+    '}';
+
+  var MQ_RULES = [
+    { w:0,    label:'base (no query)',        note:'one column · nav stacked · sidebar below' },
+    { w:640,  label:'@media (min-width: 40em)', note:'nav becomes a row · 2 cards across' },
+    { w:768,  label:'@media (min-width: 48em)', note:'3 cards across' },
+    { w:1024, label:'@media (min-width: 64em)', note:'sidebar moves beside the article' }
+  ];
+
+  function mqDoc() {
+    return '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+      '<style>' +
+      'body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff;color:#12181C;font-size:13px}' +
+      'header{background:#0E6E68;color:#fff;padding:12px 14px}' +
+      'header h1{margin:0 0 8px;font-size:17px}' +
+      '.nav ul{list-style:none;margin:0;padding:0}' +
+      '.nav a{color:#DCEEEC;text-decoration:none;font-size:12.5px;display:block;padding:3px 0}' +
+      'h2{font-size:14px;margin:0 0 8px}' +
+      '.card{background:#F4F7F8;border:1px solid #DCE3E6;border-radius:8px;padding:12px;font-size:12px}' +
+      '.aside{background:#F1E5F4;border:1px solid #7A3E86;border-radius:8px;padding:12px;font-size:12px;color:#5C2E66}' +
+      'footer{background:#EDF2F3;padding:11px 14px;font-size:11.5px;color:#6B7C86}' +
+      MQ_CSS +
+      '</style></head><body>' +
+      '<header><h1>Aurora Academy</h1><nav class="nav"><ul>' +
+      '<li><a href="#">Courses</a></li><li><a href="#">Schedule</a></li><li><a href="#">Contact</a></li>' +
+      '</ul></nav></header>' +
+      '<div class="layout">' +
+        '<main><h2>Upcoming batches</h2><div class="cards">' +
+        '<div class="card">HTML &amp; semantics</div><div class="card">CSS layout</div>' +
+        '<div class="card">JavaScript</div><div class="card">Deployment</div>' +
+        '</div></main>' +
+        '<aside class="aside"><b>Sidebar</b><br>On a phone this sits below the article. At 1024px it moves beside it.</aside>' +
+      '</div>' +
+      '<footer>© 2026 Aurora Academy</footer></body></html>';
+  }
+
+  function mqRender(w) {
+    $('mqFrame').style.width = w + 'px';
+    $('mqW').textContent = w + 'px';
+    $('mqRules').innerHTML = MQ_RULES.map(function (r) {
+      var on = w >= r.w;
+      return '<div class="mqrule' + (on ? ' active' : '') + '"><span class="st">' + (on ? '✓' : '·') + '</span>'
+        + '<span>' + esc(r.label) + '<i>' + esc(r.note) + '</i></span></div>';
+    }).join('');
+    Array.prototype.forEach.call($('mqJump').children, function (b) {
+      b.classList.toggle('on', +b.dataset.w === w);
+    });
+  }
+  $('mqFrame').srcdoc = mqDoc();
+  $('mqCss').textContent = MQ_CSS;
+  $('mqSlider').addEventListener('input', function (e) { mqRender(+e.target.value); });
+  $('mqJump').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    $('mqSlider').value = b.dataset.w; mqRender(+b.dataset.w);
+  });
+  mqRender(375);
+
+  /* ============================================================
+     CHALLENGES
+     ============================================================ */
+  function P(raw){ return new DOMParser().parseFromString(raw, 'text/html'); }
+  function cssOf(doc){
+    var out = '';
+    Array.prototype.forEach.call(doc.querySelectorAll('style'), function (s) { out += s.textContent + '\n'; });
+    return out;
+  }
+  function clean(css){ return String(css).replace(/\/\*[\s\S]*?\*\//g, ''); }
+  // every declaration block whose selector list contains `selector`
+  function blocks(css, selector){
+    var out = [], re = /([^{}]+)\{([^{}]*)\}/g, m;
+    var want = selector.replace(/\s+/g, ' ').trim().toLowerCase();
+    var c = clean(css).replace(/@media[^{]*\{/g, '');   // flatten one level of @media
+    while ((m = re.exec(c)) !== null) {
+      var sels = m[1].split(',').map(function (s) { return s.replace(/\s+/g, ' ').trim().toLowerCase(); });
+      if (sels.indexOf(want) >= 0) out.push(m[2]);
+    }
+    return out;
+  }
+  function decl(css, selector, prop){
+    var v = null;
+    blocks(css, selector).forEach(function (b) {
+      var m = b.match(new RegExp('(?:^|;)\\s*' + prop.replace(/-/g, '\\-') + '\\s*:\\s*([^;]+)', 'i'));
+      if (m) v = m[1].trim();
+    });
+    return v;
+  }
+  function anyDecl(css, prop, test){
+    var re = new RegExp('(?:^|[;{])\\s*' + prop.replace(/-/g, '\\-') + '\\s*:\\s*([^;}]+)', 'gi'), m, found = false;
+    var c = clean(css);
+    while ((m = re.exec(c)) !== null) { if (test(m[1].trim())) found = true; }
+    return found;
+  }
+  // media query blocks: returns [{cond, body}]
+  function medias(css){
+    var out = [], c = clean(css), i = 0;
+    while ((i = c.indexOf('@media', i)) !== -1) {
+      var open = c.indexOf('{', i); if (open < 0) break;
+      var depth = 1, j = open + 1;
+      while (j < c.length && depth > 0) { if (c[j] === '{') depth++; else if (c[j] === '}') depth--; j++; }
+      out.push({ cond: c.slice(i + 6, open).trim(), body: c.slice(open + 1, j - 1), at: i });
+      i = j;
+    }
+    return out;
+  }
+  function num(v){ var m = String(v).match(/-?[\d.]+/); return m ? parseFloat(m[0]) : NaN; }
+  function words(v){ return String(v).trim().split(/\s+/); }
+  function isFlex(css, sel){ return /(^|\s)(inline-)?flex\b/.test(String(decl(css, sel, 'display'))); }
+  function isGrid(css, sel){ return /(^|\s)(inline-)?grid\b/.test(String(decl(css, sel, 'display'))); }
+
+  var CH = [
+    { id:'L1', title:'The navbar', lvl:'m',
+      scen:'The header has the logo and the menu stacked on top of each other, both flush left.',
+      brief:'Make the header a flex row with the <b>logo hard left and the menu hard right</b>, both <b>vertically centred</b>. The menu links must sit in a row with a gap. Use no fixed widths and no floats.',
+      start:'<style>\n  .site-head {\n    background: #E6F3F1;\n    padding: 12px 18px;\n    /* your code */\n  }\n  .site-head nav ul {\n    list-style: none; margin: 0; padding: 0;\n    /* your code */\n  }\n</style>\n\n<header class="site-head">\n  <a class="logo" href="/">Aurora</a>\n  <nav><ul>\n    <li><a href="#">Courses</a></li>\n    <li><a href="#">Contact</a></li>\n  </ul></nav>\n</header>',
+      hint:'On .site-head: display:flex; justify-content:space-between; align-items:center. On the ul: display:flex plus a gap.',
+      checks:[
+        {l:'.site-head is a flex container', f:function(d){ return isFlex(cssOf(d), '.site-head'); }},
+        {l:'Logo and nav are pushed apart', f:function(d){
+          var v = decl(cssOf(d), '.site-head', 'justify-content');
+          return /space-between|space-around|space-evenly/.test(String(v)) ||
+                 /auto/.test(String(decl(cssOf(d), '.site-head nav', 'margin-left'))); }},
+        {l:'They are vertically centred', f:function(d){
+          return /center/.test(String(decl(cssOf(d), '.site-head', 'align-items'))); }},
+        {l:'The menu list is also a flex row', f:function(d){
+          var css = cssOf(d);
+          if (!isFlex(css, '.site-head nav ul')) return false;
+          var dir = decl(css, '.site-head nav ul', 'flex-direction');
+          return !dir || /row/.test(dir); }},
+        {l:'The links have a gap between them', f:function(d){
+          var v = decl(cssOf(d), '.site-head nav ul', 'gap') || decl(cssOf(d), '.site-head nav ul', 'column-gap');
+          return !!v && num(v) > 0; }},
+        {l:'No floats were used', f:function(d){ return !/float\s*:/i.test(clean(cssOf(d))); }}
+      ]},
+
+    { id:'L2', title:'Dead centre', lvl:'m',
+      scen:'A 404 page. The message must sit in the exact middle of the screen, horizontally and vertically.',
+      brief:'Centre <code>.msg</code> in both directions inside <code>.screen</code>. <b>The container must have a real height</b> or there is no vertical space to centre within — that is the part people forget.',
+      start:'<style>\n  .screen {\n    background: #F4F7F8;\n    /* your code */\n  }\n  .msg { font-size: 20px; font-weight: 700; }\n</style>\n\n<div class="screen">\n  <p class="msg">404 — not found</p>\n</div>',
+      hint:'display:flex; justify-content:center; align-items:center; and a height — min-height:60vh or similar. Without the height nothing appears to happen.',
+      checks:[
+        {l:'.screen is a flex container', f:function(d){ return isFlex(cssOf(d), '.screen'); }},
+        {l:'Centred on the main axis', f:function(d){
+          return /center/.test(String(decl(cssOf(d), '.screen', 'justify-content'))); }},
+        {l:'Centred on the cross axis', f:function(d){
+          return /center/.test(String(decl(cssOf(d), '.screen', 'align-items'))); }},
+        {l:'.screen has a real height to centre within', f:function(d){
+          var css = cssOf(d);
+          var h = decl(css, '.screen', 'height') || decl(css, '.screen', 'min-height');
+          return !!h && num(h) > 0; }},
+        {l:'No absolute positioning or transform hacks', f:function(d){
+          var b = blocks(cssOf(d), '.msg').concat(blocks(cssOf(d), '.screen')).join(';');
+          return !/position\s*:\s*absolute/i.test(b) && !/translate/i.test(b); }}
+      ]},
+
+    { id:'L3', title:'Cards that line up', lvl:'m',
+      scen:'Three pricing cards. One has a long title, so its button sits higher than the other two and the row looks broken.',
+      brief:'Make the row of cards <b>equal height</b>, and pin every <b>button to the bottom</b> of its own card however much text is above it. <b>Do not set any fixed heights.</b>',
+      start:'<style>\n  .row { /* your code */ }\n  .card {\n    border: 1px solid #DCE3E6;\n    border-radius: 9px;\n    padding: 14px;\n    /* your code */\n  }\n  .card button { /* your code */ }\n</style>\n\n<div class="row">\n  <div class="card"><h3>Basic</h3><p>Short.</p><button>Choose</button></div>\n  <div class="card"><h3>Pro</h3><p>A much longer description that wraps onto several lines and makes this card taller.</p><button>Choose</button></div>\n  <div class="card"><h3>Max</h3><p>Medium length text.</p><button>Choose</button></div>\n</div>',
+      hint:'.row is flex (stretch is the default, which gives equal heights). Each .card is ALSO flex, direction column. Then margin-top:auto on the button pushes it down.',
+      checks:[
+        {l:'.row is a flex container', f:function(d){ return isFlex(cssOf(d), '.row'); }},
+        {l:'Cards are not forced to a fixed height', f:function(d){
+          var h = decl(cssOf(d), '.card', 'height');
+          return !h || /auto|100%/.test(h); }},
+        {l:'.card is itself a flex column', f:function(d){
+          var css = cssOf(d);
+          return isFlex(css, '.card') && /column/.test(String(decl(css, '.card', 'flex-direction'))); }},
+        {l:'The button is pushed to the bottom with an auto margin', f:function(d){
+          var css = cssOf(d);
+          var mt = decl(css, '.card button', 'margin-top') || decl(css, '.card button', 'margin');
+          return /auto/.test(String(mt)); }},
+        {l:'align-items was not set to something that breaks stretch', f:function(d){
+          var v = decl(cssOf(d), '.row', 'align-items');
+          return !v || /stretch|normal/.test(v); }},
+        {l:'The cards share the width', f:function(d){
+          var css = cssOf(d);
+          var f = decl(css, '.card', 'flex') || decl(css, '.card', 'flex-grow') || decl(css, '.card', 'width');
+          return !!f; }}
+      ]},
+
+    { id:'L4', title:'Sidebar that will not budge', lvl:'m',
+      scen:'The 240px sidebar keeps shrinking when the article has a long unbroken URL in it, and the article overflows the page.',
+      brief:'Pin <code>.side</code> at <b>exactly 240px — never growing, never shrinking</b>. Let <code>.main</code> take everything else. Then add the <b>one property that stops a flex item overflowing its container</b> when its content will not break.',
+      start:'<style>\n  .shell { display: flex; gap: 16px; }\n  .side {\n    background: #F1E5F4;\n    /* pin it */\n  }\n  .main {\n    background: #F4F7F8;\n    /* fill the rest, and stop overflowing */\n  }\n</style>\n\n<div class="shell">\n  <aside class="side">Sidebar</aside>\n  <main class="main">https://example.com/a/very/long/unbroken/url/that/will/not/wrap/anywhere</main>\n</div>',
+      hint:'.side { flex: 0 0 240px }  — grow 0, shrink 0, basis 240px.  .main { flex: 1; min-width: 0 } — a flex item will not shrink below its content size unless min-width is 0.',
+      checks:[
+        {l:'.side sets a flex shorthand', f:function(d){ return !!decl(cssOf(d), '.side', 'flex'); }},
+        {l:'.side neither grows nor shrinks', f:function(d){
+          var v = decl(cssOf(d), '.side', 'flex');
+          if (!v) return false;
+          var w = words(v);
+          return w.length === 3 && num(w[0]) === 0 && num(w[1]) === 0; }},
+        {l:'Its basis is 240px', f:function(d){
+          var v = decl(cssOf(d), '.side', 'flex');
+          return !!v && num(words(v)[2]) === 240; }},
+        {l:'.main grows into the remaining space', f:function(d){
+          var css = cssOf(d);
+          var v = decl(css, '.main', 'flex') || decl(css, '.main', 'flex-grow');
+          return !!v && num(v) >= 1; }},
+        {l:'.main has min-width: 0 so it can shrink', f:function(d){
+          return num(decl(cssOf(d), '.main', 'min-width')) === 0; }}
+      ]},
+
+    { id:'L5', title:'The badge and its anchor', lvl:'a',
+      scen:'A "SALE" badge is meant to sit on the top-right corner of each product card. Instead all of them are stacked in the corner of the page.',
+      brief:'Anchor the badge to <b>its own card</b>. Then answer in a CSS comment: <b>which property on which element</b> was missing, and why the badge went to the page corner instead.',
+      start:'<style>\n  .product {\n    border: 1px solid #DCE3E6;\n    border-radius: 9px;\n    padding: 16px;\n    margin: 20px;\n    /* something is missing here */\n  }\n  .badge {\n    position: absolute;\n    top: -10px;\n    right: -10px;\n    background: #B03A2E;\n    color: #fff;\n    border-radius: 999px;\n    padding: 4px 10px;\n  }\n\n  /* explain the bug here */\n\n</style>\n\n<div class="product"><span class="badge">SALE</span>Aurora sleeve</div>\n<div class="product"><span class="badge">SALE</span>Aurora stand</div>',
+      hint:'position:relative on .product. An absolute element is positioned against its nearest ancestor whose position is not static — with none, it falls back to the page itself.',
+      checks:[
+        {l:'.product is a positioned element', f:function(d){
+          return /relative/.test(String(decl(cssOf(d), '.product', 'position'))); }},
+        {l:'.badge is still absolute', f:function(d){
+          return /absolute/.test(String(decl(cssOf(d), '.badge', 'position'))); }},
+        {l:'The badge offsets were kept', f:function(d){
+          var css = cssOf(d);
+          return !!decl(css, '.badge', 'top') && !!decl(css, '.badge', 'right'); }},
+        {l:'A comment explains the missing property', f:function(d){
+          var cs = cssOf(d).match(/\/\*[\s\S]*?\*\//g) || [];
+          return cs.some(function(c){
+            return /relative|position|ancestor|static/i.test(c) && c.replace(/[^a-z]/gi,'').length > 20; }); }},
+        {l:'The explanation mentions the ancestor rule', f:function(d){
+          var cs = (cssOf(d).match(/\/\*[\s\S]*?\*\//g) || []).join(' ');
+          return /ancestor|parent|static|page|body|containing/i.test(cs); }}
+      ]},
+
+    { id:'L6', title:'Sticky that actually sticks', lvl:'a',
+      scen:'A sticky section header was added a week ago. It has never stuck once, and nobody can work out why.',
+      brief:'Make <code>.head</code> stick to the top of the scroll area. <b>Two separate things are wrong</b> — one on the sticky element itself, and one on an ancestor. Fix both.',
+      start:'<style>\n  .panel {\n    height: 200px;\n    overflow: hidden;      /* something here is a problem */\n    border: 1px solid #DCE3E6;\n  }\n  .head {\n    position: sticky;      /* and something here is missing */\n    background: #1E7A4C;\n    color: #fff;\n    padding: 8px 12px;\n  }\n  .body { padding: 12px; }\n</style>\n\n<div class="panel">\n  <div class="head">Section A</div>\n  <div class="body">Lots of scrolling content goes here.<br><br>More.<br><br>More.<br><br>More.</div>\n</div>',
+      hint:'Sticky needs a threshold — top: 0. And any ancestor with overflow hidden/auto/scroll kills it; the panel needs overflow:auto so it scrolls, not hidden so it clips.',
+      checks:[
+        {l:'.head is still position: sticky', f:function(d){
+          return /sticky/.test(String(decl(cssOf(d), '.head', 'position'))); }},
+        {l:'.head now has a threshold', f:function(d){
+          var css = cssOf(d);
+          return ['top','bottom','left','right'].some(function(p){ return decl(css, '.head', p) !== null; }); }},
+        {l:'The ancestor no longer clips with overflow: hidden', f:function(d){
+          var v = decl(cssOf(d), '.panel', 'overflow');
+          return !v || !/hidden|clip/.test(v); }},
+        {l:'The panel can still scroll', f:function(d){
+          var css = cssOf(d);
+          var v = decl(css, '.panel', 'overflow') || decl(css, '.panel', 'overflow-y');
+          return !!v && /auto|scroll/.test(v); }},
+        {l:'The panel keeps a constrained height', f:function(d){
+          var css = cssOf(d);
+          var h = decl(css, '.panel', 'height') || decl(css, '.panel', 'max-height');
+          return !!h && num(h) > 0; }}
+      ]},
+
+    { id:'L7', title:'Reorder without breaking the keyboard', lvl:'a',
+      scen:'On mobile the promo banner should appear above the article. A developer used order — and the tab sequence now jumps around the page.',
+      brief:'Move <code>.promo</code> visually to the top using <b><code>order</code></b>, but leave the DOM untouched. Then write a comment stating <b>what order does not change</b> — this is the interview answer.',
+      start:'<style>\n  .wrap { display: flex; flex-direction: column; gap: 12px; }\n  .promo { background: #F7E9D8; padding: 12px; }\n  .article { background: #F4F7F8; padding: 12px; }\n\n  /* move the promo up, then explain the caveat */\n\n</style>\n\n<div class="wrap">\n  <article class="article">The article, first in the HTML.</article>\n  <aside class="promo"><a href="#">Promo link</a></aside>\n</div>',
+      hint:'order: -1 on .promo pulls it in front without touching anything else. Then say in a comment that order changes only the visual order — tab order and screen reader order still follow the HTML.',
+      checks:[
+        {l:'.promo has an order value', f:function(d){ return decl(cssOf(d), '.promo', 'order') !== null; }},
+        {l:'That order puts it before the article', f:function(d){
+          var css = cssOf(d);
+          var p = num(decl(css, '.promo', 'order'));
+          var a = decl(css, '.article', 'order');
+          var av = a === null ? 0 : num(a);
+          return !isNaN(p) && p < av; }},
+        {l:'The HTML order was not changed', f:function(d){
+          var kids = d.querySelectorAll('.wrap > *');
+          return kids.length === 2 && kids[0].classList.contains('article'); }},
+        {l:'A comment states the caveat', f:function(d){
+          var cs = (cssOf(d).match(/\/\*[\s\S]*?\*\//g) || []).join(' ');
+          return /tab|keyboard|screen ?reader|focus|dom|reading|accessib/i.test(cs); }},
+        {l:'That comment is a real explanation, not a placeholder', f:function(d){
+          var cs = (cssOf(d).match(/\/\*[\s\S]*?\*\//g) || []);
+          return cs.some(function(c){
+            return /tab|keyboard|screen ?reader|focus|dom|reading|accessib/i.test(c) &&
+                   c.replace(/[^a-z]/gi,'').length > 25; }); }}
+      ]},
+
+    { id:'L8', title:'A gallery with no breakpoints', lvl:'a',
+      scen:'The gallery has four media queries controlling its column count, and it still looks wrong inside the narrow sidebar.',
+      brief:'Replace the whole thing with <b>one</b> <code>grid-template-columns</code> declaration that fills as many columns as fit, never narrower than <b>200px</b>, stretching to share the space. <b>Delete every media query.</b>',
+      start:'<style>\n  .gallery {\n    display: grid;\n    gap: 14px;\n    grid-template-columns: 1fr;\n  }\n  @media (min-width: 600px)  { .gallery { grid-template-columns: repeat(2, 1fr) } }\n  @media (min-width: 900px)  { .gallery { grid-template-columns: repeat(3, 1fr) } }\n  @media (min-width: 1200px) { .gallery { grid-template-columns: repeat(4, 1fr) } }\n</style>\n\n<div class="gallery">\n  <img alt="1"><img alt="2"><img alt="3"><img alt="4"><img alt="5">\n</div>',
+      hint:'repeat(auto-fit, minmax(200px, 1fr)) — and remove all four media queries. auto-fit stretches the items; auto-fill would leave empty columns.',
+      checks:[
+        {l:'.gallery is still a grid with a gap', f:function(d){
+          var css = cssOf(d);
+          return isGrid(css, '.gallery') && !!decl(css, '.gallery', 'gap'); }},
+        {l:'Every media query is gone', f:function(d){ return medias(cssOf(d)).length === 0; }},
+        {l:'The columns use repeat() with auto-fit', f:function(d){
+          var v = decl(cssOf(d), '.gallery', 'grid-template-columns');
+          return !!v && /repeat\s*\(\s*auto-fit/i.test(v); }},
+        {l:'It uses minmax with a 200px floor', f:function(d){
+          var v = decl(cssOf(d), '.gallery', 'grid-template-columns');
+          return !!v && /minmax\s*\(\s*200px/i.test(v); }},
+        {l:'The upper bound is 1fr so columns share the space', f:function(d){
+          var v = decl(cssOf(d), '.gallery', 'grid-template-columns');
+          return !!v && /minmax\s*\(\s*200px\s*,\s*1fr\s*\)/i.test(v); }},
+        {l:'It is a single declaration, not a list of fixed tracks', f:function(d){
+          var v = String(decl(cssOf(d), '.gallery', 'grid-template-columns'));
+          return !/\b\d+fr\s+\d+fr/.test(v); }}
+      ]},
+
+    { id:'L9', title:'The page skeleton', lvl:'a',
+      scen:'Header, sidebar, main and footer. The header and footer must span the full width; the footer must sit at the bottom even on a short page.',
+      brief:'Build the skeleton with <b>grid</b>: a <b>240px sidebar and a fluid main</b>, three rows where the <b>middle row takes the remaining height</b>, and header and footer spanning <b>all columns</b> using the line-based syntax.',
+      start:'<style>\n  .page {\n    /* your code */\n  }\n  header, footer { background: #E6F3F1; padding: 12px;\n    /* span the full width */\n  }\n  .side { background: #F1E5F4; padding: 12px; }\n  main  { background: #F4F7F8; padding: 12px; }\n</style>\n\n<div class="page">\n  <header>Header</header>\n  <aside class="side">Sidebar</aside>\n  <main>Main content</main>\n  <footer>Footer</footer>\n</div>',
+      hint:'display:grid; grid-template-columns: 240px 1fr; grid-template-rows: auto 1fr auto; min-height:100vh. Then on header and footer: grid-column: 1 / -1  — first line to last line.',
+      checks:[
+        {l:'.page is a grid', f:function(d){ return isGrid(cssOf(d), '.page'); }},
+        {l:'Columns are a 240px sidebar and a fluid main', f:function(d){
+          var v = decl(cssOf(d), '.page', 'grid-template-columns');
+          return !!v && /240px/.test(v) && /1fr/.test(v); }},
+        {l:'Three rows, with the middle one taking the slack', f:function(d){
+          var v = decl(cssOf(d), '.page', 'grid-template-rows');
+          if (!v) return false;
+          var w = words(v);
+          return w.length === 3 && /1fr/.test(w[1]); }},
+        {l:'The page fills the viewport height', f:function(d){
+          var css = cssOf(d);
+          var h = decl(css, '.page', 'min-height') || decl(css, '.page', 'height');
+          return !!h && /vh|%/.test(h); }},
+        {l:'Header and footer span every column', f:function(d){
+          var css = cssOf(d);
+          var v = decl(css, 'header, footer', 'grid-column') ||
+                  decl(css, 'header', 'grid-column') || decl(css, 'footer', 'grid-column');
+          return !!v && (/1\s*\/\s*-1/.test(v) || /span\s*2/.test(v)); }},
+        {l:'It uses the 1 / -1 line syntax, not a hard-coded span', f:function(d){
+          var css = cssOf(d);
+          var v = String(decl(css, 'header, footer', 'grid-column') || decl(css, 'header', 'grid-column'));
+          return /1\s*\/\s*-1/.test(v); }}
+      ]},
+
+    { id:'L10', title:'Mobile first, properly', lvl:'a',
+      scen:'A desktop-first stylesheet with max-width queries. On a phone the browser parses four rules for the grid and then undoes three of them.',
+      brief:'Rewrite it <b>mobile first</b>. The phone layout must be the <b>base rules with no query at all</b>; every query must use <b><code>min-width</code></b>, in <b>ascending</b> order, and must appear <b>after</b> the base rule. Use <code>em</code> units in the queries.',
+      start:'<style>\n  /* desktop first — rewrite this */\n  .cards { display: grid; gap: 14px; grid-template-columns: repeat(4, 1fr); }\n\n  @media (max-width: 1023px) { .cards { grid-template-columns: repeat(3, 1fr) } }\n  @media (max-width: 767px)  { .cards { grid-template-columns: repeat(2, 1fr) } }\n  @media (max-width: 639px)  { .cards { grid-template-columns: 1fr } }\n</style>\n\n<div class="cards"><div>1</div><div>2</div><div>3</div><div>4</div></div>',
+      hint:'Base: .cards { display:grid; gap:14px } — one column, no query needed. Then @media (min-width: 40em) two columns, (min-width: 48em) three, (min-width: 64em) four. 640/16 = 40em.',
+      checks:[
+        {l:'No max-width query remains', f:function(d){
+          return !medias(cssOf(d)).some(function(m){ return /max-width/i.test(m.cond); }); }},
+        {l:'At least two min-width queries', f:function(d){
+          return medias(cssOf(d)).filter(function(m){ return /min-width/i.test(m.cond); }).length >= 2; }},
+        {l:'The queries use em, not px', f:function(d){
+          var ms = medias(cssOf(d)).filter(function(m){ return /min-width/i.test(m.cond); });
+          return ms.length > 0 && ms.every(function(m){ return /em/i.test(m.cond); }); }},
+        {l:'They are in ascending order', f:function(d){
+          var ns = medias(cssOf(d)).filter(function(m){ return /min-width/i.test(m.cond); }).map(function(m){ return num(m.cond); });
+          for (var i = 1; i < ns.length; i++) if (ns[i] <= ns[i-1]) return false;
+          return ns.length > 0; }},
+        {l:'The base .cards rule has no multi-column track list', f:function(d){
+          var css = clean(cssOf(d));
+          var firstMedia = css.indexOf('@media');
+          var base = firstMedia < 0 ? css : css.slice(0, firstMedia);
+          var m = base.match(/\.cards[^{]*\{([^}]*)\}/);
+          if (!m) return false;
+          var g = m[1].match(/grid-template-columns\s*:\s*([^;]+)/i);
+          return !g || !/repeat\s*\(\s*[2-9]|1fr\s+1fr/.test(g[1]); }},
+        {l:'The base rule still declares the grid and gap', f:function(d){
+          var css = clean(cssOf(d));
+          var firstMedia = css.indexOf('@media');
+          var base = firstMedia < 0 ? css : css.slice(0, firstMedia);
+          return /display\s*:\s*grid/i.test(base) && /gap\s*:/i.test(base); }},
+        {l:'Every query sits after the base rule', f:function(d){
+          var css = clean(cssOf(d));
+          return css.indexOf('.cards') < css.indexOf('@media'); }}
+      ]},
+
+    { id:'L11', title:'Boss — the responsive page', lvl:'b',
+      scen:'One page, three layouts, judged in an interview. Markup and CSS both count.',
+      brief:'Build a complete responsive page. It must use <b>grid for the skeleton</b>, <b>flex for the navbar</b>, a <b>sticky header with a threshold</b>, an <b>auto-fit gallery</b>, at least <b>two min-width breakpoints in em</b>, and a <b>prefers-reduced-motion</b> block. Every requirement below is checked.',
+      start:'<!-- Build the page. Suggested structure:\n     header.top (sticky) > nav > ul\n     div.page > main > .gallery > 4 cards\n              > aside.side\n     footer\n-->\n<style>\n  *, *::before, *::after { box-sizing: border-box; }\n\n  /* base — phone */\n\n\n  /* breakpoints, ascending, at the bottom */\n\n</style>\n\n<header class="top">\n\n</header>',
+      hint:'Sticky: position:sticky; top:0 on .top. Skeleton: .page { display:grid } and at 64em give it grid-template-columns: 1fr 240px. Gallery: repeat(auto-fit, minmax(180px,1fr)). Motion: @media (prefers-reduced-motion: reduce) { * { transition:none } }.',
+      checks:[
+        {l:'A sticky header with a threshold', f:function(d){
+          var css = cssOf(d);
+          var found = false;
+          var re = /([^{}]+)\{([^{}]*)\}/g, m, c = clean(css);
+          while ((m = re.exec(c)) !== null) {
+            if (/position\s*:\s*sticky/i.test(m[2]) && /(^|;)\s*(top|bottom)\s*:/i.test(m[2])) found = true;
+          }
+          return found; }},
+        {l:'A flex container for the navigation', f:function(d){
+          var css = clean(cssOf(d));
+          var re = /([^{}]+)\{([^{}]*)\}/g, m, ok = false;
+          while ((m = re.exec(css)) !== null) {
+            if (/nav|menu|ul/i.test(m[1]) && /display\s*:\s*flex/i.test(m[2])) ok = true;
+          }
+          return ok; }},
+        {l:'A grid is used for the page skeleton', f:function(d){
+          return anyDecl(cssOf(d), 'display', function(v){ return /^grid$/i.test(v.trim()); }); }},
+        {l:'An auto-fit gallery with minmax', f:function(d){
+          return anyDecl(cssOf(d), 'grid-template-columns', function(v){
+            return /auto-fit/i.test(v) && /minmax/i.test(v); }); }},
+        {l:'At least two min-width media queries', f:function(d){
+          return medias(cssOf(d)).filter(function(m){ return /min-width/i.test(m.cond); }).length >= 2; }},
+        {l:'Those breakpoints are in em and ascending', f:function(d){
+          var ms = medias(cssOf(d)).filter(function(m){ return /min-width/i.test(m.cond); });
+          if (ms.length < 2) return false;
+          if (!ms.every(function(m){ return /em/i.test(m.cond); })) return false;
+          var ns = ms.map(function(m){ return num(m.cond); });
+          for (var i = 1; i < ns.length; i++) if (ns[i] <= ns[i-1]) return false;
+          return true; }},
+        {l:'No max-width query anywhere', f:function(d){
+          return !medias(cssOf(d)).some(function(m){ return /max-width/i.test(m.cond); }); }},
+        {l:'A prefers-reduced-motion block', f:function(d){
+          return medias(cssOf(d)).some(function(m){ return /prefers-reduced-motion/i.test(m.cond); }); }},
+        {l:'Markup: header, nav with 2+ links, main and footer', f:function(d){
+          var nav = d.querySelector('nav');
+          return !!d.querySelector('header') && !!nav && nav.querySelectorAll('a').length >= 2 &&
+                 !!d.querySelector('main') && !!d.querySelector('footer'); }},
+        {l:'Markup: a gallery holding 4 or more items', f:function(d){
+          var g = d.querySelector('.gallery');
+          return !!g && g.children.length >= 4; }},
+        {l:'Markup: exactly one h1', f:function(d){ return d.querySelectorAll('h1').length === 1; }},
+        {l:'No inline style attributes — it all lives in the stylesheet', f:function(d){
+          return d.querySelectorAll('body [style]').length === 0; }}
+      ]}
+  ];
+
+  var solved = {}, attempts = {}, chIdx = 0;
+  var chList = $('chList'), chCode = $('chCode'), chPrev = $('chPrev');
+  var chChecks = $('chChecks'), chVerdict = $('chVerdict'), chHintBox = $('chHintBox');
+
+  /* ============================================================
+     THREE LANES — same problem, same checks, different scaffolding.
+     Nobody is separated or labelled: every learner runs the identical
+     acceptance criteria. Only the amount of help changes.
+     ============================================================ */
+  var GUIDED = {
+  "L1": [
+    "Make .site-head a flex container            ->  display: flex",
+    "Push the logo and the nav to opposite ends  ->  justify-content: ______",
+    "Line them up vertically                     ->  align-items: ______",
+    "Make the menu list a row                    ->  display: flex on the ul",
+    "Space the links apart with gap, not margin  ->  gap: 18px"
+  ],
+  "L2": [
+    "Make .screen a flex container               ->  display: flex",
+    "Centre along the main axis                  ->  justify-content: center",
+    "Centre across the cross axis                ->  align-items: center",
+    "Give .screen a height or there is no room   ->  min-height: 60vh",
+    "(without the height nothing appears to happen - that is the lesson)"
+  ],
+  "L3": [
+    "Make .row a flex container                  ->  display: flex",
+    "Let each card share the width               ->  flex: 1 on .card",
+    "Make each CARD a flex container too         ->  display: flex",
+    "  ...stacking downward                      ->  flex-direction: column",
+    "Push the button to the bottom of its card   ->  margin-top: auto",
+    "Do NOT set a height - equal heights are free from the default stretch"
+  ],
+  "L4": [
+    "Pin the sidebar: grow 0, shrink 0, basis    ->  flex: 0 0 240px",
+    "Let the main area take everything else      ->  flex: 1",
+    "Stop the long URL forcing the layout wider  ->  min-width: 0 on .main",
+    "(a flex item will not shrink below its longest word without that line)"
+  ],
+  "L5": [
+    "The badge is already absolute. It needs an anchor.",
+    "An absolute element measures from the nearest ancestor that is NOT static.",
+    "Give .product that property                 ->  position: relative",
+    "Then write a /* comment */ saying what was missing and why the badge",
+    "ended up in the page corner instead of on the card."
+  ],
+  "L6": [
+    "Two separate bugs here.",
+    "1. Sticky needs a threshold to stick at     ->  add top: 0 to .head",
+    "2. An ancestor with overflow:hidden kills it ->  .panel needs overflow: auto",
+    "Keep the height on .panel so there is something to scroll through."
+  ],
+  "L7": [
+    "Pull .promo in front visually               ->  order: -1",
+    "Leave the HTML exactly as it is.",
+    "Then write a /* comment */ saying what order does NOT change -",
+    "tab order, screen reader reading order, and copy-paste all still",
+    "follow the DOM."
+  ],
+  "L8": [
+    "Delete all four media queries.",
+    "Replace the column declaration with a single line:",
+    "  grid-template-columns: repeat( auto-fit , minmax( 200px , 1fr ) );",
+    "auto-fit stretches the surviving columns; auto-fill would leave gaps."
+  ],
+  "L9": [
+    "Make .page a grid                           ->  display: grid",
+    "Two columns: fixed sidebar, fluid main      ->  grid-template-columns: 240px 1fr",
+    "Three rows, middle one takes the slack      ->  grid-template-rows: auto 1fr auto",
+    "Fill the screen                             ->  min-height: 100vh",
+    "Header and footer span every column         ->  grid-column: 1 / -1"
+  ],
+  "L10": [
+    "The phone layout goes FIRST, with no media query at all:",
+    "  .cards { display: grid; gap: 14px; }      <- one column, nothing else needed",
+    "Then add min-width queries, smallest first, BELOW that rule.",
+    "Convert px to em by dividing by 16:  640 -> 40em, 768 -> 48em, 1024 -> 64em",
+    "Each query only says what CHANGES - never repeat gap or display."
+  ],
+  "L11": [
+    "Work through it in this order:",
+    "1. .top     -> position: sticky; top: 0",
+    "2. .top nav ul -> display: flex; flex-direction: column  (phone first)",
+    "3. .page    -> display: grid; gap; padding",
+    "4. .gallery -> display: grid; repeat(auto-fit, minmax(180px, 1fr))",
+    "5. At the BOTTOM: @media (min-width: 40em) and (min-width: 64em)",
+    "6. Also @media (prefers-reduced-motion: reduce)",
+    "7. Markup: header > nav > ul with 3 links, main > .gallery with 4 items,",
+    "   aside, footer, and exactly one <h1>"
+  ]
+};
+  var STRETCH = {
+  "L1": "Below <b>40em</b> the menu should stack vertically with tap targets at least 44px tall, and collapse behind a toggle. <b>Do it with no JavaScript</b> \u2014 a <code>&lt;details&gt;</code> element or a checkbox + <code>:checked</code> both work. Then say which you would ship and why.",
+  "L2": "Now centre it <b>two more ways</b>: with grid (<code>place-items: center</code>) and with <code>position:absolute</code> + <code>transform: translate(-50%,-50%)</code>. Write one sentence on which you would ship in production and what the transform version costs you.",
+  "L3": "Make the cards <b>wrap onto a second row</b> below 40em, and make the middle card visually larger than the other two <b>without changing the HTML order</b> and without a fixed width.",
+  "L4": "Below <b>64em</b> the sidebar should collapse to a 56px icon rail; above it, return to 240px. Change <b>only the flex-basis</b> inside the media query \u2014 nothing else.",
+  "L5": "Add a <b>second badge</b> at the bottom-left of the same card. Then explain, in a comment, why two absolutely positioned children of the same parent never fight each other for space.",
+  "L6": "Add a <b>fixed top bar</b> above everything and make the sticky header park <b>beneath</b> it rather than under it. Then add a second sticky section and describe what happens when the first section ends.",
+  "L7": "Achieve the <b>same visual result without <code>order</code></b> \u2014 by changing the HTML and using <code>flex-direction</code> or grid placement instead. Then write which version you would ship for a real product, and why.",
+  "L8": "Make the <b>first item span two columns</b> at every width without breaking auto-fit. Then explain why <code>grid-column: span 2</code> can overflow a one-column layout, and what stops it.",
+  "L9": "Rebuild the same skeleton with <b><code>grid-template-areas</code></b> instead of line numbers, and add a breakpoint where the sidebar moves below main on phones. Which version reads better in a review?",
+  "L10": "Add a <b><code>@media print</code></b> block and a <b><code>prefers-reduced-motion</code></b> block. Then write one sentence explaining why neither of them is about screen width at all.",
+  "L11": "Add <b>container queries</b> to the gallery cards so a card sitting in the narrow sidebar lays out differently from one in the wide main column \u2014 <b>with no extra media query</b>. This is the modern answer to the component-reuse problem."
+};
+  var lane = 'standard';
+
+  function guidedStarter(c) {
+    var steps = GUIDED[c.id];
+    if (!steps) return c.start;
+    return '<!-- GUIDED  ·  work through these in order\n\n'
+      + steps.map(function (t, i) {
+          return /^[0-9(.]|^ /.test(t) ? '     ' + t : '  ' + (i + 1) + '. ' + t;
+        }).join('\n')
+      + '\n\n-->\n\n' + c.start;
+  }
+  function starterFor(c) { return lane === 'guided' ? guidedStarter(c) : c.start; }
+  function isUntouched(c) {
+    var v = chCode.value;
+    return v === c.start || v === guidedStarter(c);
+  }
+  function renderLane() {
+    var c = CH[chIdx];
+    Array.prototype.forEach.call(document.querySelectorAll('#chLanes button'), function (b) {
+      b.classList.toggle('on', b.dataset.l === lane);
+    });
+    var note = {
+      guided:   'Every step is written out for you. Follow them in order — the checks are exactly the same.',
+      standard: 'The brief and the checks, nothing else. This is the level to aim for.',
+      stretch:  'Finish the standard task first, then take the extension below. Hints are switched off.'
+    }[lane];
+    $('chLaneNote').textContent = note;
+    var sb = $('chStretch');
+    if (lane === 'stretch' && STRETCH[c.id]) {
+      sb.innerHTML = '<span class="l">Extension · after the checks pass</span>' + STRETCH[c.id];
+      sb.classList.add('show');
+    } else { sb.classList.remove('show'); }
+    $('chHint').style.display = (lane === 'stretch') ? 'none' : '';
+    if (lane !== 'stretch') chHintBox.className = 'hint';
+  }
+  document.getElementById('chLanes').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    var c = CH[chIdx], fresh = isUntouched(c);
+    lane = b.dataset.l;
+    if (fresh) chCode.value = starterFor(c);   // only replace work they have not started
+    renderLane(); preview();
+  });
+
+
+  chList.innerHTML = CH.map(function (c) { return '<button>' + c.id + '</button>'; }).join('');
+  chList.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    loadCh(Array.prototype.indexOf.call(chList.children, b));
+  });
+
+  function updateScore() {
+    $('score').innerHTML = 'solved <b>' + Object.keys(solved).length + '</b> / ' + CH.length;
+    Array.prototype.forEach.call(chList.children, function (b, i) {
+      b.classList.toggle('solved', !!solved[CH[i].id]);
+      b.classList.toggle('on', i === chIdx);
+    });
+  }
+  function preview() {
+    chPrev.srcdoc = '<style>body{font-family:system-ui,-apple-system,sans-serif;padding:12px;color:#111;background:#fff;'
+      + 'line-height:1.5;margin:0;font-size:13px}ul{padding-left:16px}img{background:#dfe6ea;min-height:46px;display:block}'
+      + 'button{font:inherit}</style>' + chCode.value;
+  }
+  function renderChecks(res) {
+    var c = CH[chIdx], html = '';
+    c.checks.forEach(function (ck, i) {
+      var st = res ? (res[i] ? 'pass' : 'fail') : 'idle';
+      var mk = res ? (res[i] ? '✓' : '✕') : '·';
+      html += '<div class="chk ' + st + '"><span class="mk">' + mk + '</span><span>' + esc(ck.l) + '</span></div>';
+    });
+    chChecks.innerHTML = html;
+  }
+  function loadCh(i) {
+    chIdx = i;
+    var c = CH[i];
+    $('chTitle').textContent = c.id + ' · ' + c.title;
+    var lv = $('chLvl');
+    lv.className = 'lvl ' + c.lvl;
+    lv.textContent = c.lvl === 'm' ? 'MODERATE' : (c.lvl === 'a' ? 'ADVANCED' : 'BOSS');
+    $('chScenario').innerHTML = '<span class="l">Real scenario</span>' + c.scen;
+    $('chBrief').innerHTML = c.brief;
+    chCode.value = starterFor(c);
+    chVerdict.textContent = ''; chVerdict.className = 'verdict';
+    chHintBox.className = 'hint'; chHintBox.textContent = c.hint;
+    renderChecks(null); preview(); updateScore(); renderLane();
+    window.scrollTo(0, 0);
+  }
+  function runChecks() {
+    var c = CH[chIdx], raw = chCode.value, doc = P(raw);
+    var res = c.checks.map(function (ck) {
+      try { return !!ck.f(doc, raw); } catch (e) { return false; }
+    });
+    renderChecks(res);
+    var passed = res.filter(Boolean).length;
+    if (passed === res.length) {
+      solved[c.id] = true;
+      chVerdict.className = 'verdict ok';
+      chVerdict.textContent = '✓ All ' + res.length + ' requirements met.';
+    } else {
+      attempts[c.id] = (attempts[c.id] || 0) + 1;
+      chVerdict.className = 'verdict no';
+      chVerdict.textContent = passed + ' of ' + res.length + ' passed — keep going.';
+      if (attempts[c.id] >= 2) chHintBox.className = 'hint show';
+    }
+    updateScore();
+  }
+  chCode.addEventListener('input', preview);
+  $('chRun').addEventListener('click', runChecks);
+  $('chReset').addEventListener('click', function () { loadCh(chIdx); });
+  $('chHint').addEventListener('click', function () { chHintBox.classList.toggle('show'); });
+  loadCh(0);
+  window.__CH = CH;
+
+  /* ============================================================
+     LOGIC DRILLS
+     ============================================================ */
+  var LOGIC = [
+    { q:'.box {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n}',
+      ask:'Does justify-content centre the items horizontally or vertically here?',
+      a:'<p><b>Vertically.</b> <code>justify-content</code> always works along the <b>main axis</b>, and <code>flex-direction: column</code> makes the main axis vertical.</p><p>This is why "justify is horizontal" is a dangerous shortcut — it is only true in a row. Teach the axis, not the direction.</p>' },
+
+    { q:'.box {\n  display: flex;\n  align-content: space-between;\n}',
+      ask:'What does align-content do here?',
+      a:'<p><b>Nothing at all.</b> <code>align-content</code> positions the <i>lines</i> of a wrapped flex container as a group — and with the default <code>flex-wrap: nowrap</code> there is only ever one line.</p><p>Add <code>flex-wrap: wrap</code> and enough items to wrap, and it springs into life. Until then it is silently inert.</p>' },
+
+    { q:'/* three children, one has much longer text */\n.a { flex: 1; }\n.b { flex: auto; }',
+      ask:'Which one makes all three children equal width?',
+      a:'<p><b>.a</b> — because <code>flex: 1</code> expands to <code>1 1 0</code>. The basis is <b>zero</b>, so the content length is ignored entirely and the free space is split evenly.</p><p><code>flex: auto</code> is <code>1 1 auto</code>: the basis is the content, so the item with more text starts wider and stays wider.</p>' },
+
+    { q:'<a href="/one">One</a>\n<a href="/two">Two</a>\n<a href="/three">Three</a>\n\n/* CSS */\na:nth-child(3) { order: -1; }',
+      ask:'The links now read Three, One, Two on screen. What order does Tab move through them?',
+      a:'<p><b>One, Two, Three</b> — the DOM order, unchanged.</p><p><code>order</code> changes only what is painted. Focus order, screen-reader reading order and copy-paste all still follow the HTML. A user tabbing through this sees focus jump from the middle of the screen back to the start, which is disorienting.</p><p><b>Use <code>order</code> for presentation. If the reading order really changes, change the HTML.</b></p>' },
+
+    { q:'<div class="card">\n  <span class="badge">SALE</span>\n</div>\n\n.card  { /* no position set */ }\n.badge { position: absolute; top: 0; right: 0; }',
+      ask:'Where does the badge appear?',
+      a:'<p><b>In the top-right corner of the page</b>, not the card.</p><p>An absolutely positioned element is measured from its nearest ancestor whose <code>position</code> is <b>not static</b>. The card is static, so is everything above it, so the badge falls all the way back to the initial containing block — the page.</p><p>The fix is <code>position: relative</code> on the card, with no offsets. That single line exists purely to become an anchor.</p>' },
+
+    { q:'.header {\n  position: sticky;\n  background: white;\n}',
+      ask:'Under what circumstances does this stick?',
+      a:'<p><b>Never.</b> Sticky needs a threshold to stick <i>at</i> — <code>top</code>, <code>bottom</code>, <code>left</code> or <code>right</code>. With none, it behaves exactly like <code>position: relative</code> and scrolls away.</p><p>There is no error and no warning. It simply does nothing, which is why this one costs people an hour.</p>' },
+
+    { q:'.wrapper { overflow: hidden; }\n.wrapper .header { position: sticky; top: 0; }',
+      ask:'The header has a threshold. Does it stick?',
+      a:'<p><b>No.</b> Any ancestor with <code>overflow</code> set to <code>hidden</code>, <code>auto</code> or <code>scroll</code> becomes the sticky element\'s scroll container. If that container is not itself scrolling, the sticky has nothing to stick against.</p><p>This is the hardest position bug to find, because the <code>overflow: hidden</code> is usually several files away and was added for a completely unrelated reason — clearing floats, or hiding a decorative overflow.</p>' },
+
+    { q:'.modal   { z-index: 99999; }          /* no position */\n.tooltip { position: absolute; z-index: 1; }',
+      ask:'Which one appears on top?',
+      a:'<p><b>The tooltip.</b> <code>z-index</code> is ignored entirely on a <code>static</code> element, so 99999 was never read. (Flex and grid children are the exception — they accept z-index without being positioned.)</p><p>Add <code>position: relative</code> to the modal and the number suddenly starts working. If z-index "does nothing", this is almost always the reason.</p>' },
+
+    { q:'@media (min-width: 768px) {\n  .box { color: blue }\n}\n\n.box { color: red }',
+      ask:'On a 1000px screen, what colour is the box?',
+      a:'<p><b>Red.</b> Media queries add <b>no specificity whatsoever</b>. Both rules match and both are a single class, so the tie is broken by <b>source order</b> — and the plain rule comes last.</p><p>This is why breakpoints belong at the bottom of the stylesheet, largest last. Moving the query below the base rule turns it blue.</p>' },
+
+    { q:'<!-- no viewport meta tag in the head -->\n\n@media (max-width: 600px) {\n  .menu { display: none }\n}',
+      ask:'On a real phone, does the menu hide?',
+      a:'<p><b>No.</b> Without <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;</code> a phone browser pretends to be about 980px wide and zooms the whole page out.</p><p>So <code>max-width: 600px</code> never matches, every breakpoint appears dead, and the page renders as a shrunken desktop layout. <b>Check this line first, every time, before debugging anything responsive.</b></p>' }
+  ];
+
+  $('logicWrap').innerHTML = LOGIC.map(function (d, i) {
+    return '<div class="panel" style="margin-bottom:14px">'
+      + '<span class="lbl">Drill ' + (i + 1) + '</span>'
+      + '<pre>' + esc(d.q) + '</pre>'
+      + '<p style="font-size:15.5px;color:var(--ink);font-weight:600;margin:12px 0">' + d.ask + '</p>'
+      + '<button class="btn sm" data-i="' + i + '">Reveal the answer</button>'
+      + '<div class="note q" id="la' + i + '" style="display:none;margin-top:12px">' + d.a + '</div>'
+      + '</div>';
+  }).join('');
+  $('logicWrap').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-i]'); if (!b) return;
+    var box = $('la' + b.dataset.i);
+    var open = box.style.display !== 'none';
+    box.style.display = open ? 'none' : 'block';
+    b.textContent = open ? 'Reveal the answer' : 'Hide the answer';
+  });
+
+})();
+</script>
+</body>
+</html>

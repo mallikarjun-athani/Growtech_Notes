@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSS Properties and Box Model Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#F4F7F8; --card:#FFFFFF; --sunk:#EDF2F3;
+    --ink:#12181C; --ink-2:#3D4A52; --ink-3:#6B7C86;
+    --line:#D8E1E4; --line-soft:#E7EDEF;
+    --accent:#0E6E68; --accent-soft:#DBEEEC;
+    --amber:#A85A11; --amber-soft:#F8EADA;
+    --blue:#1F5FA8;  --blue-s:#E0EAF7;
+    --plum:#7A3E86;  --plum-s:#F1E5F4;
+    --red:#B03A2E;   --red-s:#FBE6E3;
+    --green:#1E7A4C; --green-s:#DDF0E5;
+    --code-bg:#101A20; --code-ink:#D5E2E6;
+    --shadow:0 1px 2px rgba(18,24,28,.05), 0 8px 24px rgba(18,24,28,.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#0C1317; --card:#131C21; --sunk:#0F171B;
+      --ink:#E9F0F2; --ink-2:#AEBEC5; --ink-3:#7D9099;
+      --line:#26343B; --line-soft:#1C272D;
+      --accent:#5CC8BE; --accent-soft:#123230;
+      --amber:#E0A15C; --amber-soft:#2F2313;
+      --blue:#79B4EE;  --blue-s:#14263A;
+      --plum:#CE9ED9;  --plum-s:#2C1D31;
+      --red:#E88070;   --red-s:#331714;
+      --green:#5FC98C; --green-s:#0F2C1D;
+      --code-bg:#070D10; --code-ink:#D5E2E6;
+      --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 32px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0C1317; --card:#131C21; --sunk:#0F171B;
+    --ink:#E9F0F2; --ink-2:#AEBEC5; --ink-3:#7D9099;
+    --line:#26343B; --line-soft:#1C272D;
+    --accent:#5CC8BE; --accent-soft:#123230;
+    --amber:#E0A15C; --amber-soft:#2F2313;
+    --blue:#79B4EE;  --blue-s:#14263A;
+    --plum:#CE9ED9;  --plum-s:#2C1D31;
+    --red:#E88070;   --red-s:#331714;
+    --green:#5FC98C; --green-s:#0F2C1D;
+    --code-bg:#070D10; --code-ink:#D5E2E6;
+    --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 32px rgba(0,0,0,.3);
+  }
+
+  *{box-sizing:border-box}
+  body{background:var(--paper);color:var(--ink);margin:0;
+    font-family:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4{font-family:"Archivo","IBM Plex Sans",system-ui,sans-serif;margin:0;text-wrap:balance;letter-spacing:-.02em}
+  p{margin:0}
+  code{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.88em;background:var(--sunk);padding:1px 6px;border-radius:4px;border:1px solid var(--line-soft)}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 20px 90px}
+
+  header.top{padding:44px 0 22px;border-bottom:2px solid var(--ink);margin-bottom:6px}
+  .kicker{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+  header.top h1{font-size:clamp(31px,5.2vw,50px);font-weight:800;line-height:1.03;margin-bottom:12px}
+  header.top .lede{font-size:clamp(15px,1.6vw,17.5px);color:var(--ink-2);max-width:72ch}
+  header.top .lede b{color:var(--ink);font-weight:600}
+
+  .nav{position:sticky;top:0;z-index:40;background:var(--paper);box-shadow:0 6px 16px -10px rgba(0,0,0,.35);padding:12px 0;border-bottom:1px solid var(--line);margin-bottom:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .nav button{font-family:"IBM Plex Sans",sans-serif;font-size:13.5px;font-weight:600;padding:8px 14px;border-radius:9px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2)}
+  .nav button.on{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .nav button:hover{border-color:var(--accent)}
+  .nav button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .score{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-3);white-space:nowrap}
+  .score b{color:var(--green);font-size:15px}
+
+  .view{display:none}
+  .view.on{display:block}
+
+  section{margin:34px 0}
+  h2.head{font-size:clamp(19px,2.5vw,26px);font-weight:800;padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:15px}
+  .intro{color:var(--ink-2);font-size:15.5px;max-width:74ch;margin-bottom:16px}
+  .intro b{color:var(--ink);font-weight:600}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:20px;box-shadow:var(--shadow)}
+  .note{border-left:3px solid var(--amber);background:var(--amber-soft);padding:12px 16px;border-radius:0 9px 9px 0;font-size:14.5px;color:var(--ink-2);margin:14px 0}
+  .note b{color:var(--ink)}
+  .note .l{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--amber);margin-bottom:4px;font-weight:600}
+  .note.q{border-left-color:var(--plum);background:var(--plum-s)}
+  .note.q .l{color:var(--plum)}
+
+  .btn{font-family:"IBM Plex Sans",sans-serif;font-size:13.5px;font-weight:600;padding:9px 15px;border-radius:9px;cursor:pointer;border:1px solid var(--line);background:var(--sunk);color:var(--ink)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .btn:hover{border-color:var(--accent)}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .btn[disabled]{opacity:.4;cursor:default}
+  .btn.sm{font-size:12px;padding:6px 11px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+  textarea,input.tx{
+    width:100%;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--line);
+    border-radius:10px;padding:13px 15px;
+    font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.65;resize:vertical;tab-size:2;
+  }
+  input.tx{padding:11px 15px;font-size:15px}
+  textarea:focus,input.tx:focus{outline:2px solid var(--accent);outline-offset:1px}
+  pre{margin:12px 0;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:"IBM Plex Mono",monospace;font-size:12.7px;line-height:1.7;border:1px solid var(--line)}
+  pre .c{color:#6E828B;font-style:italic}
+  pre .t{color:#79D3C9}
+  pre .a{color:#9FC6E8}
+  pre .s{color:#E8B57A}
+  .lbl{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:7px;display:block}
+
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .split > *{min-width:0}
+  @media (max-width:900px){.split{grid-template-columns:1fr}}
+
+  /* ---- selector playground ---- */
+  .stage{background:var(--sunk);border-radius:10px;padding:16px;min-height:300px;font-size:14px}
+  .stage .sh{background:var(--card);border:2px dashed var(--line);border-radius:9px;padding:12px;margin-bottom:10px}
+  .stage .sh .nm{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3);display:block;margin-bottom:6px}
+  .node{border:2px solid var(--line);border-radius:8px;padding:9px 12px;margin:6px 0;background:var(--card);transition:all .2s ease;position:relative}
+  .node .tg{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3)}
+  .node.hit{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+  @media (prefers-reduced-motion:reduce){.node{transition:none}}
+  .selin{display:flex;gap:9px;align-items:center;margin-bottom:12px}
+  .selin span{font-family:"IBM Plex Mono",monospace;font-size:18px;color:var(--accent);font-weight:600}
+  .hitcount{font-family:"IBM Plex Mono",monospace;font-size:13.5px;margin-top:10px;font-weight:600}
+  .hitcount.ok{color:var(--green)} .hitcount.no{color:var(--red)}
+  .presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .presets button{font-family:"IBM Plex Mono",monospace;font-size:11.5px;padding:5px 10px;border-radius:7px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2)}
+  .presets button:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* ---- specificity calc ---- */
+  .spec{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;background:var(--sunk);border-radius:10px;padding:14px 16px;margin-bottom:10px}
+  .spec .sel{font-family:"IBM Plex Mono",monospace;font-size:15px;color:var(--ink);word-break:break-all}
+  .spec .sc{display:flex;gap:5px}
+  .spec .sc i{font-family:"IBM Plex Mono",monospace;font-style:normal;font-size:15px;font-weight:700;width:34px;height:34px;border-radius:7px;display:grid;place-items:center;border:2px solid}
+  .sc i.i0{background:var(--red-s);border-color:var(--red);color:var(--red)}
+  .sc i.i1{background:var(--plum-s);border-color:var(--plum);color:var(--plum)}
+  .sc i.i2{background:var(--blue-s);border-color:var(--blue);color:var(--blue)}
+  .sc i.i3{background:var(--green-s);border-color:var(--green);color:var(--green)}
+  .winner{margin-top:12px;padding:13px 16px;border-radius:10px;background:var(--green-s);border-left:3px solid var(--green);font-size:15px;color:var(--ink)}
+  .winner b{color:var(--green)}
+
+  /* ---- cascade lab ---- */
+  .casc{display:grid;grid-template-columns:1fr 200px;gap:16px}
+  @media (max-width:820px){.casc{grid-template-columns:1fr}}
+  .swatch{border:2px solid var(--line);border-radius:10px;min-height:150px;display:grid;place-items:center;font-family:"Archivo",sans-serif;font-size:22px;font-weight:700;background:var(--card);transition:all .25s}
+  .toggles{display:flex;flex-direction:column;gap:9px}
+  .tog{display:flex;align-items:center;gap:10px;padding:10px 13px;border:1px solid var(--line);border-radius:9px;background:var(--sunk);cursor:pointer;font-size:13.5px}
+  .tog input{accent-color:var(--accent);width:17px;height:17px}
+  .tog.on{border-color:var(--accent);background:var(--accent-soft)}
+  .tog .mono{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3);display:block}
+
+  /* ---- tag matcher ---- */
+  .match{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:820px){.match{grid-template-columns:1fr}}
+  .mq{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--card);margin-bottom:10px}
+  .mq p{font-size:14.5px;color:var(--ink-2);margin-bottom:10px}
+  .mq .opts{display:flex;gap:6px;flex-wrap:wrap}
+  .mq .opts button{font-family:"IBM Plex Mono",monospace;font-size:12px;padding:6px 11px;border-radius:7px;cursor:pointer;border:1px solid var(--line);background:var(--sunk);color:var(--ink-2)}
+  .mq .opts button.right{background:var(--green-s);border-color:var(--green);color:var(--green);font-weight:700}
+  .mq .opts button.wrong{background:var(--red-s);border-color:var(--red);color:var(--red)}
+  .mq .why{margin-top:10px;font-size:13.5px;color:var(--ink-2);display:none;border-top:1px solid var(--line-soft);padding-top:9px}
+  .mq .why.show{display:block}
+
+  /* ---- challenges ---- */
+  .chlist{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+  .chlist button{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2);display:flex;gap:6px;align-items:center}
+  .chlist button.on{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .chlist button.solved{border-color:var(--green)}
+  .chlist button.solved::after{content:"✓";color:var(--green);font-weight:700}
+  .chlist button.on.solved::after{color:var(--card)}
+
+  .chead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+  .chead h3{font-size:19px;font-weight:800}
+  .lvl{font-family:"IBM Plex Mono",monospace;font-size:10px;padding:3px 9px;border-radius:6px;font-weight:600;letter-spacing:.06em}
+  .lvl.m{background:var(--blue-s);color:var(--blue)}
+  .lvl.a{background:var(--plum-s);color:var(--plum)}
+  .lvl.b{background:var(--red-s);color:var(--red)}
+  .brief{color:var(--ink-2);font-size:15px;margin-bottom:12px;max-width:76ch}
+  .brief b{color:var(--ink);font-weight:600}
+  .scenario{background:var(--blue-s);border-left:3px solid var(--blue);border-radius:0 9px 9px 0;padding:11px 15px;font-size:14px;color:var(--ink-2);margin-bottom:12px}
+  .scenario .l{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--blue);margin-bottom:4px;font-weight:600}
+
+  iframe.prev{width:100%;height:250px;border:1px solid var(--line);border-radius:10px;background:#fff}
+  .checks{margin-top:13px;background:var(--sunk);border-radius:10px;padding:14px 16px}
+  .chk{display:flex;gap:10px;align-items:flex-start;padding:5px 0;font-size:13.8px;color:var(--ink-2)}
+  .chk .mk{flex:none;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;margin-top:2px}
+  .chk.pass .mk{background:var(--green);color:#fff}
+  .chk.fail .mk{background:var(--red-s);color:var(--red);border:1.5px solid var(--red)}
+  .chk.idle .mk{background:var(--card);border:1.5px solid var(--line);color:var(--ink-3)}
+  .chk.pass{color:var(--ink)}
+  .verdict{margin-top:11px;font-size:15px;font-weight:700;min-height:24px}
+  .verdict.ok{color:var(--green)}
+  .verdict.no{color:var(--red)}
+  .hint{margin-top:11px;font-size:14px;color:var(--ink-2);background:var(--amber-soft);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:11px 15px;display:none}
+  .hint.show{display:block}
+
+  .g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+  .g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+  @media (max-width:820px){.g2,.g3{grid-template-columns:1fr}}
+  .mini{border:1px solid var(--line);border-radius:12px;padding:17px;background:var(--card)}
+  .mini h4{font-size:15.5px;margin-bottom:6px}
+  .mini p{font-size:14px;color:var(--ink-2)}
+  .mini .tag{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:600;display:block;margin-bottom:5px}
+
+  /* ================= box model inspector ================= */
+  .bmwrap{display:grid;grid-template-columns:300px 1fr;gap:20px}
+  @media (max-width:900px){.bmwrap{grid-template-columns:1fr}}
+  .sliders{display:flex;flex-direction:column;gap:14px}
+  .sl label{display:flex;justify-content:space-between;align-items:baseline;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-2);margin-bottom:5px}
+  .sl label b{font-size:14px;font-weight:700}
+  .sl input[type=range]{width:100%;accent-color:var(--accent);height:20px}
+  .sl.c label b{color:var(--blue)} .sl.p label b{color:var(--green)}
+  .sl.b label b{color:var(--ink)}  .sl.m label b{color:var(--amber)}
+
+  .segbtn{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .segbtn button{flex:1;font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:600;padding:9px 6px;border:0;background:var(--card);color:var(--ink-2);cursor:pointer}
+  .segbtn button.on{background:var(--accent);color:var(--card)}
+
+  .bmstage{background:var(--sunk);border-radius:12px;padding:26px 20px 20px;display:flex;flex-direction:column;justify-content:center;gap:14px;min-height:300px}
+  .bmbox-m{background:repeating-linear-gradient(45deg,var(--amber-soft),var(--amber-soft) 6px,transparent 6px,transparent 12px);
+    border:2px dashed var(--amber);border-radius:8px;position:relative;align-self:flex-start;max-width:100%}
+  .bmbox-b{background:var(--green-s);border-style:solid;border-color:var(--ink-2);position:relative;box-sizing:content-box}
+  .bmbox-c{background:var(--blue-s);border:1.5px solid var(--blue);border-radius:3px;display:grid;place-items:center;
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--blue);font-weight:600;overflow:hidden;white-space:nowrap}
+  .bmtag{position:absolute;font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:1px 6px;border-radius:4px;pointer-events:none}
+  .bmtag.m{top:-9px;left:10px;color:var(--amber);background:var(--card);border:1px solid var(--amber)}
+  .bmtag.b{top:-9px;left:10px;color:var(--ink);background:var(--card);border:1px solid var(--line)}
+
+  .maths{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .maths .row2{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-family:"IBM Plex Mono",monospace;font-size:15px;font-weight:600}
+  .maths .pill{padding:4px 10px;border-radius:7px;border:2px solid}
+  .pill.pc{background:var(--blue-s);border-color:var(--blue);color:var(--blue)}
+  .pill.pp{background:var(--green-s);border-color:var(--green);color:var(--green)}
+  .pill.pb{background:var(--sunk);border-color:var(--ink-2);color:var(--ink)}
+  .pill.pt{background:var(--amber-soft);border-color:var(--amber);color:var(--amber)}
+  .pill.pm{background:var(--plum-s);border-color:var(--plum);color:var(--plum)}
+  .maths .op{color:var(--ink-3)}
+  .maths .cap{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:9px;display:block}
+  .maths .explain{font-size:13px;color:var(--ink-2);margin-top:10px;border-top:1px solid var(--line-soft);padding-top:9px}
+  .maths .explain b{color:var(--ink)}
+
+  /* ================= shorthand decoder ================= */
+  .shrow{display:grid;grid-template-columns:1fr 260px;gap:18px;align-items:start}
+  @media (max-width:860px){.shrow{grid-template-columns:1fr}}
+  .trbl{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+  .tb{border:2px solid var(--line);border-radius:9px;padding:10px;text-align:center;background:var(--card)}
+  .tb .s{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+  .tb .v{font-family:"IBM Plex Mono",monospace;font-size:19px;font-weight:700;color:var(--ink);margin-top:3px}
+  .tb.copy{border-style:dashed;border-color:var(--amber);background:var(--amber-soft)}
+  .tb.copy .v{color:var(--amber)}
+  .tb.given{border-color:var(--accent);background:var(--accent-soft)}
+  .tb.given .v{color:var(--accent)}
+  .tb .src{font-size:10.5px;color:var(--ink-3);margin-top:4px;min-height:13px}
+  .shpreview{background:var(--sunk);border-radius:10px;padding:18px;display:grid;place-items:center;min-height:150px}
+  .sherr{color:var(--red);font-family:"IBM Plex Mono",monospace;font-size:13px;margin-top:10px}
+  .shquick{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .shquick button{font-family:"IBM Plex Mono",monospace;font-size:11px;padding:5px 10px;border-radius:7px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2)}
+  .shquick button:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* ================= collapse bench ================= */
+  .colwrap{display:grid;grid-template-columns:230px 1fr;gap:18px}
+  @media (max-width:860px){.colwrap{grid-template-columns:1fr}}
+  .colstage{background:var(--sunk);border-radius:10px;padding:18px;min-height:280px}
+  .cbox{background:var(--blue-s);border:2px solid var(--blue);border-radius:7px;padding:12px 14px;
+    font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--blue);font-weight:600}
+  .cparent{border:2px solid var(--plum);border-radius:9px;background:var(--plum-s)}
+  .gapmark{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:700;text-align:center;padding:5px;border-radius:6px;margin:0}
+  .gapmark.ok{background:var(--green-s);color:var(--green)}
+  .gapmark.no{background:var(--red-s);color:var(--red)}
+  .verdictline{margin-top:14px;font-size:14.5px;color:var(--ink-2);background:var(--card);border-radius:9px;padding:12px 15px;border:1px solid var(--line)}
+  .verdictline b{color:var(--ink)}
+
+  /* ================= property explorer ================= */
+  .pxwrap{display:grid;grid-template-columns:270px 1fr;gap:18px}
+  @media (max-width:860px){.pxwrap{grid-template-columns:1fr}}
+  .pxlist{display:flex;flex-direction:column;gap:5px;max-height:420px;overflow-y:auto;padding-right:4px}
+  .pxlist button{text-align:left;font-family:"IBM Plex Mono",monospace;font-size:12.5px;padding:8px 11px;border-radius:8px;
+    cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2)}
+  .pxlist button.on{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .pxlist button:hover{border-color:var(--accent)}
+  .pxvals{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+  .pxvals button{font-family:"IBM Plex Mono",monospace;font-size:11.5px;padding:6px 11px;border-radius:7px;cursor:pointer;
+    border:1px solid var(--line);background:var(--sunk);color:var(--ink-2)}
+  .pxvals button.on{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .pxstage{background:var(--sunk);border-radius:10px;padding:26px;display:grid;place-items:center;min-height:200px}
+  .pxsample{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px 20px;color:var(--ink);max-width:100%}
+  .pxwhy{font-size:13.5px;color:var(--ink-2);margin-top:12px;background:var(--card);border:1px solid var(--line);border-radius:9px;padding:12px 15px}
+  .pxwhy b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="kicker">Practice Lab · CSS Properties · Box Model · Shorthand</div>
+  <h1>Box Model Lab</h1>
+  <p class="lede">Four working tools and eleven auto-checked challenges. <b>Drag a slider and watch the box arithmetic recalculate. Type a shorthand and see exactly which value lands on which side. Toggle margin collapse on and off and measure the gap it leaves.</b> Then build the real thing.</p>
+</header>
+
+<nav class="nav" id="nav">
+  <button data-v="tools" class="on">Tools</button>
+  <button data-v="ch">Challenges</button>
+  <button data-v="logic">Logic drills</button>
+  <span class="score" id="score">solved <b>0</b> / 11</span>
+</nav>
+
+<!-- ================= TOOLS ================= -->
+<div class="view on" id="v-tools">
+
+  <section>
+    <h2 class="head">1 · Box model inspector</h2>
+    <p class="intro">Drag any slider. The diagram and the arithmetic update together. <b>Then flip <code>box-sizing</code> and watch the same numbers produce a different box</b> — this is the single most useful thing on this page.</p>
+    <div class="panel">
+      <div class="bmwrap">
+        <div class="sliders">
+          <div class="sl c">
+            <label>width <b id="lw">300px</b></label>
+            <input type="range" id="rw" min="80" max="420" value="300" step="10">
+          </div>
+          <div class="sl p">
+            <label>padding <b id="lp">20px</b></label>
+            <input type="range" id="rp" min="0" max="60" value="20" step="2">
+          </div>
+          <div class="sl b">
+            <label>border <b id="lb">5px</b></label>
+            <input type="range" id="rb" min="0" max="20" value="5" step="1">
+          </div>
+          <div class="sl m">
+            <label>margin <b id="lm">16px</b></label>
+            <input type="range" id="rm" min="0" max="50" value="16" step="2">
+          </div>
+          <div>
+            <span class="lbl">box-sizing</span>
+            <div class="segbtn" id="bsSeg">
+              <button data-bs="content-box" class="on">content-box</button>
+              <button data-bs="border-box">border-box</button>
+            </div>
+          </div>
+          <div>
+            <span class="lbl">The CSS you are looking at</span>
+            <pre id="bmCss" style="margin:0;font-size:12px"></pre>
+          </div>
+        </div>
+
+        <div>
+          <div class="bmstage">
+            <div class="bmbox-m" id="bmM">
+              <span class="bmtag m">margin</span>
+              <div class="bmbox-b" id="bmB">
+                <span class="bmtag b">border</span>
+                <div class="bmbox-c" id="bmC">content</div>
+              </div>
+            </div>
+          </div>
+          <div class="maths" style="margin-top:14px">
+            <span class="cap">How wide is it really?</span>
+            <div class="row2" id="bmEq"></div>
+            <div class="explain" id="bmWhy"></div>
+          </div>
+        </div>
+      </div>
+      <div class="note">
+        <span class="l">Try this</span>
+        Set <b>width 300, padding 20, border 5</b>. In <code>content-box</code> the box on screen is 350px. Switch to <code>border-box</code> — the box becomes exactly 300px and the <b>content</b> shrinks to 250px instead. Nothing else changed.
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="head">2 · Shorthand decoder</h2>
+    <p class="intro">Type any box shorthand. The decoder resolves it to all four sides and tells you <b>which value each side copied from</b>. Works for <code>margin</code>, <code>padding</code>, <code>border-width</code>, <code>inset</code> and <code>border-radius</code>.</p>
+    <div class="panel">
+      <div class="shrow">
+        <div>
+          <span class="lbl">Declaration</span>
+          <input class="tx" id="shIn" value="padding: 10px 30px 40px" spellcheck="false" aria-label="A CSS box shorthand declaration">
+          <div class="shquick" id="shQuick"></div>
+          <div class="trbl" id="shOut"></div>
+          <div class="sherr" id="shErr"></div>
+        </div>
+        <div>
+          <span class="lbl">Applied, to scale</span>
+          <div class="shpreview">
+            <div id="shBox" style="background:var(--green-s);border:2px solid var(--green);border-radius:6px">
+              <div style="background:var(--blue-s);border:1.5px solid var(--blue);border-radius:4px;padding:6px 12px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--blue);font-weight:600">content</div>
+            </div>
+          </div>
+          <p style="font-size:12.5px;color:var(--ink-3);margin-top:9px">The green area is the property you typed. Values are drawn to scale.</p>
+        </div>
+      </div>
+      <div class="note q">
+        <span class="l">The rule behind it</span>
+        Four values run <b>clockwise from the top</b>: T, R, B, L. With three, the left copies the right. With two, each side copies its opposite. With one, everything copies it. <b>Corners in <code>border-radius</code> follow the same clockwise order</b>, starting from top-left.
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="head">3 · Margin collapse bench</h2>
+    <p class="intro">Two boxes, 40px bottom margin and 24px top margin. <b>Predict the gap before you toggle anything.</b> Then find out which of the four switches actually stops the collapse — and which one is the answer you should use in real work.</p>
+    <div class="panel">
+      <div class="colwrap">
+        <div>
+          <span class="lbl">Switches</span>
+          <div class="toggles" id="colTog"></div>
+        </div>
+        <div>
+          <div class="colstage" id="colStage"></div>
+          <div class="verdictline" id="colWhy"></div>
+        </div>
+      </div>
+      <div class="note">
+        <span class="l">What to notice</span>
+        Padding on the parent stops the <b>parent-child</b> collapse but does nothing to the <b>sibling</b> collapse. Only <code>display:flex</code> with <code>gap</code> removes both — which is why modern layouts hardly ever use vertical margins at all.
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="head">4 · Property explorer</h2>
+    <p class="intro">Pick a property on the left, then a value. The sample updates live and the note explains <b>what the browser actually did</b> — including the cases where nothing happens and that is the lesson.</p>
+    <div class="panel">
+      <div class="pxwrap">
+        <div>
+          <span class="lbl">Property</span>
+          <div class="pxlist" id="pxList"></div>
+        </div>
+        <div>
+          <span class="lbl">Value</span>
+          <div class="pxvals" id="pxVals"></div>
+          <div class="pxstage"><div class="pxsample" id="pxSample">The quick brown fox jumps over the lazy dog</div></div>
+          <pre id="pxCss" style="font-size:12.5px"></pre>
+          <div class="pxwhy" id="pxWhy"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ================= CHALLENGES ================= -->
+<div class="view" id="v-ch">
+  <section>
+    <h2 class="head">Eleven coding challenges</h2>
+    <p class="intro">Write real CSS. Every requirement is checked automatically against the document you produce — <b>not against a stored answer</b>, so any correct solution passes. The preview is live as you type.</p>
+    <div class="chlist" id="chList"></div>
+    <div class="panel">
+      <div class="chead">
+        <h3 id="chTitle">—</h3>
+        <span class="lvl m" id="chLvl">—</span>
+      </div>
+      <div class="scenario" id="chScenario"></div>
+      <p class="brief" id="chBrief"></p>
+      <div class="split">
+        <div>
+          <span class="lbl">Your code</span>
+          <textarea id="chCode" rows="20" spellcheck="false"></textarea>
+          <div class="row" style="margin-top:10px">
+            <button class="btn primary" id="chRun">Run checks</button>
+            <button class="btn" id="chReset">Reset code</button>
+            <button class="btn" id="chHint">Show hint</button>
+          </div>
+        </div>
+        <div>
+          <span class="lbl">Live preview</span>
+          <iframe class="prev" id="chPrev" sandbox="" title="Live preview"></iframe>
+          <div class="checks" id="chChecks"></div>
+          <div class="verdict" id="chVerdict"></div>
+          <div class="hint" id="chHintBox"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ================= LOGIC DRILLS ================= -->
+<div class="view" id="v-logic">
+  <section>
+    <h2 class="head">Ten logic drills</h2>
+    <p class="intro">No typing. Read the code, <b>say the answer out loud</b>, then reveal. Getting these wrong is the point — every one of them is a mistake that reaches production regularly.</p>
+    <div id="logicWrap"></div>
+  </section>
+</div>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function $(id){return document.getElementById(id);}
+
+  /* ---------------- view switching ---------------- */
+  var navBtns = Array.prototype.slice.call(document.querySelectorAll('#nav button'));
+  navBtns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      navBtns.forEach(function (x) { x.classList.toggle('on', x === b); });
+      ['tools', 'ch', 'logic'].forEach(function (v) {
+        $('v-' + v).classList.toggle('on', v === b.dataset.v);
+      });
+      window.scrollTo(0, 0);
+    });
+  });
+
+  /* ============================================================
+     TOOL 1 — BOX MODEL INSPECTOR
+     ============================================================ */
+  var bm = { w: 300, p: 20, b: 5, m: 16, bs: 'content-box' };
+  var SCALE = 0.86;   // px on screen per css px, so 420+ still fits
+
+  function bmRender() {
+    $('lw').textContent = bm.w + 'px';
+    $('lp').textContent = bm.p + 'px';
+    $('lb').textContent = bm.b + 'px';
+    $('lm').textContent = bm.m + 'px';
+
+    // What the browser will actually do with these numbers:
+    var contentW, borderBoxW;
+    if (bm.bs === 'content-box') {
+      contentW    = bm.w;
+      borderBoxW  = bm.w + bm.p * 2 + bm.b * 2;
+    } else {
+      borderBoxW  = bm.w;
+      contentW    = Math.max(0, bm.w - bm.p * 2 - bm.b * 2);
+    }
+    var totalW = borderBoxW + bm.m * 2;
+
+    // draw to scale
+    var M = $('bmM'), B = $('bmB'), C = $('bmC');
+    M.style.padding = (bm.m * SCALE) + 'px';
+    B.style.borderWidth = (bm.b * SCALE) + 'px';
+    B.style.padding = (bm.p * SCALE) + 'px';
+    C.style.width = (contentW * SCALE) + 'px';
+    C.style.height = '54px';
+    C.textContent = contentW + 'px';
+
+    // the maths line
+    var eq = '';
+    function pill(cls, v) { return '<span class="pill ' + cls + '">' + v + '</span>'; }
+    if (bm.bs === 'content-box') {
+      eq = pill('pc', bm.w) + '<span class="op">+</span>'
+         + pill('pp', bm.p) + '<span class="op">+</span>' + pill('pp', bm.p) + '<span class="op">+</span>'
+         + pill('pb', bm.b) + '<span class="op">+</span>' + pill('pb', bm.b)
+         + '<span class="op">=</span>' + pill('pt', borderBoxW + 'px');
+    } else {
+      eq = pill('pt', bm.w) + '<span class="op">−</span>'
+         + pill('pp', bm.p) + '<span class="op">−</span>' + pill('pp', bm.p) + '<span class="op">−</span>'
+         + pill('pb', bm.b) + '<span class="op">−</span>' + pill('pb', bm.b)
+         + '<span class="op">=</span>' + pill('pc', contentW + 'px content');
+    }
+    eq += '<span class="op">&nbsp;&nbsp;+ margin</span>' + pill('pm', bm.m * 2) + '<span class="op">=</span>'
+        + pill('pm', totalW + 'px of row');
+    $('bmEq').innerHTML = eq;
+
+    var why;
+    if (bm.bs === 'content-box') {
+      why = '<b>width: ' + bm.w + 'px</b> sets the <b>content</b> only. Padding and border are added outside it, so the box you see measures <b>' + borderBoxW + 'px</b>'
+          + (borderBoxW === bm.w ? '.' : ' — ' + (borderBoxW - bm.w) + 'px wider than you asked for.');
+    } else {
+      why = '<b>width: ' + bm.w + 'px</b> now sets the <b>whole visible box</b>. Padding and border grow inwards, so the content is squeezed to <b>' + contentW + 'px</b>'
+          + (contentW === 0 ? ' — there is no room left for content at all.' : '. The box stays exactly ' + bm.w + 'px, as asked.');
+    }
+    why += ' Margin adds <b>' + (bm.m * 2) + 'px</b> outside that, so this element occupies <b>' + totalW + 'px</b> of its row — but its background stops at ' + borderBoxW + 'px.';
+    $('bmWhy').innerHTML = why;
+
+    $('bmCss').innerHTML =
+      '<span class="t">.box</span> {\n' +
+      '  <span class="a">box-sizing</span>: <span class="s">' + bm.bs + '</span>;\n' +
+      '  <span class="a">width</span>:      <span class="s">' + bm.w + 'px</span>;\n' +
+      '  <span class="a">padding</span>:    <span class="s">' + bm.p + 'px</span>;\n' +
+      '  <span class="a">border</span>:     <span class="s">' + bm.b + 'px solid</span>;\n' +
+      '  <span class="a">margin</span>:     <span class="s">' + bm.m + 'px</span>;\n' +
+      '}';
+  }
+  [['rw', 'w'], ['rp', 'p'], ['rb', 'b'], ['rm', 'm']].forEach(function (pair) {
+    $(pair[0]).addEventListener('input', function (e) { bm[pair[1]] = +e.target.value; bmRender(); });
+  });
+  Array.prototype.forEach.call($('bsSeg').children, function (b) {
+    b.addEventListener('click', function () {
+      bm.bs = b.dataset.bs;
+      Array.prototype.forEach.call($('bsSeg').children, function (x) { x.classList.toggle('on', x === b); });
+      bmRender();
+    });
+  });
+  bmRender();
+
+  /* ============================================================
+     TOOL 2 — SHORTHAND DECODER
+     ============================================================ */
+  var SIDE4 = ['top', 'right', 'bottom', 'left'];
+  var CORNER4 = ['top-left', 'top-right', 'bottom-right', 'bottom-left'];
+
+  // which index each side copies from, per value-count
+  var COPY = {
+    1: [0, 0, 0, 0],
+    2: [0, 1, 0, 1],
+    3: [0, 1, 2, 1],
+    4: [0, 1, 2, 3]
+  };
+
+  function decode(text) {
+    var m = String(text).split(';')[0].match(/^\s*([a-z-]+)\s*:\s*(.+?)\s*$/i);
+    if (!m) return { err: 'Write it as  property: value  — for example  padding: 10px 30px' };
+    var prop = m[1].toLowerCase();
+    var ok = ['margin', 'padding', 'border-width', 'inset', 'border-radius'];
+    if (ok.indexOf(prop) < 0) return { err: '"' + prop + '" is not a box shorthand. Try: ' + ok.join(', ') };
+    var vals = m[2].trim().split(/\s+/);
+    if (vals.length < 1 || vals.length > 4) return { err: 'A box shorthand takes 1 to 4 values. You gave ' + vals.length + '.' };
+    var map = COPY[vals.length];
+    var names = prop === 'border-radius' ? CORNER4 : SIDE4;
+    return {
+      prop: prop,
+      vals: vals,
+      names: names,
+      resolved: map.map(function (i) { return vals[i]; }),
+      from: map,
+      count: vals.length
+    };
+  }
+
+  function shRender() {
+    var d = decode($('shIn').value);
+    var out = $('shOut'), err = $('shErr');
+    if (d.err) { out.innerHTML = ''; err.textContent = d.err; return; }
+    err.textContent = '';
+    var html = '';
+    d.resolved.forEach(function (v, i) {
+      var given = d.from[i] === i && i < d.count;
+      var srcTxt = given ? 'value ' + (i + 1) + ', as written'
+                         : 'copied from ' + d.names[d.from[i]];
+      html += '<div class="tb ' + (given ? 'given' : 'copy') + '">'
+            + '<div class="s">' + d.names[i] + '</div>'
+            + '<div class="v">' + esc(v) + '</div>'
+            + '<div class="src">' + srcTxt + '</div></div>';
+    });
+    out.innerHTML = html;
+
+    // draw it to scale
+    var box = $('shBox');
+    box.style.cssText = 'background:var(--green-s);border:2px solid var(--green);border-radius:6px';
+    function px(v) { var n = parseFloat(v); return isNaN(n) ? 0 : Math.min(n, 60); }
+    if (d.prop === 'border-radius') {
+      box.style.borderRadius = d.resolved.join(' ');
+      box.style.padding = '22px';
+    } else {
+      box.style.padding = d.resolved.map(function (v) { return px(v) + 'px'; }).join(' ');
+    }
+  }
+  $('shIn').addEventListener('input', shRender);
+  var QUICK = ['padding: 10px', 'padding: 10px 30px', 'margin: 0 auto', 'padding: 10px 30px 40px',
+               'margin: 4px 8px 12px 20px', 'border-radius: 12px 12px 0 0', 'inset: 0', 'border-width: 1px 0 1px 0'];
+  $('shQuick').innerHTML = QUICK.map(function (q) { return '<button>' + esc(q) + '</button>'; }).join('');
+  $('shQuick').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    $('shIn').value = b.textContent; shRender();
+  });
+  shRender();
+
+  /* ============================================================
+     TOOL 3 — MARGIN COLLAPSE BENCH
+     ============================================================ */
+  var col = { padding: false, border: false, flex: false, gap: false };
+  var COLTOG = [
+    { k: 'padding', l: 'padding on the parent', m: 'padding: 1px' },
+    { k: 'border',  l: 'border on the parent',  m: 'border-top: 1px solid' },
+    { k: 'flex',    l: 'parent is a flex column', m: 'display: flex; flex-direction: column' },
+    { k: 'gap',     l: 'use gap instead of margins', m: 'gap: 40px  (margins removed)' }
+  ];
+  $('colTog').innerHTML = COLTOG.map(function (t) {
+    return '<label class="tog" data-k="' + t.k + '"><input type="checkbox"><span>' + t.l
+         + '<span class="mono">' + esc(t.m) + '</span></span></label>';
+  }).join('');
+
+  function colRender() {
+    var flexed = col.flex || col.gap;           // gap only works in flex/grid
+    var usingGap = col.gap && flexed;
+    // sibling collapse happens only in normal block flow
+    var siblingCollapses = !flexed && !usingGap;
+    // parent swallows the first child's top margin unless it has padding/border or is flex
+    var parentLeaks = !col.padding && !col.border && !flexed;
+
+    var mTop = 24, mBottom = 40;
+    var gapBetween = usingGap ? 40 : (siblingCollapses ? Math.max(mBottom, mTop) : mBottom + mTop);
+
+    // NOTE: the parent's decorative edge must be an OUTLINE, not a border.
+    // A border would itself stop the parent-child margin collapse, so a dashed
+    // "no border" border would silently break the very thing being demonstrated.
+    var parentStyle = 'padding:' + (col.padding ? '10px' : '0') + ';'
+      + 'outline:2px dashed var(--plum);outline-offset:-2px;'
+      + (col.border ? 'border:2px solid var(--plum);' : 'border:0;')
+      + (flexed ? 'display:flex;flex-direction:column;' : '')
+      + (usingGap ? 'gap:' + gapBetween + 'px;' : '');
+
+    var childMargin = usingGap ? '0' : (mBottom + 'px 0 0 0');
+    var html = '<div class="cparent" id="cpar" style="' + parentStyle + '">'
+      + '<div class="cbox" id="cboxA" style="margin:' + (usingGap ? '0' : mTop + 'px 0 ' + mBottom + 'px 0') + '">Box A &nbsp;·&nbsp; margin-bottom: ' + (usingGap ? '0' : mBottom + 'px') + '</div>'
+      + '<div class="cbox" id="cboxB" style="margin:' + (usingGap ? '0' : mTop + 'px 0 0 0') + '">Box B &nbsp;·&nbsp; margin-top: ' + (usingGap ? '0' : mTop + 'px') + '</div>'
+      + '</div>';
+    $('colStage').innerHTML = html;
+
+    // measure the REAL gap from the rendered geometry — nothing sits between the boxes
+    var ra = $('cboxA').getBoundingClientRect();
+    var rb = $('cboxB').getBoundingClientRect();
+    var measured = Math.round(rb.top - ra.bottom);
+    // and how far the parent's own top sits above Box A (the "leak")
+    var rp = $('cpar').getBoundingClientRect();
+    var leak = Math.round(ra.top - rp.top);
+
+    $('colStage').insertAdjacentHTML('beforeend',
+      '<div class="gapmark ' + (measured === mTop + mBottom ? 'ok' : 'no') + '" style="margin-top:14px">'
+      + 'measured gap between A and B: ' + measured + 'px'
+      + '<span style="font-weight:400;display:block;font-size:11px;margin-top:3px">'
+      + (measured === mTop + mBottom
+          ? 'the two margins added up: ' + mBottom + ' + ' + mTop
+          : (usingGap ? 'set by gap, not by margins' : 'they collapsed: max(' + mBottom + ', ' + mTop + ')'))
+      + '</span></div>');
+
+    var why;
+    if (usingGap) {
+      why = '<b>gap: ' + measured + 'px.</b> The margins are gone entirely and the gap is exactly what you asked for. Gap never collapses, never leaks out of the parent, and only applies <i>between</i> items — never before the first or after the last. <b>This is the answer to use in real work.</b>';
+    } else if (flexed) {
+      why = '<b>No collapse.</b> Inside a flex container margins never collapse, so ' + mBottom + ' + ' + mTop + ' = <b>' + measured + 'px</b> — the sum, as you would expect. Predictable, but the spacing is still spread across two rules.';
+    } else if (siblingCollapses) {
+      why = '<b>Collapsed.</b> ' + mBottom + 'px and ' + mTop + 'px met, so the larger won and the smaller vanished: the measured gap is <b>' + measured + 'px</b>, not ' + (mBottom + mTop) + '. ';
+      why += parentLeaks
+        ? 'The parent has no padding and no border, so Box A\'s top margin has <b>escaped through the parent</b> — notice Box A is flush against the parent\'s top edge (' + leak + 'px), and the parent itself has been pushed down instead.'
+        : 'The parent has ' + (col.padding ? 'padding' : 'a border') + ', so the first child\'s top margin is now trapped inside it — Box A now sits <b>' + leak + 'px</b> below the parent\'s top edge. But the two siblings still collapse into each other.';
+    } else {
+      why = 'No collapse between the siblings. Measured gap: <b>' + measured + 'px</b>.';
+    }
+    $('colWhy').innerHTML = why;
+  }
+  $('colTog').addEventListener('change', function (e) {
+    var lab = e.target.closest('.tog'); if (!lab) return;
+    col[lab.dataset.k] = e.target.checked;
+    lab.classList.toggle('on', e.target.checked);
+    colRender();
+  });
+  colRender();
+
+  /* ============================================================
+     TOOL 4 — PROPERTY EXPLORER
+     ============================================================ */
+  var SAMPLE = 'The quick brown fox jumps over the lazy dog';
+  var PX = [
+    { p: 'font-size', vals: ['0.875rem', '1rem', '1.5rem', '2.5rem'],
+      why: 'Use <b>rem</b>, not px. 1rem equals the browser\'s root font size — 16px by default, but larger if the user has increased it in their settings. A px font size ignores that choice entirely.' },
+    { p: 'font-weight', vals: ['400', '600', '700', '800'],
+      why: 'Use numbers. <b>400</b> is normal and <b>700</b> is bold. Values in between only render if the font actually ships that weight — otherwise the browser picks the nearest one it has.' },
+    { p: 'line-height', vals: ['1', '1.2', '1.5', '2'],
+      why: 'Always <b>unitless</b>. A unitless value is inherited as a ratio and recalculated per element; <code>line-height: 24px</code> is inherited as a fixed 24px and breaks the moment a child has smaller text.' },
+    { p: 'letter-spacing', vals: ['-0.03em', 'normal', '0.08em', '0.2em'],
+      why: 'Negative tightens, positive opens up. Tighten large headings slightly; open up small uppercase text. <b>Never touch body copy</b> — the typeface already has the right spacing built in.' },
+    { p: 'text-transform', vals: ['none', 'uppercase', 'capitalize', 'lowercase'],
+      why: 'Changes only what is <b>drawn</b>. The underlying text is unchanged, so a screen reader still reads the original, and copy-paste still gives the original. That is a feature, not a limitation.' },
+    { p: 'text-align', vals: ['left', 'center', 'right', 'justify'],
+      why: '<b>Avoid justify on the web.</b> Without hyphenation it opens uneven gaps between words that run down the paragraph as "rivers". Print typesetting can hyphenate; browsers mostly cannot.' },
+    { p: 'padding', vals: ['0', '8px', '16px 24px', '24px'],
+      why: 'Padding is <b>inside</b> the border, so the background colour stretches to cover it. If you want the background to reach the space, it is padding. If not, it is margin.' },
+    { p: 'border', vals: ['none', '1px solid #9aa', '3px dashed #0E6E68', '2px'],
+      why: 'Try the last value. <b><code>border: 2px</code> renders nothing</b> — the shorthand reset <code>border-style</code> to its initial value of <code>none</code>. Width without a style is invisible.' },
+    { p: 'border-radius', vals: ['0', '8px', '999px', '50%'],
+      why: '<b>999px</b> gives a pill on any rectangle — the radius is capped at half the shorter side. <b>50%</b> gives an ellipse, which is a circle only when the box is square.' },
+    { p: 'box-shadow', vals: ['none', '0 1px 3px rgba(0,0,0,.2)', '0 8px 24px rgba(0,0,0,.18)', 'inset 0 2px 6px rgba(0,0,0,.25)'],
+      why: 'Order is <code>x y blur spread colour</code>. A shadow takes up <b>no layout space</b>, so it never pushes neighbours around. <code>inset</code> draws it inside, which reads as a pressed or recessed surface.' },
+    { p: 'display', vals: ['block', 'inline', 'inline-block', 'flex'],
+      why: 'Watch the box change shape. On <b>inline</b> the width and vertical padding you set are ignored — that is the rule, not a bug. <b>inline-block</b> keeps it in the text flow but makes it respect box properties again.' },
+    { p: 'opacity', vals: ['1', '0.6', '0.3', '0'],
+      why: 'At <b>0</b> the element is invisible but <b>still occupies space and is still clickable</b>. That is the phantom-button bug. Use <code>display:none</code> to remove it properly.' },
+    { p: 'overflow', vals: ['visible', 'hidden', 'auto', 'scroll'],
+      why: 'Use <b>auto</b>, not <code>scroll</code> — auto shows a scrollbar only when one is needed. <code>hidden</code> is also how you stop a child escaping a rounded corner.' },
+    { p: 'text-overflow', vals: ['clip', 'ellipsis'],
+      why: 'Needs <b>all three</b> together: <code>overflow:hidden</code>, <code>white-space:nowrap</code> and <code>text-overflow:ellipsis</code>. Any one alone does nothing, which is why this "never works".' },
+    { p: 'cursor', vals: ['auto', 'pointer', 'not-allowed', 'text'],
+      why: 'A cursor is a <b>hint, not a feature</b>. If something needs <code>cursor:pointer</code> to look clickable, it should almost certainly have been a real <code>&lt;button&gt;</code> — which gets the cursor, the keyboard and the screen reader announcement for free.' }
+  ];
+  var pxI = 0, pxV = 1;
+  $('pxList').innerHTML = PX.map(function (x, i) {
+    return '<button data-i="' + i + '"' + (i === 0 ? ' class="on"' : '') + '>' + esc(x.p) + '</button>';
+  }).join('');
+
+  function pxRender() {
+    var e = PX[pxI];
+    if (pxV >= e.vals.length) pxV = 0;
+    var v = e.vals[pxV];
+    $('pxVals').innerHTML = e.vals.map(function (val, i) {
+      return '<button data-i="' + i + '"' + (i === pxV ? ' class="on"' : '') + '>' + esc(val) + '</button>';
+    }).join('');
+
+    var s = $('pxSample');
+    s.style.cssText = 'background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px 20px;color:var(--ink);max-width:100%';
+    if (e.p === 'text-overflow') {
+      s.style.maxWidth = '260px'; s.style.overflow = 'hidden'; s.style.whiteSpace = 'nowrap';
+    }
+    if (e.p === 'overflow') { s.style.maxHeight = '74px'; s.style.width = '260px'; }
+    try { s.style.setProperty(e.p, v); } catch (err) { /* ignore */ }
+    s.textContent = SAMPLE;
+
+    $('pxCss').innerHTML = '<span class="t">.sample</span> { <span class="a">' + esc(e.p) + '</span>: <span class="s">' + esc(v) + '</span>; }';
+    $('pxWhy').innerHTML = e.why;
+
+    Array.prototype.forEach.call($('pxList').children, function (b, i) { b.classList.toggle('on', i === pxI); });
+  }
+  $('pxList').addEventListener('click', function (ev) {
+    var b = ev.target.closest('button'); if (!b) return;
+    pxI = +b.dataset.i; pxV = Math.min(pxV, PX[pxI].vals.length - 1); pxRender();
+  });
+  $('pxVals').addEventListener('click', function (ev) {
+    var b = ev.target.closest('button'); if (!b) return;
+    pxV = +b.dataset.i; pxRender();
+  });
+  pxRender();
+
+  /* ============================================================
+     CHALLENGES
+     ============================================================ */
+  function P(raw){ return new DOMParser().parseFromString(raw, 'text/html'); }
+  function cssOf(doc){
+    var out = '';
+    Array.prototype.forEach.call(doc.querySelectorAll('style'), function (s) { out += s.textContent + '\n'; });
+    return out;
+  }
+  // strip comments so a commented-out answer never passes
+  function clean(css){ return String(css).replace(/\/\*[\s\S]*?\*\//g, ''); }
+  // find the declaration block(s) for a selector
+  function blocks(css, selector){
+    var out = [], re = /([^{}]+)\{([^{}]*)\}/g, m;
+    var want = selector.replace(/\s+/g, ' ').trim().toLowerCase();
+    while ((m = re.exec(clean(css))) !== null) {
+      var sels = m[1].split(',').map(function (s) { return s.replace(/\s+/g, ' ').trim().toLowerCase(); });
+      if (sels.indexOf(want) >= 0) out.push(m[2]);
+    }
+    return out;
+  }
+  // value of a property inside a selector's block, or null
+  function decl(css, selector, prop){
+    var bs = blocks(css, selector), v = null;
+    bs.forEach(function (b) {
+      var re = new RegExp('(?:^|;)\\s*' + prop.replace(/[-]/g, '\\-') + '\\s*:\\s*([^;]+)', 'i');
+      var m = b.match(re);
+      if (m) v = m[1].trim();
+    });
+    return v;
+  }
+  // does ANY rule in the sheet set this property to something matching test?
+  function anyDecl(css, prop, test){
+    var re = new RegExp('(?:^|[;{])\\s*' + prop.replace(/[-]/g, '\\-') + '\\s*:\\s*([^;}]+)', 'gi'), m, found = false;
+    var c = clean(css);
+    while ((m = re.exec(c)) !== null) { if (test(m[1].trim())) found = true; }
+    return found;
+  }
+  function num(v){ var m = String(v).match(/-?[\d.]+/); return m ? parseFloat(m[0]) : NaN; }
+  function words(v){ return String(v).trim().split(/\s+/); }
+
+  var CH = [
+    { id:'B1', title:'The universal reset', lvl:'m',
+      scen:'Every card in the grid is 24px wider than the design. The designer insists the spec says 300.',
+      brief:'Add the <b>box-sizing reset</b> that every real project starts with, so that <code>width</code> means the whole visible box. It must apply to every element <b>and</b> to both pseudo-elements — a reset that misses those leaves padded pseudo-elements the wrong size.',
+      start:'<style>\n  /* write the reset here */\n\n\n  .card {\n    width: 300px;\n    padding: 20px;\n    border: 2px solid #999;\n  }\n</style>\n\n<div class="card">This card should measure exactly 300px.</div>',
+      hint:'The selector is  *, *::before, *::after  and the declaration is  box-sizing: border-box.  The .card rule itself must not be changed.',
+      checks:[
+        {l:'A rule targets * as well as ::before and ::after', f:function(d){
+          var c = clean(cssOf(d));
+          return /\*/.test(c) && /::?before/.test(c) && /::?after/.test(c); }},
+        {l:'That rule sets box-sizing: border-box', f:function(d){
+          return anyDecl(cssOf(d), 'box-sizing', function(v){ return /border-box/i.test(v); }); }},
+        {l:'The reset covers the universal selector, not just .card', f:function(d){
+          var c = clean(cssOf(d));
+          var re = /([^{}]+)\{([^{}]*)\}/g, m, ok = false;
+          while ((m = re.exec(c)) !== null) {
+            if (/\*/.test(m[1]) && /box-sizing\s*:\s*border-box/i.test(m[2])) ok = true;
+          }
+          return ok; }},
+        {l:'.card still declares width: 300px', f:function(d){
+          return /300px/.test(String(decl(cssOf(d), '.card', 'width'))); }},
+        {l:'.card keeps its padding and border', f:function(d){
+          var css = cssOf(d);
+          return !!decl(css, '.card', 'padding') && !!decl(css, '.card', 'border'); }}
+      ]},
+
+    { id:'B2', title:'A type scale that scales', lvl:'m',
+      scen:'A user with low vision has set their browser font size to 24px. On your page nothing changes at all.',
+      brief:'Set the typography using <b>rem for every font-size</b> and a <b>unitless line-height</b>. Three rules: <code>h1</code>, <code>h2</code> and <code>p</code>. Each heading also needs a weight set as a number.',
+      start:'<style>\n  h1 { font-size: 40px; line-height: 44px; font-weight: bold; }\n  h2 { font-size: 24px; line-height: 30px; font-weight: bold; }\n  p  { font-size: 16px; line-height: 24px; }\n</style>\n\n<h1>Page title</h1>\n<h2>A section</h2>\n<p>Body copy that should stay comfortably readable at any root size.</p>',
+      hint:'40px ÷ 16 = 2.5rem. Line height becomes a bare number: 44 ÷ 40 = 1.1. Weight becomes 700 or 800, not the keyword bold.',
+      checks:[
+        {l:'No font-size anywhere uses px', f:function(d){
+          return !anyDecl(cssOf(d), 'font-size', function(v){ return /\dpx/.test(v); }); }},
+        {l:'h1, h2 and p all set font-size in rem', f:function(d){
+          var css = cssOf(d);
+          return ['h1','h2','p'].every(function(s){ return /rem/.test(String(decl(css, s, 'font-size'))); }); }},
+        {l:'Every line-height is unitless', f:function(d){
+          var css = cssOf(d), any = false, bad = false;
+          ['h1','h2','p'].forEach(function(s){
+            var v = decl(css, s, 'line-height');
+            if (v){ any = true; if (/px|rem|em|%/.test(v)) bad = true; }
+          });
+          return any && !bad; }},
+        {l:'All three selectors set a line-height', f:function(d){
+          var css = cssOf(d);
+          return ['h1','h2','p'].every(function(s){ return !!decl(css, s, 'line-height'); }); }},
+        {l:'Headings use a numeric font-weight, not "bold"', f:function(d){
+          var css = cssOf(d);
+          return ['h1','h2'].every(function(s){
+            var v = decl(css, s, 'font-weight');
+            return !!v && /^\d{3}$/.test(v.trim()); }); }},
+        {l:'Headings are tighter than the body text', f:function(d){
+          var css = cssOf(d);
+          var h = num(decl(css,'h1','line-height')), p = num(decl(css,'p','line-height'));
+          return !isNaN(h) && !isNaN(p) && h < p; }}
+      ]},
+
+    { id:'B3', title:'Padding or margin?', lvl:'m',
+      scen:'The alert box has a coloured background. The text is jammed against the edge, and the box is touching the paragraph below it.',
+      brief:'Fix both problems with the <b>right property for each</b>. The background must stretch to cover the space around the text, and there must be clear space between the alert and the paragraph that the background does <b>not</b> cover.',
+      start:'<style>\n  .alert {\n    background: #FDECEA;\n    border-left: 4px solid #B03A2E;\n    /* your spacing here */\n  }\n</style>\n\n<div class="alert">Your session will expire in 5 minutes.</div>\n<p>Some following content.</p>',
+      hint:'Space inside, where the background should reach → padding. Space outside, where it should not → margin. You need both, in the same rule.',
+      checks:[
+        {l:'.alert sets padding', f:function(d){ return !!decl(cssOf(d), '.alert', 'padding'); }},
+        {l:'.alert sets margin', f:function(d){ return !!decl(cssOf(d), '.alert', 'margin') ||
+            !!decl(cssOf(d), '.alert', 'margin-bottom'); }},
+        {l:'The padding is a real, non-zero value', f:function(d){
+          var v = decl(cssOf(d), '.alert', 'padding');
+          return !!v && words(v).some(function(w){ return num(w) > 0; }); }},
+        {l:'The bottom margin is non-zero', f:function(d){
+          var css = cssOf(d);
+          var mb = decl(css, '.alert', 'margin-bottom');
+          if (mb) return num(mb) > 0;
+          var m = decl(css, '.alert', 'margin');
+          if (!m) return false;
+          var w = words(m), i = w.length === 1 ? 0 : (w.length === 2 ? 0 : 2);
+          return num(w[i]) > 0; }},
+        {l:'The background and border-left are untouched', f:function(d){
+          var css = cssOf(d);
+          return !!decl(css, '.alert', 'background') && !!decl(css, '.alert', 'border-left'); }}
+      ]},
+
+    { id:'B4', title:'Centre the page', lvl:'m',
+      scen:'On a 27-inch monitor the article stretches the full width of the screen and becomes unreadable.',
+      brief:'Constrain the container and centre it. It must never exceed <b>1100px</b>, must still shrink on a phone, and the text inside must be capped at a comfortable <b>reading length</b> using the <code>ch</code> unit.',
+      start:'<style>\n  .page {\n    width: 1100px;\n    /* centre it */\n  }\n  .page p {\n    /* cap the reading length */\n  }\n</style>\n\n<div class="page">\n  <h1>An article</h1>\n  <p>A long paragraph of body copy that should never run the full width of a very wide monitor, because lines longer than about seventy characters are genuinely hard to read.</p>\n</div>',
+      hint:'width:1100px cannot shrink — use max-width instead. Centre with margin: 0 auto. Then max-width in ch on the paragraph, somewhere between 60ch and 75ch.',
+      checks:[
+        {l:'.page uses max-width, not a fixed width', f:function(d){
+          var css = cssOf(d);
+          return !!decl(css, '.page', 'max-width') && !decl(css, '.page', 'width'); }},
+        {l:'The cap is 1100px', f:function(d){
+          return num(decl(cssOf(d), '.page', 'max-width')) === 1100; }},
+        {l:'.page is centred with an auto horizontal margin', f:function(d){
+          var css = cssOf(d);
+          var m = decl(css, '.page', 'margin');
+          if (m && /auto/.test(m)) return true;
+          return /auto/.test(String(decl(css, '.page', 'margin-left'))) &&
+                 /auto/.test(String(decl(css, '.page', 'margin-right'))); }},
+        {l:'Paragraph reading length is capped in ch', f:function(d){
+          var v = decl(cssOf(d), '.page p', 'max-width');
+          return !!v && /ch/.test(v); }},
+        {l:'That cap is a sensible 50–80ch', f:function(d){
+          var n = num(decl(cssOf(d), '.page p', 'max-width'));
+          return n >= 50 && n <= 80; }}
+      ]},
+
+    { id:'B5', title:'The clock rule, exactly', lvl:'m',
+      scen:'A design hands you four different values for the four sides and asks for the shortest correct declaration.',
+      brief:'Write <b>one</b> padding shorthand on <code>.ticket</code> giving <b>top 12px, right 20px, bottom 12px, left 20px</b> — in the <b>fewest possible values</b>. Then write <code>border-radius</code> on <code>.ticket</code> so only the <b>top two corners</b> are rounded to 10px.',
+      start:'<style>\n  .ticket {\n    background: #E0EAF7;\n    /* one padding shorthand, fewest values */\n\n    /* rounded top corners only */\n\n  }\n</style>\n\n<div class="ticket">Boarding pass</div>',
+      hint:'Top and bottom match, left and right match — that is two values. For the radius, corners run clockwise from top-left: 10px 10px 0 0.',
+      checks:[
+        {l:'.ticket sets padding', f:function(d){ return !!decl(cssOf(d), '.ticket', 'padding'); }},
+        {l:'The padding uses exactly two values', f:function(d){
+          var v = decl(cssOf(d), '.ticket', 'padding');
+          return !!v && words(v).length === 2; }},
+        {l:'It resolves to 12px vertical and 20px horizontal', f:function(d){
+          var v = decl(cssOf(d), '.ticket', 'padding');
+          if (!v) return false;
+          var w = words(v);
+          return w.length === 2 && num(w[0]) === 12 && num(w[1]) === 20; }},
+        {l:'.ticket sets border-radius', f:function(d){ return !!decl(cssOf(d), '.ticket', 'border-radius'); }},
+        {l:'Only the top two corners are rounded to 10px', f:function(d){
+          var v = decl(cssOf(d), '.ticket', 'border-radius');
+          if (!v) return false;
+          var w = words(v);
+          return w.length === 4 && num(w[0]) === 10 && num(w[1]) === 10 && num(w[2]) === 0 && num(w[3]) === 0; }}
+      ]},
+
+    { id:'B6', title:'Stop the margin collapsing', lvl:'a',
+      scen:'The card has a 32px top margin on its heading. Instead of pushing the heading down inside the card, it pushes the whole card down and leaves the heading flush against the top edge.',
+      brief:'Keep the heading\'s <code>margin-top: 32px</code> exactly as it is. Change <b>only the parent</b> so the margin stays inside the card. Then state which of the three cures you used — in a CSS comment.',
+      start:'<style>\n  .card {\n    background: #DDF0E5;\n    /* change only this rule */\n  }\n  .card h2 {\n    margin-top: 32px;   /* do not touch */\n  }\n</style>\n\n<div class="card">\n  <h2>Trapped heading</h2>\n  <p>The margin above the heading should sit inside this green card.</p>\n</div>',
+      hint:'Three things stop a parent leaking its first child\'s top margin: padding on the parent, a border on the parent, or making the parent a flex/grid container. Any one works. Add a /* comment */ naming yours.',
+      checks:[
+        {l:'The heading keeps margin-top: 32px', f:function(d){
+          return num(decl(cssOf(d), '.card h2', 'margin-top')) === 32; }},
+        {l:'.card gained padding, a border, or flex/grid', f:function(d){
+          var css = cssOf(d);
+          var pad = decl(css, '.card', 'padding') || decl(css, '.card', 'padding-top');
+          var bor = decl(css, '.card', 'border')  || decl(css, '.card', 'border-top');
+          var dis = decl(css, '.card', 'display');
+          return (!!pad && num(pad) > 0) || (!!bor && !/none/i.test(bor)) ||
+                 (!!dis && /flex|grid|flow-root/i.test(dis)); }},
+        {l:'.card keeps its background', f:function(d){
+          return !!decl(cssOf(d), '.card', 'background') ||
+                 !!decl(cssOf(d), '.card', 'background-color'); }},
+        {l:'A comment explains which cure you chose', f:function(d){
+          var raw = cssOf(d);
+          var cs = raw.match(/\/\*[\s\S]*?\*\//g) || [];
+          return cs.some(function(c){
+            return /padding|border|flex|grid|flow-root|collapse/i.test(c) && c.replace(/[^a-z]/gi,'').length > 8; }); }},
+        {l:'The h2 rule was not given a padding instead', f:function(d){
+          return !decl(cssOf(d), '.card h2', 'padding-top'); }}
+      ]},
+
+    { id:'B7', title:'Truncate with an ellipsis', lvl:'a',
+      scen:'Long product names break the card layout. Design wants them cut off with a "…" on one line.',
+      brief:'Truncate <code>.name</code> to a single line ending in an ellipsis. <b>This needs three properties working together</b> — any one or two of them on their own does nothing at all.',
+      start:'<style>\n  .name {\n    max-width: 220px;\n    border: 1px solid #ccc;\n    /* truncate it */\n\n  }\n</style>\n\n<div class="name">Aurora 14 inch padded laptop sleeve in slate grey</div>',
+      hint:'overflow: hidden  ·  white-space: nowrap  ·  text-overflow: ellipsis.  Without nowrap the text simply wraps, so nothing ever overflows and the ellipsis never appears.',
+      checks:[
+        {l:'text-overflow: ellipsis is set', f:function(d){
+          return /ellipsis/i.test(String(decl(cssOf(d), '.name', 'text-overflow'))); }},
+        {l:'white-space: nowrap is set', f:function(d){
+          return /nowrap/i.test(String(decl(cssOf(d), '.name', 'white-space'))); }},
+        {l:'overflow is hidden', f:function(d){
+          var v = decl(cssOf(d), '.name', 'overflow') || decl(cssOf(d), '.name', 'overflow-x');
+          return /hidden|clip/i.test(String(v)); }},
+        {l:'A width constraint still exists', f:function(d){
+          var css = cssOf(d);
+          return !!decl(css, '.name', 'max-width') || !!decl(css, '.name', 'width'); }},
+        {l:'All three are on the same rule', f:function(d){
+          var b = blocks(cssOf(d), '.name').join(';');
+          return /ellipsis/i.test(b) && /nowrap/i.test(b) && /overflow\s*:\s*(hidden|clip)/i.test(b); }}
+      ]},
+
+    { id:'B8', title:'The border that renders nothing', lvl:'a',
+      scen:'A junior wrote three border declarations. Two of them draw nothing on screen and nobody can see why.',
+      brief:'Fix all three rules so each one actually draws. <b>Do not change any of the widths or colours</b> — add only what is missing. Then give <code>.c</code> a visible <b>focus ring that does not move the layout</b>.',
+      start:'<style>\n  .a { border: 2px; }\n  .b { border-width: 3px; border-color: teal; }\n  .c { border: 1px solid #999; }\n  .c:focus-visible {\n    /* a focus ring that takes no space */\n  }\n</style>\n\n<p class="a">Box A</p>\n<p class="b">Box B</p>\n<button class="c">Tab to me</button>',
+      hint:'border-style defaults to none — width without a style is invisible. Add solid (or dashed) to .a and .b. For the ring use outline plus outline-offset: outline is drawn outside the border and takes no space.',
+      checks:[
+        {l:'.a now has a border style', f:function(d){
+          var css = cssOf(d);
+          var b = decl(css, '.a', 'border'), s = decl(css, '.a', 'border-style');
+          return (!!b && /(solid|dashed|dotted|double|groove|ridge)/i.test(b)) ||
+                 (!!s && !/none/i.test(s)); }},
+        {l:'.a keeps its 2px width', f:function(d){
+          var b = blocks(cssOf(d), '.a').join(';');
+          return /2px/.test(b); }},
+        {l:'.b now has a border style', f:function(d){
+          var css = cssOf(d);
+          var s = decl(css, '.b', 'border-style'), b = decl(css, '.b', 'border');
+          return (!!s && !/none/i.test(s)) || (!!b && /(solid|dashed|dotted|double)/i.test(b)); }},
+        {l:'.b keeps 3px and teal', f:function(d){
+          var b = blocks(cssOf(d), '.b').join(';');
+          return /3px/.test(b) && /teal/i.test(b); }},
+        {l:'The focus ring uses outline, not border', f:function(d){
+          var v = decl(cssOf(d), '.c:focus-visible', 'outline');
+          return !!v && !/none/i.test(v); }},
+        {l:'outline-offset is set so the ring clears the border', f:function(d){
+          return !!decl(cssOf(d), '.c:focus-visible', 'outline-offset'); }}
+      ]},
+
+    { id:'B9', title:'The shorthand that ate the image', lvl:'a',
+      scen:'Featured cards were supposed to go gold. Instead the background pattern disappeared from every one of them.',
+      brief:'<code>.card</code> has a pattern image and a navy colour. <code>.card.featured</code> must be <b>gold, and keep the pattern</b>. Fix the featured rule <b>without touching <code>.card</code></b> and without repeating the image URL.',
+      start:'<style>\n  .card {\n    background-image: url(pattern.png);\n    background-color: navy;\n    color: white;\n    padding: 20px;\n  }\n  .card.featured {\n    background: gold;   /* this is the bug */\n  }\n</style>\n\n<div class="card">Normal card</div>\n<div class="card featured">Featured card</div>',
+      hint:'The background shorthand resets every background-* property, including background-image, back to its initial value. Use the longhand background-color instead.',
+      checks:[
+        {l:'.card.featured no longer uses the background shorthand', f:function(d){
+          return decl(cssOf(d), '.card.featured', 'background') === null; }},
+        {l:'It sets background-color instead', f:function(d){
+          return !!decl(cssOf(d), '.card.featured', 'background-color'); }},
+        {l:'The colour is still gold', f:function(d){
+          return /gold|#ffd700|rgb/i.test(String(decl(cssOf(d), '.card.featured', 'background-color'))); }},
+        {l:'The image URL is not repeated in the featured rule', f:function(d){
+          return !/url\(/i.test(blocks(cssOf(d), '.card.featured').join(';')); }},
+        {l:'.card still declares the pattern image', f:function(d){
+          return /url\(/i.test(String(decl(cssOf(d), '.card', 'background-image'))); }},
+        {l:'.card was left alone', f:function(d){
+          var css = cssOf(d);
+          return /navy/i.test(String(decl(css, '.card', 'background-color'))); }}
+      ]},
+
+    { id:'B10', title:'A spacing scale, not magic numbers', lvl:'a',
+      scen:'A review comment reads: "17px here, 23px there, 6px somewhere else. Where do these numbers come from?"',
+      brief:'Define a <b>spacing scale as custom properties</b> on <code>:root</code> — at least four steps — then use <code>var()</code> for <b>every</b> padding and margin in the file. No raw pixel value may appear outside the <code>:root</code> block.',
+      start:'<style>\n  :root {\n    /* define the scale here */\n\n  }\n  .panel  { padding: 17px; margin-bottom: 23px; }\n  .panel h3 { margin-bottom: 6px; }\n  .panel p  { margin: 0; }\n</style>\n\n<div class="panel">\n  <h3>Panel title</h3>\n  <p>Panel body.</p>\n</div>',
+      hint:'A 4px-based scale works: --space-1: 4px; --space-2: 8px; --space-3: 16px; --space-4: 24px. Then padding: var(--space-3). Snap 17 to 16, 23 to 24, 6 to 8 — that is the whole point of a scale.',
+      checks:[
+        {l:':root defines at least four custom properties', f:function(d){
+          var b = blocks(cssOf(d), ':root').join(';');
+          return (b.match(/--[a-z0-9-]+\s*:/gi) || []).length >= 4; }},
+        {l:'Those custom properties hold length values', f:function(d){
+          var b = blocks(cssOf(d), ':root').join(';');
+          return (b.match(/--[a-z0-9-]+\s*:\s*[\d.]+(px|rem)/gi) || []).length >= 4; }},
+        {l:'.panel padding uses var()', f:function(d){
+          return /var\(/.test(String(decl(cssOf(d), '.panel', 'padding'))); }},
+        {l:'.panel margin uses var()', f:function(d){
+          var css = cssOf(d);
+          var v = decl(css, '.panel', 'margin-bottom') || decl(css, '.panel', 'margin');
+          return /var\(/.test(String(v)); }},
+        {l:'.panel h3 margin uses var()', f:function(d){
+          var css = cssOf(d);
+          var v = decl(css, '.panel h3', 'margin-bottom') || decl(css, '.panel h3', 'margin');
+          return /var\(/.test(String(v)); }},
+        {l:'No raw px survives outside :root', f:function(d){
+          var css = clean(cssOf(d));
+          var re = /([^{}]+)\{([^{}]*)\}/g, m, bad = false;
+          while ((m = re.exec(css)) !== null) {
+            if (/:root/.test(m[1])) continue;
+            if (/\b\d+px/.test(m[2])) bad = true;
+          }
+          return !bad; }}
+      ]},
+
+    { id:'B11', title:'Boss — the pricing card', lvl:'b',
+      scen:'Build the component that will be judged in an interview. Markup and CSS both count.',
+      brief:'Build one complete pricing card. It must be exactly <b>320px wide on screen</b> whatever padding it carries, use a <b>spacing scale</b>, round only the <b>top</b> corners of its header, carry a <b>two-layer shadow</b>, transition on hover <b>naming the properties</b>, and give its button an accessible <b>focus ring that takes no layout space</b>. Every requirement below is checked.',
+      start:'<!-- Build the card. Suggested structure:\n     article.price > header.price-head > h3 + .amount\n                   > ul.features > li × 3\n                   > button.buy\n-->\n<style>\n  *, *::before, *::after { box-sizing: border-box; }\n\n  :root {\n    /* spacing scale */\n  }\n\n  .price {\n\n  }\n</style>\n\n<article class="price">\n\n</article>',
+      hint:'320px + border-box. Header: border-radius: 12px 12px 0 0. Shadow: two comma-separated layers, one tight one wide. Transition: name the properties, never "all". Focus: outline + outline-offset on .buy:focus-visible.',
+      checks:[
+        {l:'The box-sizing reset is present', f:function(d){
+          return anyDecl(cssOf(d), 'box-sizing', function(v){ return /border-box/i.test(v); }); }},
+        {l:'.price is width 320px', f:function(d){
+          var css = cssOf(d);
+          var w = decl(css, '.price', 'width') || decl(css, '.price', 'max-width');
+          return num(w) === 320; }},
+        {l:'A spacing scale of 3+ custom properties on :root', f:function(d){
+          var b = blocks(cssOf(d), ':root').join(';');
+          return (b.match(/--[a-z0-9-]+\s*:\s*[\d.]+(px|rem)/gi) || []).length >= 3; }},
+        {l:'Padding somewhere uses var()', f:function(d){
+          return anyDecl(cssOf(d), 'padding', function(v){ return /var\(/.test(v); }); }},
+        {l:'Only the top corners of the header are rounded', f:function(d){
+          var css = cssOf(d);
+          var found = false;
+          (clean(css).match(/border-radius\s*:\s*([^;}]+)/gi) || []).forEach(function(s){
+            var w = words(s.split(':')[1]);
+            if (w.length === 4 && num(w[0]) > 0 && num(w[1]) > 0 && num(w[2]) === 0 && num(w[3]) === 0) found = true;
+          });
+          return found; }},
+        {l:'A two-layer box-shadow', f:function(d){
+          return anyDecl(cssOf(d), 'box-shadow', function(v){
+            return v.split(/,(?![^(]*\))/).length >= 2; }); }},
+        {l:'A transition that names properties (never "all")', f:function(d){
+          var css = clean(cssOf(d));
+          var ms = css.match(/transition\s*:\s*([^;}]+)/gi) || [];
+          if (!ms.length) return false;
+          return ms.every(function(s){ return !/\ball\b/i.test(s); }) &&
+                 ms.some(function(s){ return /(transform|opacity|background|box-shadow|border|color)/i.test(s); }); }},
+        {l:'A :focus-visible rule using outline', f:function(d){
+          var css = clean(cssOf(d));
+          var re = /([^{}]+)\{([^{}]*)\}/g, m, ok = false;
+          while ((m = re.exec(css)) !== null) {
+            if (/focus-visible/i.test(m[1]) && /outline\s*:/i.test(m[2]) && !/outline\s*:\s*none/i.test(m[2])) ok = true;
+          }
+          return ok; }},
+        {l:'outline: none is never used anywhere', f:function(d){
+          return !/outline\s*:\s*none/i.test(clean(cssOf(d))); }},
+        {l:'Markup: article with a header, a list of 3+ items and a button', f:function(d){
+          var a = d.querySelector('article.price') || d.querySelector('article');
+          if (!a) return false;
+          return !!a.querySelector('header') &&
+                 a.querySelectorAll('li').length >= 3 &&
+                 !!a.querySelector('button'); }},
+        {l:'Markup: a heading and a price amount are present', f:function(d){
+          var a = d.querySelector('article') || d.body;
+          return !!a.querySelector('h1,h2,h3,h4') && /\d/.test(a.textContent); }},
+        {l:'No inline style attributes — it all lives in the stylesheet', f:function(d){
+          return d.querySelectorAll('body [style]').length === 0; }}
+      ]}
+  ];
+
+  var solved = {}, attempts = {}, chIdx = 0;
+  var chList = $('chList'), chCode = $('chCode'), chPrev = $('chPrev');
+  var chChecks = $('chChecks'), chVerdict = $('chVerdict'), chHintBox = $('chHintBox');
+
+  chList.innerHTML = CH.map(function (c) { return '<button>' + c.id + '</button>'; }).join('');
+  chList.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    loadCh(Array.prototype.indexOf.call(chList.children, b));
+  });
+
+  function updateScore() {
+    $('score').innerHTML = 'solved <b>' + Object.keys(solved).length + '</b> / ' + CH.length;
+    Array.prototype.forEach.call(chList.children, function (b, i) {
+      b.classList.toggle('solved', !!solved[CH[i].id]);
+      b.classList.toggle('on', i === chIdx);
+    });
+  }
+  function preview() {
+    chPrev.srcdoc = '<style>body{font-family:system-ui,-apple-system,sans-serif;padding:14px;color:#111;background:#fff;line-height:1.5;margin:0}'
+      + 'ul{padding-left:18px}button{font:inherit}</style>' + chCode.value;
+  }
+  function renderChecks(res) {
+    var c = CH[chIdx], html = '';
+    c.checks.forEach(function (ck, i) {
+      var st = res ? (res[i] ? 'pass' : 'fail') : 'idle';
+      var mk = res ? (res[i] ? '✓' : '✕') : '·';
+      html += '<div class="chk ' + st + '"><span class="mk">' + mk + '</span><span>' + esc(ck.l) + '</span></div>';
+    });
+    chChecks.innerHTML = html;
+  }
+  function loadCh(i) {
+    chIdx = i;
+    var c = CH[i];
+    $('chTitle').textContent = c.id + ' · ' + c.title;
+    var lv = $('chLvl');
+    lv.className = 'lvl ' + c.lvl;
+    lv.textContent = c.lvl === 'm' ? 'MODERATE' : (c.lvl === 'a' ? 'ADVANCED' : 'BOSS');
+    $('chScenario').innerHTML = '<span class="l">Real scenario</span>' + c.scen;
+    $('chBrief').innerHTML = c.brief;
+    chCode.value = c.start;
+    chVerdict.textContent = ''; chVerdict.className = 'verdict';
+    chHintBox.className = 'hint'; chHintBox.textContent = c.hint;
+    renderChecks(null); preview(); updateScore();
+    window.scrollTo(0, 0);
+  }
+  function runChecks() {
+    var c = CH[chIdx], raw = chCode.value, doc = P(raw);
+    var res = c.checks.map(function (ck) {
+      try { return !!ck.f(doc, raw); } catch (e) { return false; }
+    });
+    renderChecks(res);
+    var passed = res.filter(Boolean).length;
+    if (passed === res.length) {
+      solved[c.id] = true;
+      chVerdict.className = 'verdict ok';
+      chVerdict.textContent = '✓ All ' + res.length + ' requirements met.';
+    } else {
+      attempts[c.id] = (attempts[c.id] || 0) + 1;
+      chVerdict.className = 'verdict no';
+      chVerdict.textContent = passed + ' of ' + res.length + ' passed — keep going.';
+      if (attempts[c.id] >= 2) chHintBox.className = 'hint show';
+    }
+    updateScore();
+  }
+  chCode.addEventListener('input', preview);
+  $('chRun').addEventListener('click', runChecks);
+  $('chReset').addEventListener('click', function () { loadCh(chIdx); });
+  $('chHint').addEventListener('click', function () { chHintBox.classList.toggle('show'); });
+  loadCh(0);
+  window.__CH = CH;   // exposed for the automated verification pass
+
+  /* ============================================================
+     LOGIC DRILLS
+     ============================================================ */
+  var LOGIC = [
+    { q:'.box {\n  width: 300px;\n  padding: 20px;\n  border: 5px solid;\n}',
+      ask:'How many pixels wide is this box on screen?',
+      a:'<p><b>350px.</b> By default <code>width</code> measures the <b>content box only</b>. Padding is added on both sides (20 + 20) and border on both sides (5 + 5), giving 300 + 40 + 10.</p><p>Add <code>box-sizing: border-box</code> and the answer becomes 300 — with the content squeezed to 250 instead.</p>' },
+
+    { q:'* { box-sizing: border-box }\n\n.box {\n  width: 300px;\n  padding: 20px;\n  border: 5px solid;\n}',
+      ask:'Now how wide is the box — and how wide is the content inside it?',
+      a:'<p><b>The box is 300px. The content is 250px.</b> With <code>border-box</code>, padding and border grow <i>inwards</i>: 300 − 40 − 10 = 250.</p><p>This is why the reset is safe to apply globally. You lose nothing; you simply stop having to do arithmetic in your head every time you add padding.</p>' },
+
+    { q:'<div style="margin-bottom: 40px">A</div>\n<div style="margin-top: 24px">B</div>',
+      ask:'What is the vertical gap between A and B?',
+      a:'<p><b>40px, not 64.</b> Adjacent vertical margins collapse: the larger one wins and the smaller one disappears entirely.</p><p>Change 40 to 10 and the gap becomes 24 — the <i>other</i> margin now wins. The two never add up.</p>' },
+
+    { q:'<span style="margin-right: 40px">A</span>\n<span style="margin-left: 24px">B</span>',
+      ask:'And the horizontal gap between these two?',
+      a:'<p><b>64px — they add up.</b> Margin collapse is <b>vertical only</b>. Left and right margins always sum, on every display type.</p><p>This asymmetry catches people constantly. If you remember one thing: collapse is a block-flow phenomenon in the vertical direction, nowhere else.</p>' },
+
+    { q:'.a { padding: 10px 20px 30px; }',
+      ask:'What is the left padding?',
+      a:'<p><b>20px.</b> With three values the order is top, sides, bottom — and the missing fourth (left) copies the second value (right).</p><p>The full resolution is: top 10, right 20, bottom 30, left 20.</p>' },
+
+    { q:'.a { border: 2px red; }\n.b { border: 2px solid red; }',
+      ask:'Which one draws a border?',
+      a:'<p><b>Only .b.</b> The initial value of <code>border-style</code> is <code>none</code>, so a width and a colour with no style render absolutely nothing.</p><p>This is the single most common "my border isn\'t showing" bug, and it is completely silent — no error, no warning, just no border.</p>' },
+
+    { q:'.card { background-image: url(dots.png); background-color: navy; }\n.card.big { background: gold; }',
+      ask:'What does a .card.big element look like?',
+      a:'<p><b>Plain gold — the dots are gone.</b> <code>background</code> is a shorthand, so writing it resets <i>every</i> background-* property you did not mention, including <code>background-image</code>, back to its initial value of <code>none</code>.</p><p>The fix is the longhand: <code>background-color: gold</code>. <b>Shorthand to set, longhand to override.</b></p>' },
+
+    { q:'.box {\n  width: 400px;\n  margin: auto 0;\n}',
+      ask:'Is this box centred vertically?',
+      a:'<p><b>No.</b> On the vertical axis <code>auto</code> resolves to <b>zero</b>, so this sets no top or bottom margin at all. Only horizontal auto margins split the free space.</p><p><code>margin: 0 auto</code> centres horizontally. For vertical centring use flexbox: <code>display:flex; align-items:center</code>.</p>' },
+
+    { q:'<a href="#" style="width: 200px; padding: 20px 0; background: gold">Link</a>',
+      ask:'How much of this actually takes effect?',
+      a:'<p><b>The background works. The width is ignored, and the vertical padding paints but pushes nothing apart.</b> An anchor is <code>display:inline</code>, and inline boxes do not respect width, height, or vertical margin — vertical padding overflows the line box and overlaps the lines above and below.</p><p>Add <code>display:inline-block</code> and all of it starts behaving.</p>' },
+
+    { q:'.parent { background: pink; }\n.parent > p { margin-top: 30px; }',
+      ask:'Where does the 30px of space end up?',
+      a:'<p><b>Above the pink area, not inside it.</b> A parent with no padding, no border and no new formatting context lets its first child\'s top margin escape — so the <b>parent itself</b> moves down 30px and the paragraph sits flush against its top edge.</p><p>Give <code>.parent</code> any padding, any border, or <code>display:flow-root</code> and the margin is trapped inside where you expected it.</p>' }
+  ];
+
+  $('logicWrap').innerHTML = LOGIC.map(function (d, i) {
+    return '<div class="panel" style="margin-bottom:14px">'
+      + '<span class="lbl">Drill ' + (i + 1) + '</span>'
+      + '<pre>' + esc(d.q) + '</pre>'
+      + '<p style="font-size:15.5px;color:var(--ink);font-weight:600;margin:12px 0">' + d.ask + '</p>'
+      + '<button class="btn sm" data-i="' + i + '">Reveal the answer</button>'
+      + '<div class="note q" id="la' + i + '" style="display:none;margin-top:12px">' + d.a + '</div>'
+      + '</div>';
+  }).join('');
+  $('logicWrap').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-i]'); if (!b) return;
+    var box = $('la' + b.dataset.i);
+    var open = box.style.display !== 'none';
+    box.style.display = open ? 'none' : 'block';
+    b.textContent = open ? 'Reveal the answer' : 'Hide the answer';
+  });
+
+})();
+</script>
+</body>
+</html>

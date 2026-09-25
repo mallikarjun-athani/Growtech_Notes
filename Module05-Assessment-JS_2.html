@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JavaScript Assessment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#F5F7F8; --card:#FFFFFF; --sunk:#EDF2F3;
+    --ink:#12181C; --ink-2:#3D4A52; --ink-3:#6B7C86;
+    --line:#DCE3E6; --line-soft:#E9EEF0;
+    --accent:#0E6E68; --accent-soft:#DCEEEC;
+    --amber:#A85A11; --amber-soft:#F7E9D8;
+    --blue:#1F5FA8;  --blue-s:#E0EAF7;
+    --plum:#7A3E86;  --plum-s:#F1E5F4;
+    --red:#B03A2E;   --red-s:#FBE6E3;
+    --green:#1E7A4C; --green-s:#DDF0E5;
+    --code-bg:#101820; --code-ink:#D7E3E6;
+    --shadow:0 1px 2px rgba(18,24,28,.06), 0 8px 24px rgba(18,24,28,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#0D1418; --card:#141D22; --sunk:#101A1F;
+      --ink:#E8EFF1; --ink-2:#AEBEC5; --ink-3:#7E9099;
+      --line:#26343B; --line-soft:#1D282E;
+      --accent:#5CC8BE; --accent-soft:#12312F;
+      --amber:#E0A15C; --amber-soft:#2E2213;
+      --blue:#79B4EE;  --blue-s:#14263A;
+      --plum:#CE9ED9;  --plum-s:#2C1D31;
+      --red:#E88070;   --red-s:#331714;
+      --green:#5FC98C; --green-s:#0F2C1D;
+      --code-bg:#070C0F; --code-ink:#D7E3E6;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0D1418; --card:#141D22; --sunk:#101A1F;
+    --ink:#E8EFF1; --ink-2:#AEBEC5; --ink-3:#7E9099;
+    --line:#26343B; --line-soft:#1D282E;
+    --accent:#5CC8BE; --accent-soft:#12312F;
+    --amber:#E0A15C; --amber-soft:#2E2213;
+    --blue:#79B4EE;  --blue-s:#14263A;
+    --plum:#CE9ED9;  --plum-s:#2C1D31;
+    --red:#E88070;   --red-s:#331714;
+    --green:#5FC98C; --green-s:#0F2C1D;
+    --code-bg:#070C0F; --code-ink:#D7E3E6;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--paper); color:var(--ink); margin:0;
+    font-family:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:"Archivo","IBM Plex Sans",system-ui,sans-serif;text-wrap:balance;margin:0;letter-spacing:-.02em}
+  p{margin:0}
+  code,.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+  button{font-family:inherit}
+
+  .wrap{max-width:1400px;margin:0 auto;padding:0 22px 40px}
+  #vLobby .wrap,#vKey .wrap{max-width:1240px;padding-bottom:110px}
+  #vArena .wrap,#vGate .wrap{padding-bottom:16px}
+  .view{display:none}
+  .view.on{display:block}
+
+  /* ---------- shared bits ---------- */
+  .eyebrow{
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .btn{
+    font-family:"IBM Plex Mono",monospace;font-size:13px;background:var(--card);color:var(--ink);
+    border:1px solid var(--line);border-radius:8px;padding:9px 16px;cursor:pointer;white-space:nowrap;
+  }
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .btn[disabled]{opacity:.4;cursor:not-allowed}
+  .btn[disabled]:hover{border-color:var(--line);color:var(--ink)}
+  .btn.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .btn.pri:hover{color:#fff;filter:brightness(1.08)}
+  .btn.big{font-size:15px;padding:12px 24px}
+  .btn.sm{font-size:12px;padding:6px 11px}
+  .row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+  .kbd{
+    font-family:"IBM Plex Mono",monospace;font-size:11px;border:1px solid var(--line);
+    border-bottom-width:2px;border-radius:5px;padding:1px 6px;color:var(--ink-3);background:var(--paper);
+  }
+  .pill{
+    font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+    padding:3px 10px;border-radius:999px;border:1px solid var(--line);color:var(--ink-3);background:var(--paper);
+  }
+  .pill.easy{color:var(--green);border-color:var(--green);background:var(--green-s)}
+  .pill.medium{color:var(--blue);border-color:var(--blue);background:var(--blue-s)}
+  .pill.tricky{color:var(--plum);border-color:var(--plum);background:var(--plum-s)}
+
+  /* ---------- lobby ---------- */
+  .lobby{padding:clamp(26px,3.4vw,52px);margin:26px 0;display:flex;flex-direction:column;gap:26px}
+  .lobby h1{font-size:clamp(34px,5.4vw,64px);font-weight:800;line-height:1.04}
+  .lobby h1 .thin{display:block;font-weight:600;color:var(--ink-3);font-size:.34em;margin-bottom:.6em;letter-spacing:.02em}
+  .lead{color:var(--ink-2);font-size:clamp(15px,1.4vw,18px);max-width:70ch}
+  .lead b{color:var(--ink);font-weight:600}
+  .setgrid{display:grid;grid-template-columns:1.15fr 1fr;gap:18px;align-items:start}
+  @media (max-width:900px){.setgrid{grid-template-columns:1fr}}
+  .setbox{border:1px solid var(--line);border-radius:11px;padding:18px;background:var(--paper);display:flex;flex-direction:column;gap:13px}
+  .setbox h3{font-size:15px;font-weight:700}
+  .setbox .hint{font-size:13px;color:var(--ink-3)}
+  .roundpick{display:flex;flex-direction:column;gap:8px}
+  .rp{
+    display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:9px;
+    padding:11px 13px;background:var(--card);cursor:pointer;text-align:left;width:100%;
+  }
+  .rp:hover{border-color:var(--accent)}
+  .rp .box{
+    flex:none;width:19px;height:19px;border-radius:5px;border:1.5px solid var(--line);margin-top:2px;
+    display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;background:var(--paper);
+  }
+  .rp.on .box{background:var(--accent);border-color:var(--accent);color:#fff}
+  .rp .rpn{display:block;font-size:14.5px;font-weight:700;color:var(--ink)}
+  .rp .rps{display:block;font-size:12.5px;color:var(--ink-3);margin-top:2px}
+  .rp .rpc{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);flex:none;padding-top:2px}
+  .teamrow{display:flex;gap:9px;align-items:center}
+  .teamrow input{
+    flex:1;font-family:inherit;font-size:14.5px;padding:8px 11px;border-radius:8px;
+    border:1px solid var(--line);background:var(--card);color:var(--ink);min-width:0;
+  }
+  .teamrow input:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:var(--accent)}
+  .swatch{flex:none;width:12px;height:12px;border-radius:4px}
+  .keymap{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px;color:var(--ink-2);align-items:baseline}
+  .keymap .kbd{justify-self:start}
+
+  /* ---------- arena ---------- */
+  .top{
+    position:sticky;top:0;z-index:40;background:var(--card);border-bottom:1px solid var(--line);
+    padding:9px 20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+  }
+  .top .now{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-2);font-weight:600}
+  .top .sep{width:1px;height:20px;background:var(--line)}
+  .top .spacer{flex:1}
+  .bar{position:fixed;top:0;left:0;height:2px;background:var(--accent);z-index:60;transition:width .2s}
+  .scores{display:flex;gap:7px;flex-wrap:wrap}
+  .tchip{
+    display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;
+    padding:4px 12px 4px 8px;background:var(--paper);font-size:13px;cursor:pointer;
+  }
+  .tchip:hover{border-color:var(--accent)}
+  .tchip .dot{width:9px;height:9px;border-radius:3px;flex:none}
+  .tchip .nm{color:var(--ink-2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tchip .sc{font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--ink)}
+  .tchip.won{background:var(--green-s);border-color:var(--green)}
+  .tchip.won .nm,.tchip.won .sc{color:var(--green)}
+  .clock{
+    font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600;color:var(--ink-2);
+    border:1px solid var(--line);border-radius:7px;padding:5px 11px;background:var(--paper);cursor:pointer;min-width:62px;text-align:center;
+  }
+  .clock.run{border-color:var(--accent);color:var(--accent)}
+  .clock.out{border-color:var(--red);color:var(--red);background:var(--red-s)}
+
+  .stage{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);
+    padding:clamp(22px,2.4vw,40px);margin:12px 0;min-height:calc(100vh - 92px);
+    display:flex;flex-direction:column;gap:clamp(14px,1.6vh,22px);
+  }
+  .qhead{display:flex;gap:11px;align-items:center;flex-wrap:wrap}
+  .qhead .num{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+  .qtext{font-size:clamp(21px,2.6vw,40px);font-weight:700;line-height:1.22;color:var(--ink);text-wrap:balance}
+  .qtext code{
+    background:var(--sunk);border:1px solid var(--line);border-radius:6px;padding:1px 7px;
+    font-size:.88em;color:var(--accent);
+  }
+  .qask{font-size:clamp(16px,1.55vw,24px);color:var(--ink-2);font-weight:600}
+  pre.qcode{
+    margin:0;background:var(--code-bg);color:var(--code-ink);border-radius:11px;padding:20px 24px;
+    overflow-x:auto;font-family:"IBM Plex Mono",monospace;font-size:clamp(15px,1.72vw,29px);
+    line-height:1.62;border:1px solid var(--line);
+  }
+  /* A tall snippet has to leave room for the options, the reason and the live
+     output — on a 768px laptop mirror all of it must fit without scrolling. */
+  pre.qcode.tall{font-size:clamp(13px,1.2vw,21px);line-height:1.5;padding:16px 20px}
+  pre.qcode.taller{font-size:clamp(12.5px,1.02vw,18px);line-height:1.45;padding:13px 18px}
+  pre .c{color:#6E828B;font-style:italic}
+  pre .s{color:#E8B57A}
+  pre .k{color:#79D3C9;font-weight:600} pre .n{color:#8FC0F0} pre .f{color:#D6A8E0}
+
+  .opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  @media (max-width:820px){.opts{grid-template-columns:1fr}}
+  .opt{
+    display:flex;gap:14px;align-items:center;border:1.5px solid var(--line);border-radius:11px;
+    padding:15px 18px;background:var(--paper);cursor:pointer;text-align:left;width:100%;
+    font-family:inherit;font-size:clamp(16px,1.55vw,26px);color:var(--ink);transition:border-color .12s,background .12s;
+  }
+  .opt:hover{border-color:var(--accent)}
+  .opt .ltr{
+    flex:none;width:clamp(34px,2.6vw,44px);height:clamp(34px,2.6vw,44px);border-radius:9px;border:1.5px solid var(--line);background:var(--card);
+    display:flex;align-items:center;justify-content:center;font-family:"IBM Plex Mono",monospace;
+    font-size:clamp(15px,1.15vw,19px);font-weight:600;color:var(--ink-3);
+  }
+  .opt .txt{font-family:"IBM Plex Mono",monospace;font-size:.94em;word-break:break-word}
+  .opt .mark{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;flex:none}
+  .opt.pick{border-color:var(--blue);background:var(--blue-s)}
+  .opt.pick .ltr{border-color:var(--blue);color:var(--blue)}
+  .opt.pick .mark{color:var(--blue)}
+  .opt.right{border-color:var(--green);background:var(--green-s)}
+  .opt.right .ltr{background:var(--green);border-color:var(--green);color:#fff}
+  .opt.right .mark{color:var(--green)}
+  .opt.wrong{opacity:.45}
+  .opt.missed{border-color:var(--red);background:var(--red-s);opacity:1}
+  .opt.missed .ltr{border-color:var(--red);color:var(--red)}
+  .opt.missed .mark{color:var(--red)}
+
+  .shout.fill{flex:1}
+  .shout{
+    border:1.5px dashed var(--line);border-radius:11px;padding:20px;background:var(--paper);
+    display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;min-height:clamp(120px,17vh,190px);text-align:center;
+  }
+  .shout .lbl{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+  .shout .ans{font-family:"IBM Plex Mono",monospace;font-size:clamp(22px,3.1vw,46px);font-weight:600;color:var(--green)}
+  .shout.hid .ans{filter:blur(13px);user-select:none}
+  .shout.hid .lbl::after{content:" — hidden"}
+
+  .grow{flex:1}
+  .why{
+    border-left:3px solid var(--green);background:var(--green-s);padding:15px 19px;border-radius:0 9px 9px 0;
+    color:var(--ink-2);font-size:clamp(15px,1.4vw,22px);line-height:1.5;
+  }
+  .why b{color:var(--ink)} .why code{color:var(--green);font-family:"IBM Plex Mono",monospace;font-size:.92em}
+  .deep{
+    border-left:3px solid var(--plum);background:var(--plum-s);padding:15px 19px;border-radius:0 9px 9px 0;
+    color:var(--ink-2);font-size:clamp(14.5px,1.3vw,21px);line-height:1.5;
+  }
+  .deep b{color:var(--ink)} .deep code{color:var(--plum);font-family:"IBM Plex Mono",monospace;font-size:.92em}
+  .deep .dlbl{
+    display:block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--plum);margin-bottom:5px;
+  }
+  .verdict{font-family:"IBM Plex Mono",monospace;font-size:clamp(13px,1.1vw,17px);padding:8px 14px;border-radius:8px;display:inline-block}
+  .verdict.good{background:var(--green-s);color:var(--green);border:1px solid var(--green)}
+  .verdict.bad{background:var(--red-s);color:var(--red);border:1px solid var(--red)}
+
+  .out{background:#081014;border-top:1px solid #22313A;font-family:"IBM Plex Mono",monospace;
+    font-size:clamp(14px,1.5vw,24px);line-height:1.6;padding:14px 20px;min-height:48px;color:#D7E3E6;border-radius:0 0 11px 11px}
+  .out .ol,.out .or{padding:2px 0;border-bottom:1px solid #111E24;white-space:pre-wrap;word-break:break-word}
+  .out .or{color:#8FA3AD}
+  .out .or .arrow{color:#566B75}
+  .out .ow{padding:3px 8px;margin:2px -8px;background:#2B2210;color:#F0C27A;border-radius:4px}
+  .out .oe{padding:5px 9px;margin:3px -8px;background:#2C1512;color:#F4A193;border-radius:4px;white-space:pre-wrap}
+  .out .oe b{color:#FF8E7C}
+  .out .onote{display:block;color:#D9B0A8;font-size:.78em;margin-top:3px}
+  .out .ot{padding:7px 10px;margin:3px -8px;background:#2B2210;color:#F0C27A;border-radius:4px}
+  .out .oa{padding:3px 8px;margin:2px -8px;background:#12263A;color:#AFD3F5;border-radius:4px}
+  .out .tagalert{font-size:.62em;letter-spacing:.1em;text-transform:uppercase;background:#1F5FA8;color:#fff;padding:1px 6px;border-radius:3px}
+  .out .oempty,.out .ohint{color:#566B75;font-style:italic}
+  .v-string{color:#E7ECEE} .v-number,.v-bigint{color:#7FB8F0} .v-boolean{color:#D9A8E3}
+  .v-null,.v-undefined{color:#8FA3AD} .v-function{color:#7FD1C7} .v-error{color:#F4A193}
+  .v-array,.v-object{color:#E7ECEE} .v-symbol{color:#F0C27A}
+  .proof{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--code-bg)}
+  .proof .plbl{
+    font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:#8FA3AD;padding:8px 18px 6px;background:#0B1418;
+  }
+
+  .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line-soft);padding-top:15px}
+  .award{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .award .albl{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+  .abtn{
+    display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:8px;padding:6px 11px;
+    background:var(--paper);cursor:pointer;font-size:13px;color:var(--ink-2);
+  }
+  .abtn:hover{border-color:var(--green);color:var(--green)}
+  .abtn .dot{width:9px;height:9px;border-radius:3px;flex:none}
+  .abtn .k{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3)}
+  .abtn.done{background:var(--green-s);border-color:var(--green);color:var(--green)}
+
+  /* ---------- round card + results ---------- */
+  .gate{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);
+    padding:clamp(30px,4vw,64px);margin:12px 0;min-height:calc(100vh - 92px);
+    display:flex;flex-direction:column;gap:22px;justify-content:center;
+  }
+  .gate h2{font-size:clamp(30px,4.6vw,56px);font-weight:800;line-height:1.08}
+  .gate .gsub{color:var(--ink-2);font-size:clamp(16px,1.6vw,21px);max-width:62ch}
+  .board{display:flex;flex-direction:column;gap:clamp(10px,1.5vh,18px);max-width:min(980px,100%);width:100%}
+  .brow{display:flex;align-items:center;gap:14px}
+  .brow .bnm{width:clamp(150px,15vw,230px);flex:none;font-size:clamp(15px,1.45vw,23px);font-weight:600;color:var(--ink);
+    display:flex;align-items:center;gap:9px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .brow .bnm .dot{width:11px;height:11px;border-radius:4px;flex:none}
+  .brow .btrack{flex:1;height:clamp(26px,3.2vh,40px);border-radius:7px;background:var(--sunk);overflow:hidden;border:1px solid var(--line-soft)}
+  .brow .bfill{display:block;height:100%;border-radius:6px 0 0 6px;transition:width .5s cubic-bezier(.2,.7,.3,1)}
+  .brow .bsc{width:clamp(58px,5vw,84px);flex:none;text-align:right;font-family:"IBM Plex Mono",monospace;font-size:clamp(17px,1.9vw,30px);font-weight:600;color:var(--ink)}
+  .crown{color:var(--amber)}
+  .statline{display:flex;gap:26px;flex-wrap:wrap;font-size:clamp(14px,1.05vw,17px);color:var(--ink-3);font-family:"IBM Plex Mono",monospace}
+  .statline b{color:var(--ink);font-weight:600}
+
+  /* ---------- trainer key ---------- */
+  .keywrap{padding:26px 0 0}
+  .kq{border-bottom:1px solid var(--line-soft);padding:13px 0;display:grid;grid-template-columns:52px 1fr 1fr;gap:16px;align-items:start}
+  @media (max-width:820px){.kq{grid-template-columns:44px 1fr}.kq .kwhy{grid-column:2}}
+  .kq .kn{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3);padding-top:2px}
+  .kq .kqt{font-size:14.5px;color:var(--ink);line-height:1.45}
+  .kq .kqt code{background:var(--sunk);border-radius:4px;padding:0 5px;color:var(--accent);font-size:.92em}
+  .kq pre{margin:6px 0 0;background:var(--sunk);color:var(--ink);border:1px solid var(--line);border-radius:7px;
+    padding:9px 12px;font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.5;white-space:pre-wrap}
+  .kq .ka{font-family:"IBM Plex Mono",monospace;font-size:13.5px;font-weight:600;color:var(--green);margin-bottom:4px}
+  .kq .kwhy{font-size:13px;color:var(--ink-2);line-height:1.45}
+  .kq .kwhy code{font-family:"IBM Plex Mono",monospace;color:var(--accent);font-size:.94em}
+  .khead{display:flex;align-items:baseline;gap:12px;margin:26px 0 4px;padding-top:12px;border-top:2px solid var(--line)}
+  .khead h3{font-size:18px;font-weight:700}
+  .khead span{font-size:13px;color:var(--ink-3)}
+
+  /* A laptop mirrored to a projector is often only 768px tall. Tighten the
+     vertical rhythm there so a fully-opened question — answer, deeper note and
+     live output all showing — still fits without the trainer scrolling. */
+  @media (max-height:850px){
+    #vArena .wrap,#vGate .wrap{padding-bottom:8px}
+    .stage{padding:20px 24px;margin:10px 0;gap:11px;min-height:calc(100vh - 84px)}
+    .gate{margin:10px 0;min-height:calc(100vh - 84px)}
+    .opts{gap:9px}
+    .opt{padding:10px 14px}
+    .opt .ltr{width:30px;height:30px}
+    .why,.deep{padding:10px 15px;font-size:15.5px;line-height:1.42}
+    .deep .dlbl{margin-bottom:2px}
+    .out{padding:9px 16px;min-height:38px;font-size:15px}
+    .proof .plbl{padding:5px 16px 3px}
+    .actions{padding-top:10px}
+    pre.qcode{padding:14px 18px}
+    pre.qcode.tall{padding:11px 16px}
+    pre.qcode.taller{padding:9px 15px}
+    .qask{margin-top:-2px}
+  }
+
+  @media print{
+    .top,.bar,.noprint{display:none!important}
+    body{background:#fff}
+    .view{display:none!important}
+    .view#vKey{display:block!important}
+    .kq{break-inside:avoid;page-break-inside:avoid}
+    .wrap{max-width:none;padding:0}
+  }
+
+  /* ---------- assessment ---------- */
+
+  .typebox{display:flex;flex-direction:column;gap:7px}
+  .typebox label{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+  .typebox input{
+    font-family:"IBM Plex Mono",monospace;font-size:clamp(17px,1.7vw,26px);padding:13px 17px;border-radius:10px;
+    border:1.5px solid var(--line);background:var(--paper);color:var(--ink);width:100%;
+  }
+  .typebox input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .typebox input.nudge{border-color:var(--red);background:var(--red-s)}
+  .typebox .hint{font-size:13px;color:var(--ink-3)}
+  .opt[disabled]{cursor:default}
+  .opt[disabled]:hover{border-color:var(--line)}
+  .opt.right[disabled]:hover{border-color:var(--green)}
+  .opt.missed[disabled]:hover{border-color:var(--red)}
+
+  .modes{display:flex;gap:8px;flex-wrap:wrap}
+  .mode{
+    flex:1;min-width:190px;border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--card);
+    cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:3px;
+  }
+  .mode:hover{border-color:var(--accent)}
+  .mode.on{border-color:var(--accent);background:var(--accent-soft)}
+  .mode .mn{font-size:14.5px;font-weight:700;color:var(--ink)}
+  .mode .md{font-size:12.5px;color:var(--ink-3)}
+  .mode.on .md{color:var(--ink-2)}
+
+  /* On the report card the topic name IS the finding — it must never clip. */
+  #card .brow .bnm{
+    width:clamp(200px,22vw,310px);display:block;font-size:clamp(14.5px,1.25vw,20px);
+    line-height:clamp(26px,3.2vh,40px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  #card .board{gap:clamp(8px,1.2vh,14px)}
+  .missed{border-top:1px solid var(--line);padding-top:16px;width:100%}
+  .missed h3{font-size:15px;font-weight:700;margin-bottom:9px}
+  .mlist{display:flex;flex-direction:column;gap:6px;max-height:34vh;overflow-y:auto}
+  .mrow{
+    display:flex;gap:13px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:9px 13px;
+    background:var(--paper);cursor:pointer;text-align:left;width:100%;font-family:inherit;
+  }
+  .mrow:hover{border-color:var(--accent)}
+  .mrow .mt{flex:none;width:200px;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mrow .ml{flex:1;font-size:13.5px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mrow .mk{flex:none;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--accent)}
+  @media (max-width:760px){.mrow .mt{display:none}}
+  #cText{
+    display:none;width:100%;min-height:150px;margin-top:10px;font-family:"IBM Plex Mono",monospace;font-size:13px;
+    border:1px solid var(--line);border-radius:9px;padding:12px;background:var(--sunk);color:var(--ink);resize:vertical;
+  }
+
+  /* The topic name is the finding on a report card — it must never clip. */
+  #done .brow .bnm{
+    width:clamp(200px,22vw,320px);display:block;font-size:clamp(14.5px,1.25vw,20px);
+    line-height:clamp(26px,3.2vh,40px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .idform{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:660px}
+  @media (max-width:640px){.idform{grid-template-columns:1fr}}
+  .fld{display:flex;flex-direction:column;gap:6px}
+  .fld label{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+  .fld input{
+    font-family:inherit;font-size:17px;padding:12px 15px;border-radius:10px;
+    border:1.5px solid var(--line);background:var(--card);color:var(--ink);width:100%;
+  }
+  .fld input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .rules{display:flex;flex-direction:column;gap:9px;margin:0;padding:0;list-style:none}
+  /* Block, not flex: a flex <li> turns every <b> and the text around it into
+     separate columns, which shreds a sentence. */
+  .rules li{display:block;position:relative;padding-left:18px;font-size:15px;color:var(--ink-2);line-height:1.45}
+  .rules li b{color:var(--ink);font-weight:600}
+  .rules li::before{content:"";position:absolute;left:0;top:.5em;width:7px;height:7px;border-radius:2px;background:var(--accent);transform:rotate(45deg)}
+
+  .palette{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}
+  .pq{
+    width:38px;height:34px;border-radius:7px;border:1.5px solid var(--line);background:var(--paper);
+    font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-3);cursor:pointer;
+  }
+  .pq:hover{border-color:var(--accent);color:var(--accent)}
+  .pq.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+  .palette.rev{margin-top:14px;padding-top:14px;border-top:1px solid var(--line-soft)}
+  .pq.good{background:var(--green-s);border-color:var(--green);color:var(--green)}
+  .pq.bad{background:var(--red-s);border-color:var(--red);color:var(--red)}
+  .pq.blank{background:var(--sunk)}
+  .pq.here{outline:2px solid var(--ink);outline-offset:1px}
+  .pkey{font-size:12.5px;color:var(--ink-3);display:flex;align-items:center;gap:6px}
+  .pkey .sw{display:inline-block;width:14px;height:14px;border-radius:4px;border:1.5px solid var(--line);background:var(--paper);vertical-align:-2px}
+  .pkey .sw.on{background:var(--accent-soft);border-color:var(--accent)}
+
+  .sendbox{border:1.5px solid var(--accent);border-radius:12px;padding:20px;background:var(--accent-soft);display:flex;flex-direction:column;gap:12px}
+  .sublead{font-size:15px;color:var(--ink-2);max-width:74ch}
+  .sublead b{color:var(--ink)}
+  .codebox{
+    font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.55;word-break:break-all;
+    background:var(--card);border:1px solid var(--line);border-radius:9px;padding:13px 15px;color:var(--ink);
+    user-select:all;-webkit-user-select:all;max-height:150px;overflow-y:auto;
+  }
+  .hint{font-size:13px;color:var(--ink-3)}
+  #done h2{font-size:clamp(28px,3.8vw,46px);font-weight:800;line-height:1.08;margin-top:2px}
+</style>
+</head>
+<body>
+
+<div class="bar" id="bar" style="width:0"></div>
+
+<!-- ===================== START ===================== -->
+<div class="view on" id="vStart">
+<div class="wrap">
+  <div class="panel lobby">
+    <div class="eyebrow">JavaScript &middot; Assessment</div>
+    <h1><span class="thin">Dr. Reddy&rsquo;s Foundation &middot; Full Stack Programme</span>JavaScript Assessment</h1>
+    <p class="lead"><b id="qCount">73</b> questions. Multiple choice, predict-the-output, and a short written round.
+      Work alone, at your own speed &mdash; there is no time limit, but the time you take is recorded.</p>
+
+    <div class="setgrid">
+      <div class="setbox">
+        <h3>Who is sitting this paper</h3>
+        <div class="idform">
+          <div class="fld"><label for="fName">Your full name</label>
+            <input type="text" id="fName" maxlength="60" autocomplete="off" placeholder="as your trainer knows you"></div>
+          <div class="fld"><label for="fBatch">Batch</label>
+            <input type="text" id="fBatch" maxlength="40" autocomplete="off" placeholder="e.g. Indore B-07"></div>
+        </div>
+        <p class="hint">Both are needed &mdash; they are how your trainer finds your paper.</p>
+      </div>
+      <div class="setbox">
+        <h3>How it works</h3>
+        <ul class="rules">
+          <li>You can move <b>back and forth</b> and change any answer until you submit.</li>
+          <li>Nothing is marked while you work. <b>No answers, no explanations, no Run button.</b></li>
+          <li>A blank scores nothing, so <b>a guess is worth more than a blank</b>.</li>
+          <li>When you submit you get a <b>code to send to your trainer</b> &mdash; that code is your paper.</li>
+          <li>After that the whole paper <b>reopens with every answer and reason</b>, and the code runs live.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="row">
+      <button class="btn pri big" type="button" id="goBegin" disabled>Begin the paper &rarr;</button>
+      <button class="btn big" type="button" id="goTheme">Light / dark</button>
+      <span class="hint">Nothing is saved on this computer. Finish in one sitting.</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== EXAM ===================== -->
+<div class="view" id="vExam">
+  <div class="top">
+    <span class="now" id="who">&mdash;</span>
+    <span class="sep"></span>
+    <span class="now" id="answered">0 of 73 answered</span>
+    <span class="spacer"></span>
+    <span class="clock" id="clock">0:00</span>
+  </div>
+  <div class="wrap"><div class="stage" id="stage"></div></div>
+</div>
+
+<!-- ===================== CHECK SHEET ===================== -->
+<div class="view" id="vCheck">
+  <div class="wrap"><div class="gate" id="check"></div></div>
+</div>
+
+<!-- ===================== AFTER ===================== -->
+<div class="view" id="vDone">
+  <div class="wrap"><div class="stage" id="done" style="gap:16px"></div></div>
+</div>
+
+<script>
+/* =====================================================================
+   JSRunner — runs learner JavaScript in a Web Worker.
+
+   Why a worker: a beginner's first while-loop is often infinite. In the
+   page itself that freezes the tab (and the projector). In a worker we
+   simply terminate it after a timeout and explain what happened.
+
+   Shared by the deck (live slides) and the lab (challenges + tools).
+   ===================================================================== */
+var JSRunner = (function () {
+  'use strict';
+
+  var WORKER_SRC = [
+    "'use strict';",
+    "var OUT = [];",
+    "function ser(v, d) {",
+    "  d = d || 0; var t = typeof v;",
+    "  if (v === null) return { t:'null', s:'null' };",
+    "  if (t === 'undefined') return { t:'undefined', s:'undefined' };",
+    "  if (t === 'string') return { t:'string', s:v };",
+    "  if (t === 'number') return { t:'number', s: Object.is(v, -0) ? '-0' : String(v) };",
+    "  if (t === 'boolean') return { t:'boolean', s:String(v) };",
+    "  if (t === 'bigint') return { t:'bigint', s:String(v) + 'n' };",
+    "  if (t === 'symbol') return { t:'symbol', s:v.toString() };",
+    "  if (t === 'function') return { t:'function', s:'ƒ ' + (v.name || 'anonymous') + '()' };",
+    "  if (v instanceof Error) return { t:'error', s:v.name + ': ' + v.message };",
+    "  if (Array.isArray(v)) return { t:'array', s:inner(v, d) };",
+    "  return { t:'object', s:inner(v, d) };",
+    "}",
+    "function rep(x, d) { return typeof x === 'string' ? \"'\" + x + \"'\" : ser(x, d).s; }",
+    "function inner(v, d) {",
+    "  if (d > 2) return Array.isArray(v) ? '[Array]' : '{…}';",
+    "  if (Array.isArray(v)) return '[' + v.map(function (x) { return rep(x, d + 1); }).join(', ') + ']';",
+    "  var ks = Object.keys(v);",
+    "  if (!ks.length) return '{}';",
+    "  return '{' + ks.map(function (k) { return k + ': ' + rep(v[k], d + 1); }).join(', ') + '}';",
+    "}",
+    "function canon(v) {",
+    "  if (typeof v === 'string') return 's:' + JSON.stringify(v);",
+    "  if (typeof v === 'number') return Number.isNaN(v) ? 'n:NaN' : 'n:' + String(v);",
+    "  if (v === null) return 'null';",
+    "  if (v === undefined) return 'undef';",
+    "  if (typeof v === 'boolean') return 'b:' + v;",
+    "  if (Array.isArray(v)) return 'a:[' + v.map(canon).join(',') + ']';",
+    "  if (typeof v === 'object') return 'o:{' + Object.keys(v).sort().map(function (k) { return k + '=' + canon(v[k]); }).join(',') + '}';",
+    "  return typeof v + ':' + String(v);",
+    "}",
+    "var CAP = 300, capped = false;",
+    "function push(kind, args) {",
+    "  if (capped) return;",
+    "  OUT.push({ k:kind, parts:[].map.call(args, function (a) { return ser(a, 0); }) });",
+    "  if (OUT.length >= CAP) { capped = true; postMessage({ partial:true, out:OUT }); }",
+    "}",
+    "console.log   = function () { push('log', arguments); };",
+    "console.info  = function () { push('log', arguments); };",
+    "console.warn  = function () { push('warn', arguments); };",
+    "console.error = function () { push('error', arguments); };",
+    "console.table = function () { push('log', arguments); };",
+    "self.alert  = function (m) { OUT.push({ k:'alert', parts:[ser(String(m))] }); };",
+    "self.prompt = function () { OUT.push({ k:'warn', parts:[ser('prompt() is not available here - pass values into your function as parameters instead.')] }); return null; };",
+    "function err(e) {",
+    "  var name = (e && e.name) || 'Error', msg = (e && e.message) || String(e), note = '';",
+    "  if (/\\b(document|window) is not defined/.test(msg)) note = 'This runner has no web page attached - the DOM comes in a later module. Use console.log for now.';",
+    "  return { name:name, message:msg, note:note };",
+    "}",
+    "self.onmessage = function (e) {",
+    "  var m = e.data;",
+    "  if (m.cap) CAP = m.cap;",
+    "  if (m.mode === 'run') {",
+    "    try {",
+    "      var r = (0, eval)(m.code);",
+    "      postMessage({ ok:true, out:OUT, result:ser(r, 0), truncated:capped });",
+    "    } catch (x) { postMessage({ ok:false, out:OUT, error:err(x), truncated:capped }); }",
+    "    return;",
+    "  }",
+    "  if (m.mode === 'test') {",
+    "    var fn;",
+    "    try {",
+    "      fn = (0, eval)(m.code + '\\n;\\n(typeof ' + m.fname + \" === 'function' ? \" + m.fname + ' : undefined)');",
+    "    } catch (x) { postMessage({ ok:false, out:OUT, error:err(x) }); return; }",
+    "    if (typeof fn !== 'function') {",
+    "      postMessage({ ok:false, out:OUT, error:{ name:'NotFound', message:'No function called ' + m.fname + ' was found.', note:'Check the spelling - the name must match exactly, including capital letters.' } });",
+    "      return;",
+    "    }",
+    "    var results = m.cases.map(function (c) {",
+    "      var before = OUT.length;",
+    "      try {",
+    "        var got = fn.apply(null, c.args);",
+    "        return { pass: canon(got) === canon(c.expect), got: ser(got, 0), printed: OUT.length > before, gotUndef: got === undefined };",
+    "      } catch (x) { return { pass:false, threw:err(x), printed: OUT.length > before }; }",
+    "    });",
+    "    postMessage({ ok:true, out:OUT, results:results });",
+    "  }",
+    "};"
+  ].join('\n');
+
+  var url = null;
+  function workerURL() {
+    if (!url) url = URL.createObjectURL(new Blob([WORKER_SRC], { type: 'text/javascript' }));
+    return url;
+  }
+
+  function exec(msg, ms) {
+    return new Promise(function (resolve) {
+      var w, done = false;
+      try { w = new Worker(workerURL()); }
+      catch (e) {
+        resolve({ ok:false, fatal:true, error:{ name:'RunnerError', message:'This browser blocked the code runner.', note:'Open the file in Chrome or Edge.' } });
+        return;
+      }
+      var partial = null;
+      var t = setTimeout(function () {
+        if (done) return; done = true; w.terminate();
+        resolve({ ok:false, timeout:true, ms:ms, out:partial || [], truncated:!!partial });
+      }, ms);
+      w.onmessage = function (e) {
+        if (done) return;
+        if (e.data && e.data.partial) { partial = e.data.out; return; }
+        done = true; clearTimeout(t); w.terminate(); resolve(e.data);
+      };
+      w.onerror = function (e) {
+        if (done) return; done = true; clearTimeout(t); w.terminate();
+        if (e && e.preventDefault) e.preventDefault();
+        resolve({ ok:false, error:{ name:'Error', message:(e && e.message) || 'The code could not run.' } });
+      };
+      w.postMessage(msg);
+    });
+  }
+
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  /* one value as the console would draw it */
+  function val(v, quoteStrings) {
+    if (!v) return '';
+    var s = (v.t === 'string' && quoteStrings) ? "'" + v.s + "'" : v.s;
+    return '<span class="v-' + v.t + '">' + esc(s) + '</span>';
+  }
+
+  /* render a run result into an output element */
+  function render(el, r, opts) {
+    opts = opts || {};
+    var h = '';
+    (r.out || []).forEach(function (line) {
+      var cls = line.k === 'error' ? 'oe' : line.k === 'warn' ? 'ow' : line.k === 'alert' ? 'oa' : 'ol';
+      var body = line.parts.map(function (p) { return val(p, false); }).join(' ');
+      if (line.k === 'alert') body = '<span class="tagalert">alert</span> ' + body;
+      h += '<div class="' + cls + '">' + (body || '&nbsp;') + '</div>';
+    });
+    if (r.truncated) h += '<div class="ow">… output stopped after ' + (r.out || []).length + ' lines</div>';
+    if (r.timeout) {
+      h += '<div class="ot"><b>Stopped after ' + (r.ms / 1000) + ' seconds.</b> The code never finished — this almost always means an infinite loop. Check that the loop condition eventually becomes false.</div>';
+    } else if (r.error) {
+      h += '<div class="oe"><b>Uncaught ' + esc(r.error.name) + ':</b> ' + esc(r.error.message) +
+           (r.error.note ? '<span class="onote">' + esc(r.error.note) + '</span>' : '') + '</div>';
+    } else if (opts.showResult && r.result && !(r.result.t === 'undefined' && (r.out || []).length)) {
+      h += '<div class="or"><span class="arrow">←</span> ' + val(r.result, true) + '</div>';
+    }
+    if (!h) h = '<div class="oempty">No output. Use console.log(…) to print something.</div>';
+    el.innerHTML = h;
+  }
+
+  /* single-pass syntax highlighter — tokens are consumed once, never re-scanned */
+  var KW = /^(const|let|var|function|return|if|else|for|while|do|switch|case|break|continue|default|new|typeof|instanceof|in|of|class|this|try|catch|finally|throw|async|await)$/;
+  var LIT = /^(true|false|null|undefined|NaN|Infinity)$/;
+  function highlight(src) {
+    var re = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(`(?:\\[\s\S]|[^`\\])*`|'(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*")|(\b\d+(?:\.\d+)?n?\b)|([A-Za-z_$][\w$]*)|([\s\S])/g;
+    var out = '', m;
+    while ((m = re.exec(src)) !== null) {
+      if (m[1]) out += '<span class="c">' + esc(m[1]) + '</span>';
+      else if (m[2]) out += '<span class="s">' + esc(m[2]) + '</span>';
+      else if (m[3]) out += '<span class="n">' + m[3] + '</span>';
+      else if (m[4]) {
+        var w = m[4], next = src.charAt(re.lastIndex);
+        if (KW.test(w)) out += '<span class="k">' + w + '</span>';
+        else if (LIT.test(w)) out += '<span class="n">' + w + '</span>';
+        else if (next === '(') out += '<span class="f">' + w + '</span>';
+        else out += w;
+      }
+      else out += esc(m[5]);
+    }
+    return out;
+  }
+
+  /* strip comments and strings, for static rules like "no .reverse()" */
+  function codeOnly(src) {
+    var re = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(`(?:\\[\s\S]|[^`\\])*`|'(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*")|([\s\S])/g;
+    var out = '', m;
+    while ((m = re.exec(src)) !== null) {
+      if (m[1]) out += ' ';
+      else if (m[2]) out += m[2].charAt(0) === '`' ? '``' : '""';
+      else out += m[3];
+    }
+    return out;
+  }
+
+  return {
+    run: function (code, ms, cap) { return exec({ mode:'run', code:code, cap:cap || 300 }, ms || 1500); },
+    test: function (code, fname, cases, ms) { return exec({ mode:'test', code:code, fname:fname, cases:cases }, ms || 2500); },
+    render: render,
+    val: val,
+    highlight: highlight,
+    codeOnly: codeOnly,
+    esc: esc
+  };
+})();
+
+</script>
+<script>
+/* =====================================================================
+   THE SUBMISSION CODE.
+
+   Shared by the exam page (which writes one) and the trainer console
+   (which reads it). Both files carry this identical source, so a code
+   produced on any aspirant's laptop decodes on the trainer's.
+
+   WHAT THE CODE CARRIES: the aspirant's answers — never their score.
+   The console recomputes the score from the answers and its own copy of
+   the question bank, so a mark can never disagree with the answer key.
+
+   HONEST LIMIT: the checksum stops a code being edited by hand or
+   mangled in transit. It is not cryptography — anyone who opens this
+   file in a text editor can work out how to forge a code. For marks
+   that matter, run the paper in the room.
+   ===================================================================== */
+var QCodec = (function () {
+  'use strict';
+
+  var TAG = 'JSQ1';
+  var SALT = 'drf-indore-js-assessment';
+
+  /* FNV-1a over UTF-16 code units, salted. Short, stable, no dependencies. */
+  function sum(s) {
+    var h = 0x811c9dc5, i;
+    s = SALT + s + SALT;
+    for (i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
+    }
+    return ('000000' + h.toString(36)).slice(-7);
+  }
+
+  /* base64url over UTF-8, so the code survives WhatsApp, email and a
+     copy out of a PDF without a single character needing escaping. */
+  function toB64(str) {
+    var bytes = unescape(encodeURIComponent(str));
+    var b = typeof btoa === 'function' ? btoa(bytes) : Buffer.from(bytes, 'binary').toString('base64');
+    return b.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  function fromB64(s) {
+    var b = s.replace(/-/g, '+').replace(/_/g, '/');
+    while (b.length % 4) b += '=';
+    var bytes = typeof atob === 'function' ? atob(b) : Buffer.from(b, 'base64').toString('binary');
+    return decodeURIComponent(escape(bytes));
+  }
+
+  /* ---- the answer string -------------------------------------------
+     One character per question, in the bank's own order, so the console
+     never has to trust a question id sent by the aspirant's machine.
+       0 1 2 3  the option chosen
+       y n      a typed answer that did / did not match
+       .        left blank
+     ------------------------------------------------------------------ */
+  var BLANK = '.';
+
+  /* The payload is pipe-delimited rather than JSON: the same facts in
+     about seventy fewer characters, which is the difference between one
+     message and a wrapped one. Name and batch are percent-encoded, so a
+     pipe or a newline in a typed name cannot break the format. */
+  function encode(rec) {
+    var body = [
+      '1',
+      encodeURIComponent(String(rec.name || '').slice(0, 60)),
+      encodeURIComponent(String(rec.batch || '').slice(0, 40)),
+      (rec.at || Math.floor(Date.now() / 1000)).toString(36),
+      (rec.seconds || 0).toString(36),
+      String(rec.rounds || ''),
+      String(rec.answers || ''),
+      (rec.typed || []).map(function (x) { return encodeURIComponent(String(x || '').slice(0, 18)); }).join('~')
+    ].join('|');
+    var b64 = toB64(body);
+    return TAG + '.' + b64 + '.' + sum(b64);
+  }
+
+  /* Mail clients hard-wrap long lines and people paste with stray line
+     breaks, so whitespace inside a code is removed before it is read
+     rather than rejected. */
+  function clean(s) { return String(s).replace(/\s+/g, ''); }
+
+  function decode(code) {
+    var m = clean(code).match(/^([A-Z]{3}\d)\.([A-Za-z0-9_-]+)\.([a-z0-9]{7})$/);
+    if (!m) return { ok: false, why: 'This is not a submission code.' };
+    if (m[1] !== TAG) return { ok: false, why: 'Made by a different version of the exam (' + m[1] + ').' };
+    if (sum(m[2]) !== m[3]) return { ok: false, why: 'The code has been altered or was copied incompletely.' };
+    var raw;
+    try { raw = fromB64(m[2]); }
+    catch (e) { return { ok: false, why: 'The code is damaged and cannot be read.' }; }
+    var f = raw.split('|');
+    if (f.length !== 8 || f[0] !== '1') return { ok: false, why: 'Unknown code version.' };
+    var name, batch, typed;
+    try {
+      name = decodeURIComponent(f[1]); batch = decodeURIComponent(f[2]);
+      typed = f[7] ? f[7].split('~').map(decodeURIComponent) : [];
+    } catch (e) { return { ok: false, why: 'The code is damaged and cannot be read.' }; }
+    return {
+      ok: true, code: clean(code),
+      name: name || '(no name)', batch: batch || '(no batch)',
+      at: parseInt(f[3], 36) || 0, seconds: parseInt(f[4], 36) || 0,
+      rounds: f[5], answers: f[6], typed: typed
+    };
+  }
+
+  /* Every code in a pasted block — a WhatsApp export, a pile of emails,
+     a CSV of form responses. Everything that is not a code is ignored. */
+  function harvest(text) {
+    var out = [], seen = {}, m;
+    /* The middle is lazy and allows whitespace, so a code that a mail
+       client wrapped across three lines is still found whole — and the
+       laziness stops one match swallowing the next code after it. */
+    var re = /[A-Z]{3}\d\.[\sA-Za-z0-9_-]{16,}?\.[a-z0-9]{7}/g;
+    while ((m = re.exec(String(text))) !== null) {
+      var c = clean(m[0]);
+      if (seen[c]) continue;
+      seen[c] = 1;
+      out.push(c);
+    }
+    return out;
+  }
+
+  /* Mark a decoded submission against a bank. The score is computed
+     here, from the answers — it is never carried in the code. */
+  function mark(sub, rounds) {
+    var flat = [];
+    rounds.forEach(function (r) { r.qs.forEach(function (q, i) { flat.push({ r: r, q: q, i: i }); }); });
+    var per = [], byTopic = {}, right = 0, answered = 0, typedSeen = 0;
+    for (var k = 0; k < flat.length; k++) {
+      var ch = sub.answers.charAt(k) || BLANK;
+      var q = flat[k].q, ok = false, given = null;
+      if (ch === BLANK) { /* skipped */ }
+      else if (ch === 'y' || ch === 'n') { ok = ch === 'y'; given = 'typed'; answered++; }
+      else if (/[0-9]/.test(ch)) { given = +ch; ok = given === q.ans; answered++; }
+      if (!byTopic[q.t]) byTopic[q.t] = { r: 0, n: 0 };
+      byTopic[q.t].n++;
+      if (ok) { right++; byTopic[q.t].r++; }
+      /* Words are carried only for the ones judged wrong — that is where
+         a trainer learns something, and it keeps a good paper's code short. */
+      var wrote = null;
+      if (given === 'typed' && !ok) { wrote = (sub.typed || [])[typedSeen++] || ''; }
+      per.push({ k: k, round: flat[k].r.id, roundName: flat[k].r.name, i: flat[k].i,
+                 q: q, given: given, ch: ch, ok: ok, wrote: wrote });
+    }
+    return {
+      per: per, byTopic: byTopic, right: right, total: flat.length,
+      answered: answered, blank: flat.length - answered,
+      pct: flat.length ? Math.round(right / flat.length * 100) : 0
+    };
+  }
+
+  return { TAG: TAG, BLANK: BLANK, encode: encode, decode: decode, harvest: harvest, mark: mark, sum: sum };
+})();
+
+if (typeof module !== 'undefined') module.exports = QCodec;
+
+</script>
+<script>
+/* The paper. Answers, explanations and topics are not in this object —
+   they are unpacked from KEYBLOB once the paper has been submitted. */
+var ROUNDS = [{"id":"r1","name":"Round 1 · Fundamentals","sub":"Straight multiple choice. Warm the room up — fast, no code to trace.","qs":[{"diff":"easy","q":"Which keyword creates a variable whose value can never be reassigned?","opts":["let","const","var","static"]},{"diff":"easy","q":"What does <code>typeof null</code> return?","opts":["\"null\"","\"object\"","\"undefined\"","null"]},{"diff":"easy","q":"Which of these is <b>not</b> a primitive type?","opts":["string","boolean","array","undefined"]},{"diff":"easy","q":"How many falsy values does JavaScript have?","opts":["5","6","8","12"]},{"diff":"easy","q":"Which loop is guaranteed to run at least once?","opts":["for","while","do…while","for…of"]},{"diff":"medium","q":"Which operator returns the <b>remainder</b> after division?","opts":["/","%","//","**"]},{"diff":"medium","q":"A function that finishes without a <code>return</code> statement gives back…","opts":["null","0","undefined","nothing at all — it errors"]},{"diff":"medium","q":"<code>??</code> falls back to the right-hand value only when the left is…","opts":["falsy","null or undefined","zero","an empty string"]},{"diff":"medium","q":"Which of these can be called <b>before</b> the line that defines it?","opts":["A function declaration","A function stored in const","An arrow function","None of them"]},{"diff":"medium","q":"What is the index of the <b>last</b> item in an array of length 5?","opts":["5","4","-1","length"]},{"diff":"medium","q":"Which comparison never converts types before comparing?","opts":["==","===","=","!="]},{"diff":"medium","q":"What does <code>const</code> <b>not</b> prevent?","opts":["Reassigning the variable","Changing a property of an object it holds","Redeclaring the name","Using it before its line"]},{"diff":"tricky","q":"Which quotes let you drop a variable straight into the text?","opts":["Single quotes","Double quotes","Backticks","All three"]},{"diff":"tricky","q":"An arrow function written with no braces — <code>(n) => n * 2</code> — does what with the value?","opts":["Returns it automatically","Prints it","Discards it","Throws a SyntaxError"]},{"diff":"tricky","q":"Where does a <code>let</code> declared inside an <code>if</code> block exist?","opts":["Everywhere in the file","Everywhere in the function","Only inside those braces","Only on the line it is written"]},{"diff":"tricky","q":"Which operator reads a property safely when the object might be null?","opts":["?.","??","!.","?:"]},{"diff":"tricky","q":"A default parameter <code>function f(x = 5)</code> kicks in when <code>x</code> is…","opts":["any falsy value","undefined only","null or undefined","missing or empty"]},{"diff":"tricky","q":"String methods like <code>toUpperCase()</code> do what to the original string?","opts":["Change it in place","Nothing — they return a new string","Change it only if reassigned","Throw if the string is const"]},{"diff":"tricky","q":"Which of these is the <b>same</b> as <code>flex</code>… no — as <code>x += 1</code>?","opts":["x = 1","x = x + 1","x == x + 1","++x + 1"]},{"diff":"tricky","q":"What does <code>console.log()</code> itself return?","opts":["The value it printed","A string","undefined","true"]}]},{"id":"r2","name":"Round 2 · Predict the output","sub":"The code is on screen. Say what prints — then we run it and find out.","qs":[{"diff":"easy","code":"console.log(\"5\" + 3);","opts":["8","\"8\"","53","NaN"]},{"diff":"easy","code":"console.log(\"5\" - 3);","opts":["2","\"2\"","53","NaN"]},{"diff":"medium","code":"console.log(1 + \"2\" - 3);","opts":["0","9","\"12-3\"","NaN"]},{"diff":"medium","code":"console.log(true + true + true);","opts":["3","true","\"truetruetrue\"","NaN"]},{"diff":"medium","code":"let x = 5;\nconsole.log(x++ + ++x);","opts":["10","11","12","13"]},{"diff":"medium","code":"console.log(10 > 9, \"10\" > \"9\");","opts":["true true","true false","false true","false false"]},{"diff":"medium","code":"console.log(null + 1, undefined + 1);","opts":["1 NaN","null1 undefined1","NaN NaN","1 1"]},{"diff":"medium","code":"console.log([1, 2, 3] + [4, 5]);","opts":["[1,2,3,4,5]","1,2,34,5","[1,2,3][4,5]","NaN"]},{"diff":"tricky","code":"console.log(typeof typeof 1);","opts":["number","string","object","undefined"]},{"diff":"tricky","code":"const a = [1, 2, 3];\na.length = 0;\nconsole.log(a);","opts":["[1, 2, 3]","[]","[0]","TypeError"]},{"diff":"tricky","code":"console.log([10, 1, 3].sort());","opts":["[1, 3, 10]","[10, 3, 1]","[1, 10, 3]","[10, 1, 3]"]},{"diff":"tricky","code":"console.log(Math.max() > Math.min());","opts":["true","false","NaN","TypeError"]},{"diff":"tricky","code":"const obj = { a: 1 };\nconst copy = obj;\ncopy.a = 99;\nconsole.log(obj.a);","opts":["1","99","undefined","TypeError"]},{"diff":"tricky","code":"function makeUser() {\n  return\n  {\n    name: \"Asha\"\n  };\n}\nconsole.log(makeUser());","opts":["{name: \"Asha\"}","undefined","null","SyntaxError"]},{"diff":"tricky","code":"console.log(\"b\" + \"a\" + +\"a\" + \"a\");","opts":["baaa","baNaNa","ba0a","NaN"]},{"diff":"tricky","code":"const fns = [];\nfor (var i = 0; i < 3; i++) {\n  fns.push(() => i);\n}\nconsole.log(fns[0](), fns[1](), fns[2]());","opts":["0 1 2","3 3 3","0 0 0","2 2 2"]},{"diff":"tricky","code":"console.log(0.1 + 0.2);","opts":["0.3","0.30000000000000004","0.300000001","0"]}]},{"id":"r3","name":"Round 3 · Tricky traps","sub":"The famous ones. Nobody gets all of these first time — that is the point.","qs":[{"diff":"tricky","code":"console.log(0.1 + 0.2 === 0.3);","opts":["true","false","NaN","TypeError"]},{"diff":"tricky","code":"console.log(NaN === NaN, Number.isNaN(NaN));","opts":["true true","false true","true false","false false"]},{"diff":"tricky","code":"console.log(null == undefined, null === undefined);","opts":["true true","true false","false false","false true"]},{"diff":"tricky","code":"console.log(null > 0, null == 0, null >= 0);","opts":["false false false","false false true","true false true","false true true"]},{"diff":"tricky","code":"console.log([] == ![]);","opts":["true","false","TypeError","undefined"]},{"diff":"tricky","code":"console.log(Boolean([]), [] == false);","opts":["true false","false true","true true","false false"]},{"diff":"tricky","code":"console.log(1 < 2 < 3, 3 > 2 > 1);","opts":["true true","true false","false true","false false"]},{"diff":"tricky","code":"console.log(parseInt(0.0000005));","opts":["0","5","0.0000005","NaN"]},{"diff":"tricky","code":"console.log(9999999999999999);","opts":["9999999999999999","10000000000000000","Infinity","NaN"]},{"diff":"tricky","code":"console.log(typeof NaN, typeof [], typeof function(){});","opts":["NaN object function","number array function","number object function","number object object"]},{"diff":"tricky","code":"console.log(a);\nvar a = 5;","opts":["5","undefined","null","ReferenceError"]},{"diff":"tricky","code":"console.log(b);\nlet b = 5;","opts":["5","undefined","ReferenceError","null"]},{"diff":"tricky","code":"console.log(typeof notDeclaredAnywhere);","opts":["ReferenceError","undefined","null","an empty string"]},{"diff":"tricky","code":"const arr = [1, 2];\narr.push(3);\nconsole.log(arr);","opts":["[1, 2]","[1, 2, 3]","TypeError","3"]},{"diff":"tricky","code":"console.log(\"\" + null, \"\" + undefined, \"\" + NaN);","opts":["\"\" \"\" \"\"","null undefined NaN","0 NaN NaN","null null null"]},{"diff":"tricky","code":"console.log([1, 2, 3] == \"1,2,3\");","opts":["true","false","TypeError","undefined"]}]},{"id":"r4","name":"Round 4 · Rapid fire","sub":"No options. Shout the answer. Ten seconds each.","qs":[{"diff":"easy","q":"How many falsy values are there?"},{"diff":"easy","q":"<code>typeof null</code> gives?"},{"diff":"easy","q":"Does <code>const</code> freeze an object?"},{"diff":"easy","q":"Which is block scoped — <code>var</code> or <code>let</code>?"},{"diff":"easy","q":"<code>\"2\" * \"3\"</code>?"},{"diff":"easy","q":"<code>\"2\" + 3</code>?"},{"diff":"easy","q":"What does a function with no <code>return</code> give back?"},{"diff":"medium","q":"Which comparison never converts types?"},{"diff":"medium","q":"What does <code>??</code> check for?"},{"diff":"medium","q":"Is <code>NaN</code> equal to <code>NaN</code>?"},{"diff":"medium","q":"Last index of an array of length 5?"},{"diff":"medium","q":"What does <code>break</code> do?"},{"diff":"medium","q":"Which loop runs at least once?"},{"diff":"medium","q":"A default parameter triggers on which value?"},{"diff":"tricky","q":"<code>typeof []</code> gives?"},{"diff":"tricky","q":"Which gives you values directly — <code>for</code> or <code>for…of</code>?"},{"diff":"tricky","q":"What is the remainder operator used for in tests?"},{"diff":"tricky","q":"Name the operator that avoids a crash on <code>user.name</code> when user is null."},{"diff":"tricky","q":"Does <code>console.log</code> return the value it printed?"},{"diff":"tricky","q":"Why does <code>[10, 1, 3].sort()</code> give <code>[1, 10, 3]</code>?"}]}];
+var KEYBLOB = "W3siYW5zIjoxLCJ3aHkiOiI8Y29kZT5jb25zdDwvY29kZT4gZ2x1ZXMgdGhlIG5hbWUgdG8gb25lIHZhbHVlLiBSZWFzc2lnbmluZyBpdCB0aHJvd3MgYSBUeXBlRXJyb3IuIiwiZGVlcCI6Ikl0IGZpeGVzIHRoZSA8aT5iaW5kaW5nPC9pPiwgbm90IHRoZSBjb250ZW50cyDigJQgdGhlIHByb3BlcnRpZXMgb2YgYSA8Y29kZT5jb25zdDwvY29kZT4gb2JqZWN0IGNhbiBzdGlsbCBjaGFuZ2UuIiwidCI6IlNjb3BlICYgaG9pc3RpbmciLCJhIjpudWxsfSx7ImFucyI6MSwid2h5IjoiQSBidWcgZnJvbSB0aGUgZmlyc3QgdmVyc2lvbiBvZiBKYXZhU2NyaXB0IGluIDE5OTUuIEl0IGNhbiBuZXZlciBiZSBmaXhlZCB3aXRob3V0IGJyZWFraW5nIG1pbGxpb25zIG9mIHdlYnNpdGVzLiIsImRlZXAiOiJUbyB0ZXN0IGZvciBudWxsLCBjb21wYXJlIGRpcmVjdGx5OiA8Y29kZT52YWx1ZSA9PT0gbnVsbDwvY29kZT4uIiwidCI6IlR5cGVzICYgY29udmVyc2lvbiIsImEiOm51bGx9LHsiYW5zIjoyLCJ3aHkiOiJBbiBhcnJheSBpcyBhbiBvYmplY3QuIFRoZSBwcmltaXRpdmVzIGFyZSBzdHJpbmcsIG51bWJlciwgYm9vbGVhbiwgdW5kZWZpbmVkLCBudWxsLCBiaWdpbnQgYW5kIHN5bWJvbC4iLCJkZWVwIjoiVGhhdCBpcyB3aHkgPGNvZGU+dHlwZW9mIFtdPC9jb2RlPiBpcyA8Y29kZT5cIm9iamVjdFwiPC9jb2RlPiDigJQgdGVzdCB3aXRoIDxjb2RlPkFycmF5LmlzQXJyYXkoKTwvY29kZT4uIiwidCI6IlR5cGVzICYgY29udmVyc2lvbiIsImEiOm51bGx9LHsiYW5zIjoyLCJ3aHkiOiI8Y29kZT5mYWxzZTwvY29kZT4sIDxjb2RlPjA8L2NvZGU+LCA8Y29kZT4tMDwvY29kZT4sIDxjb2RlPjBuPC9jb2RlPiwgPGNvZGU+XCJcIjwvY29kZT4sIDxjb2RlPm51bGw8L2NvZGU+LCA8Y29kZT51bmRlZmluZWQ8L2NvZGU+LCA8Y29kZT5OYU48L2NvZGU+LiBFdmVyeXRoaW5nIGVsc2UgaXMgdHJ1dGh5LiIsImRlZXAiOiJUaGVyZSBpcyBhIG5pbnRoIGxlZ2FjeSBjYXNlIOKAlCA8Y29kZT5kb2N1bWVudC5hbGw8L2NvZGU+IOKAlCBrZXB0IGRlbGliZXJhdGVseSBmb3Igb2xkIHdlYnNpdGVzLiIsInQiOiJUcnV0aHksIGZhbHN5ICYgZGVmYXVsdHMiLCJhIjpudWxsfSx7ImFucyI6Miwid2h5IjoiQSA8Y29kZT5kb+KApndoaWxlPC9jb2RlPiBydW5zIHRoZSBib2R5IGZpcnN0IGFuZCBjaGVja3MgdGhlIGNvbmRpdGlvbiBhZnRlcndhcmRzLiIsImRlZXAiOiJVc2VmdWwgZm9yIFwiYXNrIHVudGlsIHRoZSBpbnB1dCBpcyB2YWxpZFwiIOKAlCB5b3UgYWx3YXlzIG5lZWQgdGhlIGZpcnN0IGFzay4iLCJ0IjoiT3BlcmF0b3JzLCBsb29wcyAmIGZsb3ciLCJhIjpudWxsfSx7ImFucyI6MSwid2h5IjoiPGNvZGU+NyAlIDI8L2NvZGU+IGlzIDEuIEl0IGlzIGhvdyB5b3UgdGVzdCBldmVuIG9yIG9kZCwgYW5kIGhvdyB5b3UgdGFrZSBldmVyeSBudGggaXRlbS4iLCJkZWVwIjoiSXQga2VlcHMgdGhlIHNpZ24gb2YgdGhlIGxlZnQgb3BlcmFuZDogPGNvZGU+LTcgJSAyPC9jb2RlPiBpcyA8Y29kZT4tMTwvY29kZT4sIHdoaWNoIGlzIHdoeSA8Y29kZT5uICUgMiA9PT0gMTwvY29kZT4gZmFpbHMgZm9yIG5lZ2F0aXZlIG9kZCBudW1iZXJzLiIsInQiOiJPcGVyYXRvcnMsIGxvb3BzICYgZmxvdyIsImEiOm51bGx9LHsiYW5zIjoyLCJ3aHkiOiJFdmVyeSBmdW5jdGlvbiByZXR1cm5zIHNvbWV0aGluZy4gV2l0aCBubyByZXR1cm4gc3RhdGVtZW50LCB0aGF0IHNvbWV0aGluZyBpcyA8Y29kZT51bmRlZmluZWQ8L2NvZGU+LiIsImRlZXAiOiJUaGlzIGlzIHdoeSBhIGZ1bmN0aW9uIHRoYXQgb25seSBjYWxscyA8Y29kZT5jb25zb2xlLmxvZzwvY29kZT4gc2NvcmVzIHplcm8gaW4gYSB0ZXN0LWJhc2VkIGludGVydmlldy4iLCJ0IjoiRnVuY3Rpb25zICYgcmV0dXJuIiwiYSI6bnVsbH0seyJhbnMiOjEsIndoeSI6IlRoYXQgaXMgdGhlIHdob2xlIGRpZmZlcmVuY2UgZnJvbSA8Y29kZT58fDwvY29kZT4sIHdoaWNoIGFsc28gcmVwbGFjZXMgPGNvZGU+MDwvY29kZT4gYW5kIDxjb2RlPlwiXCI8L2NvZGU+LiIsImRlZXAiOiJVc2UgPGNvZGU+Pz88L2NvZGU+IGZvciBkZWZhdWx0cyB3aGVuZXZlciAwIG9yIGFuIGVtcHR5IHN0cmluZyBpcyBhIGxlZ2l0aW1hdGUgdmFsdWUg4oCUIGEgcXVhbnRpdHksIGEgc2NvcmUsIGEgZGlzY291bnQuIiwidCI6IlRydXRoeSwgZmFsc3kgJiBkZWZhdWx0cyIsImEiOm51bGx9LHsiYW5zIjowLCJ3aHkiOiJGdW5jdGlvbiBkZWNsYXJhdGlvbnMgYXJlIGhvaXN0ZWQgaW4gZnVsbCwgc28gdGhleSB3b3JrIGFueXdoZXJlIGluIHRoZWlyIHNjb3BlLiIsImRlZXAiOiJBIDxjb2RlPmNvbnN0PC9jb2RlPiBvciA8Y29kZT5sZXQ8L2NvZGU+IGhvbGRpbmcgYSBmdW5jdGlvbiBpcyBpbiB0aGUgdGVtcG9yYWwgZGVhZCB6b25lIHVudGlsIGl0cyBsaW5lIHJ1bnMg4oCUIGNhbGxpbmcgaXQgZWFybHkgdGhyb3dzIGEgUmVmZXJlbmNlRXJyb3IuIiwidCI6IlNjb3BlICYgaG9pc3RpbmciLCJhIjpudWxsfSx7ImFucyI6MSwid2h5IjoiSW5kZXhlcyBzdGFydCBhdCAwLCBzbyB0aGUgbGFzdCBvbmUgaXMgYWx3YXlzIDxjb2RlPmxlbmd0aCAtIDE8L2NvZGU+LiIsImRlZXAiOiI8Y29kZT5hcnIuYXQoLTEpPC9jb2RlPiByZWFkcyB0aGUgbGFzdCBpdGVtIHdpdGhvdXQgdGhlIGFyaXRobWV0aWMuIiwidCI6IkFycmF5cywgb2JqZWN0cyAmIHN0cmluZ3MiLCJhIjpudWxsfSx7ImFucyI6MSwid2h5IjoiPGNvZGU+PT09PC9jb2RlPiBjaGVja3MgdmFsdWUgPGI+YW5kPC9iPiB0eXBlLiA8Y29kZT49PTwvY29kZT4gY29udmVydHMgZmlyc3QsIHVzaW5nIHJ1bGVzIGFsbW9zdCBub2JvZHkgY2FuIHJlY2l0ZS4iLCJkZWVwIjoiVGhlIG9uZSBhY2NlcHRlZCB1c2Ugb2YgPGNvZGU+PT08L2NvZGU+IGlzIDxjb2RlPnZhbHVlID09IG51bGw8L2NvZGU+LCB3aGljaCBjYXRjaGVzIGJvdGggbnVsbCBhbmQgdW5kZWZpbmVkLiIsInQiOiJFcXVhbGl0eSAmIE5hTiIsImEiOm51bGx9LHsiYW5zIjoxLCJ3aHkiOiI8Y29kZT5jb25zdCB1c2VyID0ge308L2NvZGU+IHRoZW4gPGNvZGU+dXNlci5uYW1lID0gXCJBc2hhXCI8L2NvZGU+IGlzIHBlcmZlY3RseSBsZWdhbC4gVGhlIGJpbmRpbmcgaXMgZml4ZWQ7IHRoZSBvYmplY3QgaXMgbm90LiIsImRlZXAiOiI8Y29kZT5PYmplY3QuZnJlZXplKHVzZXIpPC9jb2RlPiBsb2NrcyB0aGUgY29udGVudHMgdG9vIOKAlCBidXQgb25seSBvbmUgbGV2ZWwgZGVlcC4iLCJ0IjoiU2NvcGUgJiBob2lzdGluZyIsImEiOm51bGx9LHsiYW5zIjoyLCJ3aHkiOiJCYWNrdGlja3MgbWFrZSBhIHRlbXBsYXRlIGxpdGVyYWw6IDxjb2RlPmBIZWxsbywgJHtuYW1lfSFgPC9jb2RlPi4iLCJkZWVwIjoiVGhleSBhbHNvIHNwYW4gbXVsdGlwbGUgbGluZXMgd2l0aG91dCA8Y29kZT5cXG48L2NvZGU+LCBhbmQgc3VwcG9ydCB0YWdnZWQgdGVtcGxhdGVzIGZvciB0aGluZ3MgbGlrZSBzYWZlIEhUTUwgZXNjYXBpbmcuIiwidCI6IkFycmF5cywgb2JqZWN0cyAmIHN0cmluZ3MiLCJhIjpudWxsfSx7ImFucyI6MCwid2h5IjoiT25lIGV4cHJlc3Npb24gYW5kIG5vIGJyYWNlcyBtZWFucyB0aGUgdmFsdWUgaXMgcmV0dXJuZWQgaW1wbGljaXRseS4iLCJkZWVwIjoiQWRkIGJyYWNlcyBhbmQgeW91IG11c3Qgd3JpdGUgPGNvZGU+cmV0dXJuPC9jb2RlPiB5b3Vyc2VsZiwgb3IgdGhlIGZ1bmN0aW9uIHF1aWV0bHkgcmV0dXJucyA8Y29kZT51bmRlZmluZWQ8L2NvZGU+LiIsInQiOiJGdW5jdGlvbnMgJiByZXR1cm4iLCJhIjpudWxsfSx7ImFucyI6Miwid2h5IjoiPGNvZGU+bGV0PC9jb2RlPiBhbmQgPGNvZGU+Y29uc3Q8L2NvZGU+IGFyZSBibG9jay1zY29wZWQg4oCUIHRoZXkgbGl2ZSBpbnNpZGUgdGhlIG5lYXJlc3QgPGNvZGU+eyB9PC9jb2RlPi4iLCJkZWVwIjoiPGNvZGU+dmFyPC9jb2RlPiBpZ25vcmVzIGJsb2NrcyBlbnRpcmVseSBhbmQgbGVha3MgdG8gdGhlIHdob2xlIGZ1bmN0aW9uLCB3aGljaCBpcyB0aGUgcmVhc29uIDxjb2RlPmxldDwvY29kZT4gZXhpc3RzLiIsInQiOiJTY29wZSAmIGhvaXN0aW5nIiwiYSI6bnVsbH0seyJhbnMiOjAsIndoeSI6Ik9wdGlvbmFsIGNoYWluaW5nLiA8Y29kZT51c2VyPy5uYW1lPC9jb2RlPiBnaXZlcyA8Y29kZT51bmRlZmluZWQ8L2NvZGU+IGluc3RlYWQgb2YgdGhyb3dpbmcuIiwiZGVlcCI6Ikl0IHNob3J0LWNpcmN1aXRzIHRoZSB3aG9sZSBjaGFpbjogPGNvZGU+YT8uYi5jPC9jb2RlPiBzdG9wcyBhdCB0aGUgZmlyc3QgbGluayBhbmQgbmV2ZXIgdG91Y2hlcyA8Y29kZT4uYzwvY29kZT4uIiwidCI6Ik9wZXJhdG9ycywgbG9vcHMgJiBmbG93IiwiYSI6bnVsbH0seyJhbnMiOjEsIndoeSI6Ik9ubHkgPGNvZGU+dW5kZWZpbmVkPC9jb2RlPiB0cmlnZ2VycyBhIGRlZmF1bHQuIFBhc3NpbmcgPGNvZGU+bnVsbDwvY29kZT4sIDxjb2RlPjA8L2NvZGU+IG9yIDxjb2RlPlwiXCI8L2NvZGU+IGtlZXBzIHRoYXQgdmFsdWUuIiwiZGVlcCI6IlRoYXQgaXMgd2h5IGEgbmFtZSBvZiA8Y29kZT5cIlwiPC9jb2RlPiBzbGlwcyBwYXN0IDxjb2RlPmZ1bmN0aW9uIGdyZWV0KG5hbWUgPSBcInN0cmFuZ2VyXCIpPC9jb2RlPiBhbmQgcHJpbnRzIFwiSGVsbG8sICFcIi4iLCJ0IjoiRnVuY3Rpb25zICYgcmV0dXJuIiwiYSI6bnVsbH0seyJhbnMiOjEsIndoeSI6IlN0cmluZ3MgYXJlIGltbXV0YWJsZSBpbiBKYXZhU2NyaXB0LiBFdmVyeSBtZXRob2QgcmV0dXJucyBhIGJyYW5kLW5ldyBzdHJpbmcuIiwiZGVlcCI6Ijxjb2RlPnN0clswXSA9IFwiWFwiPC9jb2RlPiBmYWlscyBzaWxlbnRseSBpbiBzbG9wcHkgbW9kZSBhbmQgdGhyb3dzIGluIHN0cmljdCBtb2RlLiIsInQiOiJBcnJheXMsIG9iamVjdHMgJiBzdHJpbmdzIiwiYSI6bnVsbH0seyJhbnMiOjEsIndoeSI6Ijxjb2RlPis9PC9jb2RlPiB1cGRhdGVzIGluIHBsYWNlLiBJdCByZWFkcyB0aGUgY3VycmVudCB2YWx1ZSwgYWRkcywgYW5kIHN0b3JlcyBpdCBiYWNrLiIsImRlZXAiOiJXaXRoIGEgc3RyaW5nIG9uIHRoZSBsZWZ0IGl0IGNvbmNhdGVuYXRlcyBpbnN0ZWFkOiA8Y29kZT5zICs9IFwiIVwiPC9jb2RlPi4iLCJ0IjoiT3BlcmF0b3JzLCBsb29wcyAmIGZsb3ciLCJhIjpudWxsfSx7ImFucyI6Miwid2h5IjoiSXQgcHJpbnRzIGFzIGEgc2lkZSBlZmZlY3QgYW5kIGhhbmRzIGJhY2sgPGNvZGU+dW5kZWZpbmVkPC9jb2RlPi4iLCJkZWVwIjoiU28gPGNvZGU+cmV0dXJuIGNvbnNvbGUubG9nKHgpPC9jb2RlPiByZXR1cm5zIHVuZGVmaW5lZCDigJQgYSByZWFsIGFuZCB2ZXJ5IGNvbW1vbiBidWcuIiwidCI6IkZ1bmN0aW9ucyAmIHJldHVybiIsImEiOm51bGx9LHsiYW5zIjoyLCJ3aHkiOiI8Y29kZT4rPC9jb2RlPiBqb2lucyB3aGVuIGVpdGhlciBzaWRlIGlzIGEgc3RyaW5nLCBzbyB0aGUgMyBpcyB0dXJuZWQgaW50byB0ZXh0IGFuZCBnbHVlZCBvbi4iLCJkZWVwIjoiRXZlcnkgb3RoZXIgbWF0aHMgb3BlcmF0b3IgY29udmVydHMgdGhlIG90aGVyIHdheSDigJQgdG8gbnVtYmVycy4iLCJ0IjoiVHlwZXMgJiBjb252ZXJzaW9uIiwiYSI6bnVsbH0seyJhbnMiOjAsIndoeSI6Ijxjb2RlPi08L2NvZGU+IG9ubHkga25vd3MgYXJpdGhtZXRpYywgc28gaXQgY29udmVydHMgPGNvZGU+XCI1XCI8L2NvZGU+IHRvIHRoZSBudW1iZXIgNSBmaXJzdC4iLCJkZWVwIjoiVGhpcyBhc3ltbWV0cnkgYmV0d2VlbiA8Y29kZT4rPC9jb2RlPiBhbmQgPGNvZGU+LTwvY29kZT4gaXMgdGhlIHJvb3Qgb2YgbW9zdCBmb3JtLWlucHV0IGJ1Z3MuIiwidCI6IlR5cGVzICYgY29udmVyc2lvbiIsImEiOm51bGx9LHsiYW5zIjoxLCJ3aHkiOiJMZWZ0IHRvIHJpZ2h0OiA8Y29kZT4xICsgXCIyXCI8L2NvZGU+IG1ha2VzIDxjb2RlPlwiMTJcIjwvY29kZT4sIHRoZW4gPGNvZGU+XCIxMlwiIC0gMzwvY29kZT4gY29udmVydHMgYmFjayB0byAxMiBhbmQgc3VidHJhY3RzLiIsImRlZXAiOiJSZWFkaW5nIHN0cmljdGx5IGxlZnQgdG8gcmlnaHQgaXMgdGhlIHdob2xlIHRlY2huaXF1ZSBmb3IgdGhlc2UgcXVlc3Rpb25zLiIsInQiOiJUeXBlcyAmIGNvbnZlcnNpb24iLCJhIjpudWxsfSx7ImFucyI6MCwid2h5IjoiV2l0aCBubyBzdHJpbmcgaW52b2x2ZWQsIDxjb2RlPis8L2NvZGU+IGRvZXMgbWF0aHMg4oCUIGFuZCA8Y29kZT50cnVlPC9jb2RlPiBjb252ZXJ0cyB0byAxLiIsImRlZXAiOiI8Y29kZT5mYWxzZTwvY29kZT4gY29udmVydHMgdG8gMC4gVGhpcyBpcyB0aGUgc2FtZSBjb252ZXJzaW9uIDxjb2RlPj09PC9jb2RlPiB1c2VzIG9uIGJvb2xlYW5zLiIsInQiOiJUeXBlcyAmIGNvbnZlcnNpb24iLCJhIjpudWxsfSx7ImFucyI6Miwid2h5IjoiPGNvZGU+eCsrPC9jb2RlPiBoYW5kcyBiYWNrIDUgYW5kIHRoZW4gbWFrZXMgeCA2LiA8Y29kZT4rK3g8L2NvZGU+IG1ha2VzIHggNyBhbmQgaGFuZHMgYmFjayA3LiBTbyA1ICsgNy4iLCJkZWVwIjoiUG9zdGZpeCByZXR1cm5zIHRoZSBvbGQgdmFsdWUsIHByZWZpeCByZXR1cm5zIHRoZSBuZXcgb25lLiBNaXhpbmcgdGhlbSBpbiBvbmUgZXhwcmVzc2lvbiBpcyBiYW5uZWQgaW4gbW9zdCBzdHlsZSBndWlkZXMgZm9yIGV4YWN0bHkgdGhpcyByZWFzb24uIiwidCI6Ik9wZXJhdG9ycywgbG9vcHMgJiBmbG93IiwiYSI6bnVsbH0seyJhbnMiOjEsIndoeSI6IlR3byBudW1iZXJzIGNvbXBhcmUgbnVtZXJpY2FsbHkuIFR3byA8Yj5zdHJpbmdzPC9iPiBjb21wYXJlIGNoYXJhY3RlciBieSBjaGFyYWN0ZXIg4oCUIGFuZCA8Y29kZT5cIjFcIjwvY29kZT4gY29tZXMgYmVmb3JlIDxjb2RlPlwiOVwiPC9jb2RlPi4iLCJkZWVwIjoiU29ydGluZyBudW1iZXJzIHN0b3JlZCBhcyBzdHJpbmdzIGlzIHdoZXJlIHRoaXMgYml0ZXM6IFwiMTAwXCIgc29ydHMgYmVmb3JlIFwiOVwiLiIsInQiOiJUeXBlcyAmIGNvbnZlcnNpb24iLCJhIjpudWxsfSx7ImFucyI6MCwid2h5IjoiPGNvZGU+bnVsbDwvY29kZT4gY29udmVydHMgdG8gMCBpbiBhcml0aG1ldGljLiA8Y29kZT51bmRlZmluZWQ8L2NvZGU+IGNvbnZlcnRzIHRvIDxjb2RlPk5hTjwvY29kZT4uIiwiZGVlcCI6IlRoZXkgYmVoYXZlIHRoZSBzYW1lIHVuZGVyIDxjb2RlPj09PC9jb2RlPiBidXQgY29tcGxldGVseSBkaWZmZXJlbnRseSBpbiBtYXRocyDigJQgb25lIG9mIHRoZSBjbGVhcmVzdCByZWFzb25zIHRvIGtlZXAgdGhlbSBhcGFydCBpbiB5b3VyIGhlYWQuIiwidCI6IlR5cGVzICYgY29udmVyc2lvbiIsImEiOm51bGx9LHsiYW5zIjoxLCJ3aHkiOiI8Y29kZT4rPC9jb2RlPiBoYXMgbm8gaWRlYSBob3cgdG8gYWRkIGFycmF5cywgc28gaXQgdHVybnMgYm90aCBpbnRvIHN0cmluZ3MgZmlyc3Qg4oCUIDxjb2RlPlwiMSwyLDNcIjwvY29kZT4gYW5kIDxjb2RlPlwiNCw1XCI8L2NvZGU+IOKAlCBhbmQgam9pbnMgdGhlbS4iLCJkZWVwIjoiQXJyYXlzIGJlY29tZSBzdHJpbmdzIHZpYSA8Y29kZT5qb2luKFwiLFwiKTwvY29kZT4uIFRvIGFjdHVhbGx5IGNvbWJpbmUgdGhlbSB1c2UgPGNvZGU+Y29uY2F0PC9jb2RlPiBvciB0aGUgc3ByZWFkIHN5bnRheC4iLCJ0IjoiVHlwZXMgJiBjb252ZXJzaW9uIiwiYSI6bnVsbH0seyJhbnMiOjEsIndoeSI6Ijxjb2RlPnR5cGVvZiAxPC9jb2RlPiBwcm9kdWNlcyB0aGUgPGI+c3RyaW5nPC9iPiA8Y29kZT5cIm51bWJlclwiPC9jb2RlPi4gVGhlbiA8Y29kZT50eXBlb2YgXCJudW1iZXJcIjwvY29kZT4gaXMgPGNvZGU+XCJzdHJpbmdcIjwvY29kZT4uIiwiZGVlcCI6Ijxjb2RlPnR5cGVvZjwvY29kZT4gYWx3YXlzIHJldHVybnMgYSBzdHJpbmcsIHNvIDxjb2RlPnR5cGVvZiB0eXBlb2YgYW55dGhpbmc8L2NvZGU+IGlzIGFsd2F5cyA8Y29kZT5cInN0cmluZ1wiPC9jb2RlPi4iLCJ0IjoiVHlwZXMgJiBjb252ZXJzaW9uIiwiYSI6bnVsbH0seyJhbnMiOjEsIndoeSI6Ijxjb2RlPmxlbmd0aDwvY29kZT4gaXMgd3JpdGFibGUuIFNldHRpbmcgaXQgdG8gMCB0aHJvd3MgZXZlcnkgZWxlbWVudCBhd2F5LiIsImRlZXAiOiI8Y29kZT5jb25zdDwvY29kZT4gZGlkIG5vdCBzdG9wIGl0IOKAlCB0aGUgYmluZGluZyBpcyBmaXhlZCwgdGhlIGNvbnRlbnRzIGFyZSBub3QuIiwidCI6IkFycmF5cywgb2JqZWN0cyAmIHN0cmluZ3MiLCJhIjpudWxsfSx7ImFucyI6Miwid2h5IjoiPGNvZGU+c29ydCgpPC9jb2RlPiBjb252ZXJ0cyBldmVyeXRoaW5nIHRvIHN0cmluZ3MgYnkgZGVmYXVsdC4gQXMgdGV4dCwgPGNvZGU+XCIxMFwiPC9jb2RlPiBjb21lcyBiZWZvcmUgPGNvZGU+XCIzXCI8L2NvZGU+LiIsImRlZXAiOiJGb3IgbnVtYmVycyB5b3UgbXVzdCBwYXNzIGEgY29tcGFyYXRvcjogPGNvZGU+c29ydCgoYSwgYikgPT4gYSAtIGIpPC9jb2RlPi4gVGhpcyBpcyBhIHZlcnkgY29tbW9uIGludGVydmlldyB0cmFwLiIsInQiOiJBcnJheXMsIG9iamVjdHMgJiBzdHJpbmdzIiwiYSI6bnVsbH0seyJhbnMiOjEsIndoeSI6IldpdGggbm8gYXJndW1lbnRzIDxjb2RlPk1hdGgubWF4KCk8L2NvZGU+IGlzIDxjb2RlPi1JbmZpbml0eTwvY29kZT4gYW5kIDxjb2RlPk1hdGgubWluKCk8L2NvZGU+IGlzIDxjb2RlPkluZmluaXR5PC9jb2RlPi4gU28gdGhlIGNvbXBhcmlzb24gaXMgZmFsc2UuIiwiZGVlcCI6Ikl0IHNvdW5kcyBiYWNrd2FyZHMgYnV0IGl0IGlzIGRlbGliZXJhdGU6IHRob3NlIGFyZSB0aGUgaWRlbnRpdHkgdmFsdWVzLCBzbyBhZGRpbmcgYW55IGFyZ3VtZW50IGFsd2F5cyB3aW5zLiIsInQiOiJOdW1iZXJzICYgcHJlY2lzaW9uIiwiYSI6bnVsbH0seyJhbnMiOjEsIndoeSI6Ijxjb2RlPmNvcHk8L2NvZGU+IGlzIG5vdCBhIGNvcHkuIEJvdGggbmFtZXMgcG9pbnQgYXQgdGhlIDxiPnNhbWUgb2JqZWN0PC9iPiwgc28gY2hhbmdpbmcgb25lIGNoYW5nZXMgXCJib3RoXCIuIiwiZGVlcCI6Ik9iamVjdHMgYXJlIGFzc2lnbmVkIGJ5IHJlZmVyZW5jZS4gRm9yIGEgc2hhbGxvdyBjb3B5IHVzZSA8Y29kZT57IC4uLm9iaiB9PC9jb2RlPiDigJQgYW5kIHJlbWVtYmVyIG5lc3RlZCBvYmplY3RzIGFyZSBzdGlsbCBzaGFyZWQuIiwidCI6IkFycmF5cywgb2JqZWN0cyAmIHN0cmluZ3MiLCJhIjpudWxsfSx7ImFucyI6MSwid2h5IjoiSmF2YVNjcmlwdCBpbnNlcnRzIGEgc2VtaWNvbG9uIGFmdGVyIGEgbG9uZSA8Y29kZT5yZXR1cm48L2NvZGU+LiBUaGUgb2JqZWN0IGxpdGVyYWwgYmVsb3cgaXQgaXMgbmV2ZXIgcmVhY2hlZC4iLCJkZWVwIjoiQXV0b21hdGljIHNlbWljb2xvbiBpbnNlcnRpb24uIFRoaXMgaXMgdGhlIG9uZSBwbGFjZSB3aGVyZSB0aGUgb3BlbmluZyBicmFjZSA8Yj5tdXN0PC9iPiBzdGF5IG9uIHRoZSBzYW1lIGxpbmUgYXMgPGNvZGU+cmV0dXJuPC9jb2RlPi4iLCJ0IjoiRnVuY3Rpb25zICYgcmV0dXJuIiwiYSI6bnVsbH0seyJhbnMiOjEsIndoeSI6IlRoZSBsb25lIDxjb2RlPis8L2NvZGU+IGJlZm9yZSA8Y29kZT5cImFcIjwvY29kZT4gdHJpZXMgdG8gY29udmVydCBpdCB0byBhIG51bWJlciBhbmQgZmFpbHMsIHByb2R1Y2luZyA8Y29kZT5OYU48L2NvZGU+IOKAlCB3aGljaCB0aGVuIGJlY29tZXMgdGhlIHRleHQgXCJOYU5cIi4iLCJkZWVwIjoiVW5hcnkgcGx1cyBpcyBhIG51bWVyaWMgY29udmVyc2lvbi4gT24gYSBub24tbnVtZXJpYyBzdHJpbmcgaXQgYWx3YXlzIGdpdmVzIE5hTi4iLCJ0IjoiVHlwZXMgJiBjb252ZXJzaW9uIiwiYSI6bnVsbH0seyJhbnMiOjEsIndoeSI6Ijxjb2RlPnZhcjwvY29kZT4gbWFrZXMgb25lIHNpbmdsZSA8Y29kZT5pPC9jb2RlPiBzaGFyZWQgYnkgYWxsIHRocmVlIGZ1bmN0aW9ucy4gQnkgdGhlIHRpbWUgdGhleSBydW4sIHRoZSBsb29wIGhhcyBmaW5pc2hlZCBhbmQgPGNvZGU+aTwvY29kZT4gaXMgMy4iLCJkZWVwIjoiQ2hhbmdlIDxjb2RlPnZhcjwvY29kZT4gdG8gPGNvZGU+bGV0PC9jb2RlPiBhbmQgZWFjaCByb3VuZCBnZXRzIGl0cyBvd24gYmluZGluZyDigJQgdGhlIGFuc3dlciBiZWNvbWVzIDAgMSAyLiBUaGlzIGlzIHRoZSBjbGFzc2ljIGNsb3N1cmUgcXVlc3Rpb24uIiwidCI6IlNjb3BlICYgaG9pc3RpbmciLCJhIjpudWxsfSx7ImFucyI6MSwid2h5IjoiRGVjaW1hbHMgYXJlIHN0b3JlZCBpbiBiaW5hcnksIGFuZCAwLjEgaGFzIG5vIGV4YWN0IGJpbmFyeSBmb3JtIOKAlCBqdXN0IGFzIDEvMyBoYXMgbm8gZXhhY3QgZGVjaW1hbCBmb3JtLiIsImRlZXAiOiJFdmVyeSBsYW5ndWFnZSB1c2luZyBJRUVFLTc1NCBkb3VibGVzIGJlaGF2ZXMgdGhpcyB3YXkuIENvbXBhcmUgd2l0aCBhIHRvbGVyYW5jZSwgb3Igd29yayBpbiB3aG9sZSBwYWlzZS4iLCJ0IjoiTnVtYmVycyAmIHByZWNpc2lvbiIsImEiOm51bGx9LHsiYW5zIjoxLCJ3aHkiOiJUaGUgc3VtIGlzIDAuMzAwMDAwMDAwMDAwMDAwMDQsIHdoaWNoIGlzIG5vdCAwLjMuIiwiZGVlcCI6IkNvbXBhcmUgZGVjaW1hbHMgd2l0aCA8Y29kZT5NYXRoLmFicyhhIC0gYikgJmx0OyBOdW1iZXIuRVBTSUxPTjwvY29kZT4uIiwidCI6Ik51bWJlcnMgJiBwcmVjaXNpb24iLCJhIjpudWxsfSx7ImFucyI6MSwid2h5IjoiTmFOIGlzIHRoZSBvbmx5IHZhbHVlIGluIHRoZSBsYW5ndWFnZSB0aGF0IGlzIG5vdCBlcXVhbCB0byBpdHNlbGYuIiwiZGVlcCI6IlNvIDxjb2RlPnggPT09IE5hTjwvY29kZT4gaXMgYWx3YXlzIGZhbHNlLCBldmVuIHdoZW4geCBpcyBOYU4uIEFsd2F5cyB1c2UgPGNvZGU+TnVtYmVyLmlzTmFOKCk8L2NvZGU+LiIsInQiOiJFcXVhbGl0eSAmIE5hTiIsImEiOm51bGx9LHsiYW5zIjoxLCJ3aHkiOiJBIHNwZWNpYWwgcnVsZSBtYWtlcyB0aGVtIGxvb3NlbHkgZXF1YWwgdG8gZWFjaCBvdGhlciDigJQgYW5kIHRvIG5vdGhpbmcgZWxzZS4iLCJkZWVwIjoiVGhhdCBzaW5nbGUgcnVsZSBpcyB3aHkgPGNvZGU+dmFsdWUgPT0gbnVsbDwvY29kZT4gaXMgdGhlIGFjY2VwdGVkIHNob3J0aGFuZCBmb3IgXCJudWxsIG9yIHVuZGVmaW5lZFwiLiIsInQiOiJFcXVhbGl0eSAmIE5hTiIsImEiOm51bGx9LHsiYW5zIjoxLCJ3aHkiOiJSZWxhdGlvbmFsIG9wZXJhdG9ycyAoPGNvZGU+Jmd0OzwvY29kZT4sIDxjb2RlPiZndDs9PC9jb2RlPikgY29udmVydCBudWxsIHRvIDAsIHNvIDxjb2RlPm51bGwgJmd0Oz0gMDwvY29kZT4gaXMgdHJ1ZS4gQnV0IDxjb2RlPj09PC9jb2RlPiBoYXMgaXRzIG93biBydWxlIGFuZCBuZXZlciBlcXVhdGVzIG51bGwgd2l0aCAwLiIsImRlZXAiOiJUd28gZGlmZmVyZW50IGFsZ29yaXRobXMgaW4gb25lIGV4cHJlc3Npb24uIFRoaXMgaXMgdGhlIHNpbmdsZSBtb3N0LWNpdGVkIGluY29uc2lzdGVuY3kgaW4gSmF2YVNjcmlwdC4iLCJ0IjoiRXF1YWxpdHkgJiBOYU4iLCJhIjpudWxsfSx7ImFucyI6MCwid2h5IjoiPGNvZGU+IVtdPC9jb2RlPiBpcyA8Y29kZT5mYWxzZTwvY29kZT4gKGFuIGFycmF5IGlzIHRydXRoeSkuIFRoZW4gPGNvZGU+W10gPT0gZmFsc2U8L2NvZGU+IGNvbnZlcnRzIGJvdGggdG8gbnVtYmVyczogPGNvZGU+W108L2NvZGU+IGJlY29tZXMgPGNvZGU+XCJcIjwvY29kZT4gYmVjb21lcyAwLCBhbmQgZmFsc2UgYmVjb21lcyAwLiIsImRlZXAiOiJBbiBlbXB0eSBhcnJheSBpcyBzaW11bHRhbmVvdXNseSB0cnV0aHkgYW5kIGxvb3NlbHkgZXF1YWwgdG8gZmFsc2UuIEJvdGggYXJlIHRydWU7IHRoZXkgYXJlIGFuc3dlcmluZyBkaWZmZXJlbnQgcXVlc3Rpb25zLiIsInQiOiJFcXVhbGl0eSAmIE5hTiIsImEiOm51bGx9LHsiYW5zIjoyLCJ3aHkiOiJUcnV0aGluZXNzIGFuZCA8Y29kZT49PTwvY29kZT4gdXNlIGRpZmZlcmVudCBydWxlcy4gPGNvZGU+aWYgKFtdKTwvY29kZT4gcnVucyB0aGUgYmxvY2ssIHlldCA8Y29kZT5bXSA9PSBmYWxzZTwvY29kZT4gaXMgYWxzbyB0cnVlLiIsImRlZXAiOiJOZXZlciB0ZXN0IGVtcHRpbmVzcyB3aXRoIHRydXRoaW5lc3MuIFVzZSA8Y29kZT5hcnIubGVuZ3RoID09PSAwPC9jb2RlPi4iLCJ0IjoiVHJ1dGh5LCBmYWxzeSAmIGRlZmF1bHRzIiwiYSI6bnVsbH0seyJhbnMiOjEsIndoeSI6IkNvbXBhcmlzb25zIHJ1biBvbmUgcGFpciBhdCBhIHRpbWUuIDxjb2RlPjMgJmd0OyAyPC9jb2RlPiBpcyA8Y29kZT50cnVlPC9jb2RlPiwgdGhlbiA8Y29kZT50cnVlICZndDsgMTwvY29kZT4gY29udmVydHMgdHJ1ZSB0byAxIOKAlCBhbmQgPGNvZGU+MSAmZ3Q7IDE8L2NvZGU+IGlzIGZhbHNlLiIsImRlZXAiOiJUbyB0ZXN0IGEgcmFuZ2UgeW91IG11c3Qgd3JpdGUgYm90aCBoYWx2ZXM6IDxjb2RlPmEgJmd0OyBiICZhbXA7JmFtcDsgYiAmZ3Q7IGM8L2NvZGU+LiIsInQiOiJPcGVyYXRvcnMsIGxvb3BzICYgZmxvdyIsImEiOm51bGx9LHsiYW5zIjoxLCJ3aHkiOiI8Y29kZT5wYXJzZUludDwvY29kZT4gd29ya3Mgb24gPGI+dGV4dDwvYj4uIFNtYWxsIG51bWJlcnMgYmVjb21lIGV4cG9uZW50aWFsIHN0cmluZ3M6IDxjb2RlPlwiNWUtN1wiPC9jb2RlPi4gSXQgcmVhZHMgdGhlIDUgYW5kIHN0b3BzIGF0IHRoZSBcImVcIi4iLCJkZWVwIjoiPGNvZGU+cGFyc2VJbnQoMC4wMDAwMDUpPC9jb2RlPiBnaXZlcyAwIOKAlCB0aGUgc3dpdGNoIHRvIGV4cG9uZW50aWFsIGZvcm0gaGFwcGVucyBhdCAxZS03LiBVc2UgPGNvZGU+TWF0aC50cnVuYzwvY29kZT4gb3IgPGNvZGU+TWF0aC5mbG9vcjwvY29kZT4gZm9yIG51bWJlcnMuIiwidCI6Ik51bWJlcnMgJiBwcmVjaXNpb24iLCJhIjpudWxsfSx7ImFucyI6MSwid2h5IjoiVGhhdCBudW1iZXIgaXMgcGFzdCB0aGUgc2FmZSBpbnRlZ2VyIGxpbWl0LCBzbyB0aGUgbmVhcmVzdCByZXByZXNlbnRhYmxlIGRvdWJsZSBpcyB1c2VkIGluc3RlYWQuIiwiZGVlcCI6Ijxjb2RlPk51bWJlci5NQVhfU0FGRV9JTlRFR0VSPC9jb2RlPiBpcyA5MDA3MTk5MjU0NzQwOTkxLiBCZXlvbmQgaXQsIHVzZSA8Y29kZT5CaWdJbnQ8L2NvZGU+IOKAlCB3cml0ZSA8Y29kZT45OTk5OTk5OTk5OTk5OTk5bjwvY29kZT4uIiwidCI6Ik51bWJlcnMgJiBwcmVjaXNpb24iLCJhIjpudWxsfSx7ImFucyI6Miwid2h5IjoiXCJOb3QgYSBOdW1iZXJcIiBoYXMgdHlwZSBudW1iZXIuIEFuIGFycmF5IGlzIGFuIG9iamVjdC4gQSBmdW5jdGlvbiByZXBvcnRzIFwiZnVuY3Rpb25cIi4iLCJkZWVwIjoiPGNvZGU+dHlwZW9mPC9jb2RlPiBoYXMgZXhhY3RseSBvbmUgbGllICg8Y29kZT5udWxsPC9jb2RlPikgYW5kIG9uZSBzcGVjaWFsIGNhc2UgKDxjb2RlPmZ1bmN0aW9uPC9jb2RlPiwgd2hpY2ggaXMgcmVhbGx5IGFuIG9iamVjdCkuIiwidCI6IlR5cGVzICYgY29udmVyc2lvbiIsImEiOm51bGx9LHsiYW5zIjoxLCJ3aHkiOiI8Y29kZT52YXI8L2NvZGU+IGRlY2xhcmF0aW9ucyBhcmUgaG9pc3RlZCBhbmQgcHJlLXNldCB0byA8Y29kZT51bmRlZmluZWQ8L2NvZGU+LCBzbyB0aGUgbGluZSBydW5zIHdpdGhvdXQgY29tcGxhaW50LiIsImRlZXAiOiJTaWxlbnQgd3JvbmcgdmFsdWVzIGFyZSB3b3JzZSB0aGFuIGVycm9ycy4gVGhpcyBpcyBleGFjdGx5IHdoYXQgPGNvZGU+bGV0PC9jb2RlPiB3YXMgZGVzaWduZWQgdG8gcHJldmVudC4iLCJ0IjoiU2NvcGUgJiBob2lzdGluZyIsImEiOm51bGx9LHsiYW5zIjoyLCJ3aHkiOiI8Y29kZT5sZXQ8L2NvZGU+IGlzIGhvaXN0ZWQgdG9vLCBidXQgbGVmdCB1bmluaXRpYWxpc2VkLiBUaGUgZ2FwIGJlZm9yZSBpdHMgbGluZSBpcyB0aGUgPGI+dGVtcG9yYWwgZGVhZCB6b25lPC9iPi4iLCJkZWVwIjoiXCJDYW5ub3QgYWNjZXNzIGIgYmVmb3JlIGluaXRpYWxpemF0aW9uXCIg4oCUIGEgbXVjaCBiZXR0ZXIgZmFpbHVyZSB0aGFuIDxjb2RlPnZhcjwvY29kZT4ncyBzaWxlbnQgPGNvZGU+dW5kZWZpbmVkPC9jb2RlPi4iLCJ0IjoiU2NvcGUgJiBob2lzdGluZyIsImEiOm51bGx9LHsiYW5zIjoxLCJ3aHkiOiI8Y29kZT50eXBlb2Y8L2NvZGU+IGlzIHRoZSBvbmUgb3BlcmF0b3IgdGhhdCBjYW4gdG91Y2ggYSBjb21wbGV0ZWx5IHVuZGVjbGFyZWQgbmFtZSB3aXRob3V0IHRocm93aW5nLiBJdCBoYW5kcyBiYWNrIHRoZSA8Yj5zdHJpbmc8L2I+IDxjb2RlPlwidW5kZWZpbmVkXCI8L2NvZGU+IOKAlCB3aGljaCA8Y29kZT5jb25zb2xlLmxvZzwvY29kZT4gcHJpbnRzIHdpdGhvdXQgdGhlIHF1b3Rlcy4iLCJkZWVwIjoiSXQgaXMgdGhlIGhpc3RvcmljYWwgd2F5IHRvIGZlYXR1cmUtZGV0ZWN0IGEgZ2xvYmFsIHNhZmVseSBiZWZvcmUgb3B0aW9uYWwgY2hhaW5pbmcgZXhpc3RlZC4iLCJ0IjoiU2NvcGUgJiBob2lzdGluZyIsImEiOm51bGx9LHsiYW5zIjoxLCJ3aHkiOiI8Y29kZT5jb25zdDwvY29kZT4gc3RvcHMgeW91IHBvaW50aW5nIDxjb2RlPmFycjwvY29kZT4gYXQgYSBkaWZmZXJlbnQgYXJyYXkuIEl0IGRvZXMgbm90IHN0b3AgeW91IGNoYW5naW5nIHRoaXMgb25lLiIsImRlZXAiOiI8Y29kZT5hcnIgPSBbMSwyLDNdPC9jb2RlPiB3b3VsZCB0aHJvdy4gPGNvZGU+YXJyLnB1c2goMyk8L2NvZGU+IG5ldmVyIHRvdWNoZXMgdGhlIGJpbmRpbmcuIiwidCI6IkFycmF5cywgb2JqZWN0cyAmIHN0cmluZ3MiLCJhIjpudWxsfSx7ImFucyI6MSwid2h5IjoiSm9pbmluZyB3aXRoIGEgc3RyaW5nIGNvbnZlcnRzIGVhY2ggdmFsdWUgdG8gaXRzIHRleHQgZm9ybSDigJQgdGhlIGxpdGVyYWwgd29yZHMgXCJudWxsXCIsIFwidW5kZWZpbmVkXCIgYW5kIFwiTmFOXCIuIiwiZGVlcCI6IlRoaXMgaXMgaG93IDxjb2RlPnVuZGVmaW5lZDwvY29kZT4gZW5kcyB1cCBwcmludGVkIG9uIGEgcmVhbCB3ZWIgcGFnZTogYSBtaXNzaW5nIHZhbHVlIGNvbmNhdGVuYXRlZCBpbnRvIGEgdGVtcGxhdGUuIiwidCI6IlR5cGVzICYgY29udmVyc2lvbiIsImEiOm51bGx9LHsiYW5zIjowLCJ3aHkiOiI8Y29kZT49PTwvY29kZT4gY29udmVydHMgdGhlIGFycmF5IHRvIGEgcHJpbWl0aXZlIOKAlCBpdHMgPGNvZGU+am9pbihcIixcIik8L2NvZGU+IGZvcm0g4oCUIGFuZCB0aGVuIGNvbXBhcmVzIHR3byBpZGVudGljYWwgc3RyaW5ncy4iLCJkZWVwIjoiV2l0aCA8Y29kZT49PT08L2NvZGU+IGl0IGlzIGZhbHNlIGltbWVkaWF0ZWx5OiBhbiBhcnJheSBpcyBub3QgYSBzdHJpbmcuIiwidCI6IkVxdWFsaXR5ICYgTmFOIiwiYSI6bnVsbH0seyJhbnMiOm51bGwsIndoeSI6ImZhbHNlLCAwLCAtMCwgMG4sIFwiXCIsIG51bGwsIHVuZGVmaW5lZCwgTmFOLiIsImRlZXAiOiIiLCJ0IjoiVHJ1dGh5LCBmYWxzeSAmIGRlZmF1bHRzIiwiYSI6IkVpZ2h0In0seyJhbnMiOm51bGwsIndoeSI6IkEgMTk5NSBidWcgdGhhdCBjYW4gbmV2ZXIgYmUgZml4ZWQuIiwiZGVlcCI6IiIsInQiOiJUeXBlcyAmIGNvbnZlcnNpb24iLCJhIjoiXCJvYmplY3RcIiJ9LHsiYW5zIjpudWxsLCJ3aHkiOiJJdCBmaXhlcyB0aGUgYmluZGluZy4gT2JqZWN0LmZyZWV6ZSBmaXhlcyB0aGUgY29udGVudHMuIiwiZGVlcCI6IiIsInQiOiJTY29wZSAmIGhvaXN0aW5nIiwiYSI6Ik5vIn0seyJhbnMiOm51bGwsIndoeSI6InZhciBsZWFrcyB0byB0aGUgd2hvbGUgZnVuY3Rpb24uIiwiZGVlcCI6IiIsInQiOiJTY29wZSAmIGhvaXN0aW5nIiwiYSI6ImxldCJ9LHsiYW5zIjpudWxsLCJ3aHkiOiIqIG9ubHkgZG9lcyBtYXRocywgc28gYm90aCBzdHJpbmdzIGNvbnZlcnQuIiwiZGVlcCI6IiIsInQiOiJUeXBlcyAmIGNvbnZlcnNpb24iLCJhIjoiNiDigJQgYSBudW1iZXIifSx7ImFucyI6bnVsbCwid2h5IjoiKyBqb2lucyB3aGVuIGVpdGhlciBzaWRlIGlzIGEgc3RyaW5nLiIsImRlZXAiOiIiLCJ0IjoiVHlwZXMgJiBjb252ZXJzaW9uIiwiYSI6IlwiMjNcIiDigJQgYSBzdHJpbmcifSx7ImFucyI6bnVsbCwid2h5IjoiRXZlcnkgZnVuY3Rpb24gcmV0dXJucyBzb21ldGhpbmcuIiwiZGVlcCI6IiIsInQiOiJGdW5jdGlvbnMgJiByZXR1cm4iLCJhIjoidW5kZWZpbmVkIn0seyJhbnMiOm51bGwsIndoeSI6IlZhbHVlIGFuZCB0eXBlLCBubyBjb252ZXJzaW9uLiIsImRlZXAiOiIiLCJ0IjoiRXF1YWxpdHkgJiBOYU4iLCJhIjoiPT09In0seyJhbnMiOm51bGwsIndoeSI6IlVubGlrZSB8fCwgaXQgbGVhdmVzIDAgYW5kIFwiXCIgYWxvbmUuIiwiZGVlcCI6IiIsInQiOiJUcnV0aHksIGZhbHN5ICYgZGVmYXVsdHMiLCJhIjoibnVsbCBvciB1bmRlZmluZWQifSx7ImFucyI6bnVsbCwid2h5IjoiVGhlIG9ubHkgdmFsdWUgbm90IGVxdWFsIHRvIGl0c2VsZi4iLCJkZWVwIjoiIiwidCI6IkVxdWFsaXR5ICYgTmFOIiwiYSI6Ik5vIn0seyJhbnMiOm51bGwsIndoeSI6IkluZGV4ZXMgc3RhcnQgYXQgMC4iLCJkZWVwIjoiIiwidCI6IkFycmF5cywgb2JqZWN0cyAmIHN0cmluZ3MiLCJhIjoiNCJ9LHsiYW5zIjpudWxsLCJ3aHkiOiJjb250aW51ZSBvbmx5IHNraXBzIG9uZSByb3VuZC4iLCJkZWVwIjoiIiwidCI6Ik9wZXJhdG9ycywgbG9vcHMgJiBmbG93IiwiYSI6IkxlYXZlcyB0aGUgbG9vcCBlbnRpcmVseSJ9LHsiYW5zIjpudWxsLCJ3aHkiOiJCb2R5IGZpcnN0LCBjb25kaXRpb24gYWZ0ZXJ3YXJkcy4iLCJkZWVwIjoiIiwidCI6Ik9wZXJhdG9ycywgbG9vcHMgJiBmbG93IiwiYSI6ImRv4oCmd2hpbGUifSx7ImFucyI6bnVsbCwid2h5IjoibnVsbCwgMCBhbmQgXCJcIiBhbGwgZ2V0IHRocm91Z2guIiwiZGVlcCI6IiIsInQiOiJGdW5jdGlvbnMgJiByZXR1cm4iLCJhIjoidW5kZWZpbmVkIG9ubHkifSx7ImFucyI6bnVsbCwid2h5IjoiVXNlIEFycmF5LmlzQXJyYXkoKSB0byB0ZXN0IGZvciBhbiBhcnJheS4iLCJkZWVwIjoiIiwidCI6IlR5cGVzICYgY29udmVyc2lvbiIsImEiOiJcIm9iamVjdFwiIn0seyJhbnMiOm51bGwsIndoeSI6Ik5vIGNvdW50ZXIsIG5vIG9mZi1ieS1vbmUuIiwiZGVlcCI6IiIsInQiOiJPcGVyYXRvcnMsIGxvb3BzICYgZmxvdyIsImEiOiJmb3LigKZvZiJ9LHsiYW5zIjpudWxsLCJ3aHkiOiJuICUgMiA9PT0gMCBtZWFucyBldmVuLiIsImRlZXAiOiIiLCJ0IjoiT3BlcmF0b3JzLCBsb29wcyAmIGZsb3ciLCJhIjoiRXZlbi9vZGQgYW5kIGV2ZXJ5IG50aCBpdGVtIn0seyJhbnMiOm51bGwsIndoeSI6IkdpdmVzIHVuZGVmaW5lZCBpbnN0ZWFkIG9mIHRocm93aW5nLiIsImRlZXAiOiIiLCJ0IjoiT3BlcmF0b3JzLCBsb29wcyAmIGZsb3ciLCJhIjoiPy4g4oCUIG9wdGlvbmFsIGNoYWluaW5nIn0seyJhbnMiOm51bGwsIndoeSI6Ikl0IHByaW50cyBhcyBhIHNpZGUgZWZmZWN0IG9ubHkuIiwiZGVlcCI6IiIsInQiOiJGdW5jdGlvbnMgJiByZXR1cm4iLCJhIjoiTm8g4oCUIHVuZGVmaW5lZCJ9LHsiYW5zIjpudWxsLCJ3aHkiOiJQYXNzIChhLCBiKSA9PiBhIC0gYiBmb3IgbnVtYmVycy4iLCJkZWVwIjoiIiwidCI6IkFycmF5cywgb2JqZWN0cyAmIHN0cmluZ3MiLCJhIjoic29ydCgpIGNvbXBhcmVzIGFzIHN0cmluZ3MifV0=";
+var KEYCOUNT = 73;
+if (typeof module !== 'undefined') module.exports = { ROUNDS: ROUNDS, KEYBLOB: KEYBLOB, KEYCOUNT: KEYCOUNT };
+
+</script>
+<script>
+/* =====================================================================
+   THE ASSESSMENT.
+
+   Sat alone, marked nowhere. While the paper is open there is no
+   marking, no explanation and no Run button — the aspirant is on their
+   own, which is the point. On submit the paper is marked, a submission
+   code is produced for the trainer, and the whole paper reopens with
+   the answers, the reasons and the live runner, so the test doubles as
+   the revision sheet.
+   ===================================================================== */
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = JSRunner.esc;
+  var LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+  var S = {
+    name: '', batch: '',
+    list: [],           /* display order; each carries its canonical index k */
+    pos: 0,
+    pick: {},           /* canonical k -> chosen option index */
+    typed: {},          /* canonical k -> what was typed */
+    started: 0, ended: 0, tick: null,
+    submitted: false,
+    key: null, marked: null, code: '',
+    rev: 0              /* which question the review is showing */
+  };
+
+  /* ------------------------------------------------------------------
+     THE PAPER
+     ------------------------------------------------------------------ */
+  function buildPaper() {
+    var flat = [], k = 0;
+    ROUNDS.forEach(function (r) {
+      r.qs.forEach(function (q, i) { flat.push({ r: r, q: q, i: i, k: k++ }); });
+    });
+    /* Shuffled per attempt: a glance at the next desk shows a different
+       question, so "the answer is B" travels nowhere. Option order is
+       left alone, so the trainer's key still reads A B C D. */
+    for (var j = flat.length - 1; j > 0; j--) {
+      var m = Math.floor(Math.random() * (j + 1)), t = flat[j];
+      flat[j] = flat[m]; flat[m] = t;
+    }
+    S.list = flat;
+  }
+
+  function answeredCount() {
+    var n = 0;
+    S.list.forEach(function (it) {
+      if (it.q.opts ? S.pick[it.k] !== undefined : (S.typed[it.k] || '').trim() !== '') n++;
+    });
+    return n;
+  }
+  function isAnswered(it) {
+    return it.q.opts ? S.pick[it.k] !== undefined : (S.typed[it.k] || '').trim() !== '';
+  }
+
+  /* ------------------------------------------------------------------
+     VIEWS
+     ------------------------------------------------------------------ */
+  function view(id) {
+    ['vStart', 'vExam', 'vCheck', 'vDone'].forEach(function (v) { $(v).classList.toggle('on', v === id); });
+    window.scrollTo(0, 0);
+  }
+
+  /* ------------------------------------------------------------------
+     START
+     ------------------------------------------------------------------ */
+  function validateStart() {
+    var n = $('fName').value.trim(), b = $('fBatch').value.trim();
+    $('goBegin').disabled = !(n.length >= 2 && b.length >= 1);
+  }
+  $('fName').addEventListener('input', validateStart);
+  $('fBatch').addEventListener('input', validateStart);
+  $('vStart').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !$('goBegin').disabled) { e.preventDefault(); begin(); }
+  });
+
+  function begin() {
+    S.name = $('fName').value.trim();
+    S.batch = $('fBatch').value.trim();
+    buildPaper();
+    S.pos = 0; S.pick = {}; S.typed = {}; S.submitted = false;
+    S.started = Date.now();
+    clearInterval(S.tick);
+    S.tick = setInterval(drawClock, 1000);
+    drawClock();
+    view('vExam'); stage();
+  }
+  $('goBegin').addEventListener('click', begin);
+
+  function drawClock() {
+    var s = Math.floor(((S.ended || Date.now()) - S.started) / 1000);
+    var mm = Math.floor(s / 60), ss = s % 60;
+    $('clock').textContent = mm + ':' + (ss < 10 ? '0' : '') + ss;
+  }
+
+  /* ------------------------------------------------------------------
+     A QUESTION, WITH NOTHING GIVEN AWAY
+     ------------------------------------------------------------------ */
+  function stage() {
+    var it = S.list[S.pos], q = it.q, h = '';
+
+    h += '<div class="qhead">' +
+      '<span class="num">Question ' + (S.pos + 1) + ' of ' + S.list.length + '</span>' +
+      '<span class="pill ' + q.diff + '">' + q.diff + '</span>' +
+      '</div>';
+
+    if (q.code) {
+      var lines = q.code.split('\n').length;
+      h += '<pre class="qcode' + (lines >= 7 ? ' taller' : lines >= 4 ? ' tall' : '') + '">' + JSRunner.highlight(q.code) + '</pre>';
+      h += '<p class="qask">' + (q.q || 'What does this print?') + '</p>';
+    } else {
+      h += '<p class="qtext">' + q.q + '</p>';
+    }
+
+    if (q.opts) {
+      h += '<div class="opts" id="opts">' + q.opts.map(function (o, n) {
+        return '<button class="opt' + (S.pick[it.k] === n ? ' pick' : '') + '" type="button" data-o="' + n + '">' +
+          '<span class="ltr">' + LETTERS[n] + '</span><span class="txt">' + o + '</span>' +
+          (S.pick[it.k] === n ? '<span class="mark">chosen</span>' : '') + '</button>';
+      }).join('') + '</div>';
+    } else {
+      h += '<div class="typebox"><label for="typed">Your answer</label>' +
+        '<input type="text" id="typed" autocomplete="off" spellcheck="false" ' +
+        'value="' + esc(S.typed[it.k] || '').replace(/"/g, '&quot;') + '" placeholder="a word or two is enough"></div>';
+    }
+
+    h += '<div class="grow"></div>';
+    h += '<div class="actions">' +
+      '<button class="btn" type="button" id="aPrev"' + (S.pos === 0 ? ' disabled' : '') + '>&larr; Back</button>' +
+      '<button class="btn pri" type="button" id="aNext">' +
+      (S.pos === S.list.length - 1 ? 'Finish &rarr;' : 'Next &rarr;') + '</button>';
+    if (q.opts && S.pick[it.k] !== undefined) h += '<button class="btn" type="button" id="aClear">Clear my answer</button>';
+    h += '<span style="flex:1"></span>' +
+      '<button class="btn" type="button" id="aGrid">All questions</button>' +
+      '<button class="btn" type="button" id="aFin">Finish and submit</button>' +
+      '</div>';
+
+    $('stage').innerHTML = h;
+    var inp = $('typed');
+    if (inp) {
+      inp.addEventListener('input', function () { S.typed[it.k] = inp.value; drawTop(); });
+      inp.focus();
+    }
+    drawTop();
+  }
+
+  function drawTop() {
+    var n = answeredCount(), t = S.list.length;
+    $('who').textContent = S.name + (S.batch ? ' · ' + S.batch : '');
+    $('answered').textContent = n + ' of ' + t + ' answered';
+    $('bar').style.width = (n / t * 100) + '%';
+  }
+
+  $('stage').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    var it = S.list[S.pos];
+    if (b.dataset.o !== undefined) {
+      S.pick[it.k] = +b.dataset.o; stage();
+      return;
+    }
+    if (b.id === 'aPrev') return move(-1);
+    if (b.id === 'aNext') return move(1);
+    if (b.id === 'aClear') { delete S.pick[it.k]; stage(); return; }
+    if (b.id === 'aGrid' || b.id === 'aFin') return checkScreen();
+  });
+
+  function move(d) {
+    var n = S.pos + d;
+    if (n < 0) return;
+    if (n >= S.list.length) return checkScreen();
+    S.pos = n; stage();
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (!$('vExam').classList.contains('on')) return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    var typingHere = e.target.tagName === 'INPUT';
+    if (e.key === 'ArrowRight') { e.preventDefault(); move(1); return; }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); move(-1); return; }
+    if (e.key === 'Enter') { e.preventDefault(); move(1); return; }
+    if (typingHere) return;
+    var K = e.key.toUpperCase();
+    if (K >= 'A' && K <= 'D' && e.key.length === 1) {
+      var it = S.list[S.pos];
+      if (it.q.opts) { e.preventDefault(); S.pick[it.k] = LETTERS.indexOf(K); stage(); }
+    }
+  });
+
+  /* ------------------------------------------------------------------
+     THE CHECK SHEET — what is still blank, before it is too late
+     ------------------------------------------------------------------ */
+  function checkScreen() {
+    var blanks = S.list.filter(function (it) { return !isAnswered(it); });
+    var h = '<div class="eyebrow">Before you submit</div>' +
+      '<h2>' + answeredCount() + ' of ' + S.list.length + ' answered</h2>';
+    h += '<p class="gsub">' + (blanks.length === 0
+      ? 'Everything is answered. Once you submit you cannot change anything — but the whole paper reopens with the answers and the reasons.'
+      : blanks.length + ' question' + (blanks.length === 1 ? ' is' : 's are') + ' still blank. A blank scores nothing, so a guess is worth more. Click any number to go back to it.') + '</p>';
+
+    h += '<div class="palette">' + S.list.map(function (it, n) {
+      return '<button class="pq' + (isAnswered(it) ? ' on' : '') + '" type="button" data-q="' + n + '">' + (n + 1) + '</button>';
+    }).join('') + '</div>';
+    h += '<p class="pkey"><span class="sw on"></span> answered &nbsp;&nbsp; <span class="sw"></span> blank</p>';
+
+    h += '<div class="row" style="margin-top:10px">' +
+      '<button class="btn pri big" type="button" id="cSubmit">Submit the paper</button>' +
+      '<button class="btn big" type="button" id="cBack">Keep working</button></div>';
+
+    $('check').innerHTML = h;
+    view('vCheck');
+  }
+  $('check').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.q !== undefined) { S.pos = +b.dataset.q; view('vExam'); stage(); return; }
+    if (b.id === 'cBack') { view('vExam'); stage(); return; }
+    if (b.id === 'cSubmit') submit();
+  });
+
+  /* ------------------------------------------------------------------
+     SUBMIT — the only place the key is ever unpacked
+     ------------------------------------------------------------------ */
+  function unpackKey() {
+    if (S.key) return S.key;
+    var bin = atob(KEYBLOB);
+    S.key = JSON.parse(decodeURIComponent(escape(bin)));
+    return S.key;
+  }
+
+  /* The same forgiving comparison the practice file uses: spacing,
+     quotes and punctuation are not what is being tested. */
+  function norm(s) { return String(s).replace(/['"\s]/g, '').toLowerCase(); }
+  function loose(s) { return norm(s).replace(/[…—–\-_.]/g, ''); }
+  function typedOk(written, key) {
+    var lt = loose(written);
+    if (!lt) return false;
+    var want = [];
+    if (key.a) { want.push(key.a); want.push(key.a.split('—')[0]); }
+    for (var i = 0; i < want.length; i++) if (lt === loose(want[i])) return true;
+    return false;
+  }
+
+  function submit() {
+    if (S.submitted) return;
+    S.submitted = true;
+    S.ended = Date.now();
+    clearInterval(S.tick);
+
+    var key = unpackKey();
+    /* the canonical order the code and the console both expect */
+    var flat = [], n = 0;
+    ROUNDS.forEach(function (r) { r.qs.forEach(function (q, i) { flat.push({ r: r, q: q, i: i, k: n++ }); }); });
+
+    var answers = '', typedOut = [];
+    flat.forEach(function (it) {
+      var kk = key[it.k];
+      if (it.q.opts) {
+        answers += (S.pick[it.k] === undefined) ? QCodec.BLANK : String(S.pick[it.k]);
+      } else {
+        var w = (S.typed[it.k] || '').trim();
+        var good = w !== '' && typedOk(w, kk);
+        answers += w === '' ? QCodec.BLANK : (good ? 'y' : 'n');
+        /* the trainer needs the exact words only when they did not match */
+        if (w !== '' && !good) typedOut.push(w);
+      }
+    });
+
+    S.code = QCodec.encode({
+      name: S.name, batch: S.batch,
+      at: Math.floor(S.ended / 1000),
+      seconds: Math.round((S.ended - S.started) / 1000),
+      rounds: ROUNDS.map(function (r) { return r.id; }).join(''),
+      answers: answers, typed: typedOut
+    });
+
+    /* mark it locally for the aspirant's own report, using the same
+       routine the trainer's console uses — one marking rule, not two */
+    var full = ROUNDS.map(function (r, ri) {
+      var base = 0, z;
+      for (z = 0; z < ri; z++) base += ROUNDS[z].qs.length;
+      return {
+        id: r.id, name: r.name, sub: r.sub,
+        qs: r.qs.map(function (q, i) {
+          var kk = key[base + i];
+          return { diff: q.diff, q: q.q, code: q.code, opts: q.opts,
+                   ans: kk.ans, why: kk.why, deep: kk.deep, t: kk.t, a: kk.a };
+        })
+      };
+    });
+    S.full = full;
+    S.marked = QCodec.mark(QCodec.decode(S.code), full);
+    S.rev = 0;
+    done();
+  }
+
+  /* ------------------------------------------------------------------
+     AFTER: the code to send, then the whole paper reopened
+     ------------------------------------------------------------------ */
+  function done() {
+    var m = S.marked;
+    var mins = Math.round((S.ended - S.started) / 60000);
+    var keys = Object.keys(m.byTopic).sort(function (x, y) {
+      return (m.byTopic[x].r / m.byTopic[x].n) - (m.byTopic[y].r / m.byTopic[y].n);
+    });
+
+    var h = '<div class="sendbox">' +
+      '<div class="eyebrow">Step 1 &mdash; send this to your trainer</div>' +
+      '<p class="sublead">This one line <b>is</b> your paper. Copy it and send it on WhatsApp or email. ' +
+      'Nothing is stored anywhere &mdash; if you close this page without sending it, the attempt is gone.</p>' +
+      '<div class="codebox" id="codeBox">' + esc(S.code) + '</div>' +
+      '<div class="row">' +
+      '<button class="btn pri big" type="button" id="dCopy">Copy the code</button>' +
+      '<span class="hint" id="copyHint">' + S.name + ' &middot; ' + S.batch + ' &middot; ' +
+      m.right + '/' + m.total + ' &middot; ' + mins + ' min</span></div>' +
+      '</div>';
+
+    h += '<div class="eyebrow" style="margin-top:8px">Step 2 &mdash; your result</div>' +
+      '<h2>' + m.right + ' out of ' + m.total + '</h2>' +
+      '<p class="gsub">' + (m.pct >= 85 ? 'Strong. Only a few gaps left to close.'
+        : m.pct >= 60 ? 'A solid base with clear gaps. Work down this list from the top.'
+        : 'Plenty to gain here. Start at the top — these are the topics costing you the most.') +
+      (m.blank ? ' You left <b>' + m.blank + '</b> blank.' : '') + '</p>';
+
+    h += '<div class="board">' + keys.map(function (k) {
+      var b = m.byTopic[k], p = b.r / b.n * 100;
+      var col = p >= 80 ? 'var(--green)' : p >= 50 ? 'var(--amber)' : 'var(--red)';
+      return '<div class="brow"><span class="bnm">' + k + '</span>' +
+        '<span class="btrack"><span class="bfill" style="width:' + p + '%;background:' + col + '"></span></span>' +
+        '<span class="bsc">' + b.r + '/' + b.n + '</span></div>';
+    }).join('') + '</div>';
+
+    h += '<div class="row" style="margin-top:8px">' +
+      '<button class="btn pri big" type="button" id="dReview">Go through the paper &rarr;</button>' +
+      '<span class="hint">Every question, the right answer, why, and the code running.</span></div>';
+
+    $('done').innerHTML = h;
+    view('vDone');
+  }
+
+  $('done').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    if (b.id === 'dCopy') return copyCode(b);
+    if (b.id === 'dReview') { S.rev = 0; review(); return; }
+    if (b.id === 'rNext') { S.rev = Math.min(S.marked.per.length - 1, S.rev + 1); review(); return; }
+    if (b.id === 'rPrev') { S.rev = Math.max(0, S.rev - 1); review(); return; }
+    if (b.id === 'rRun') return runIt();
+    if (b.id === 'rBack') { done(); return; }
+    if (b.dataset.jump !== undefined) { S.rev = +b.dataset.jump; review(); return; }
+  });
+
+  function copyCode(btn) {
+    var t = document.createElement('textarea');
+    t.value = S.code;
+    t.style.position = 'fixed'; t.style.opacity = '0';
+    document.body.appendChild(t); t.select();
+    var okc = false;
+    try { okc = document.execCommand('copy'); } catch (x) { okc = false; }
+    document.body.removeChild(t);
+    btn.textContent = okc ? 'Copied — now send it' : 'Select the code above and copy it';
+    setTimeout(function () { btn.textContent = 'Copy the code'; }, 2600);
+  }
+
+  /* ------------------------------------------------------------------
+     REVIEW — now everything is shown
+     ------------------------------------------------------------------ */
+  function review() {
+    var row = S.marked.per[S.rev], q = row.q;
+    var h = '<div class="qhead">' +
+      '<span class="num">' + row.roundName + ' &middot; Question ' + (row.i + 1) + '</span>' +
+      '<span class="pill ' + q.diff + '">' + q.diff + '</span>' +
+      '<span class="pill">' + q.t + '</span>' +
+      '<span class="pill ' + (row.ok ? 'easy' : 'tricky') + '">' + (row.ok ? 'you got it' : row.ch === QCodec.BLANK ? 'left blank' : 'missed') + '</span>' +
+      '</div>';
+
+    if (q.code) {
+      var lines = q.code.split('\n').length;
+      h += '<pre class="qcode' + (lines >= 7 ? ' taller' : lines >= 4 ? ' tall' : '') + '">' + JSRunner.highlight(q.code) + '</pre>';
+      h += '<p class="qask">' + (q.q || 'What does this print?') + '</p>';
+    } else {
+      h += '<p class="qtext">' + q.q + '</p>';
+    }
+
+    if (q.opts) {
+      h += '<div class="opts">' + q.opts.map(function (o, n) {
+        var cls = 'opt';
+        if (n === q.ans) cls += ' right';
+        else if (row.given === n) cls += ' missed';
+        else cls += ' wrong';
+        var mk = n === q.ans ? 'correct' : (row.given === n ? 'you said' : '');
+        return '<button class="' + cls + '" type="button" disabled>' +
+          '<span class="ltr">' + LETTERS[n] + '</span><span class="txt">' + o + '</span>' +
+          (mk ? '<span class="mark">' + mk + '</span>' : '') + '</button>';
+      }).join('') + '</div>';
+    } else {
+      h += '<div class="shout"><span class="lbl">Answer</span><span class="ans">' + q.a + '</span></div>' +
+        '<p class="qask" style="font-weight:500;color:var(--ink-2)">You wrote: <b>' +
+        (row.wrote ? esc(row.wrote) : '<i>nothing</i>') + '</b></p>';
+    }
+
+    h += '<div class="why">' + q.why + '</div>';
+    if (q.deep) h += '<div class="deep"><span class="dlbl">Going deeper</span>' + q.deep + '</div>';
+    if (q.code) {
+      h += '<div class="proof" id="proofBox" style="display:none">' +
+        '<div class="plbl">This is your browser running it</div>' +
+        '<div class="out" id="proofOut"></div></div>';
+    }
+
+    h += '<div class="grow"></div>';
+    h += '<div class="actions">' +
+      '<button class="btn" type="button" id="rPrev"' + (S.rev === 0 ? ' disabled' : '') + '>&larr;</button>' +
+      '<button class="btn pri" type="button" id="rNext"' + (S.rev === S.marked.per.length - 1 ? ' disabled' : '') + '>Next &rarr;</button>' +
+      (q.code ? '<button class="btn" type="button" id="rRun">Run it &#9654;</button>' : '') +
+      '<span style="flex:1"></span>' +
+      '<span class="hint">' + (S.rev + 1) + ' / ' + S.marked.per.length + '</span>' +
+      '<button class="btn" type="button" id="rBack">Back to my result</button>' +
+      '</div>';
+
+    h += '<div class="palette rev">' + S.marked.per.map(function (r, n) {
+      var cls = r.ok ? 'pq good' : (r.ch === QCodec.BLANK ? 'pq blank' : 'pq bad');
+      if (n === S.rev) cls += ' here';
+      return '<button class="' + cls + '" type="button" data-jump="' + n + '">' + (n + 1) + '</button>';
+    }).join('') + '</div>';
+
+    $('done').innerHTML = h;
+    window.scrollTo(0, 0);
+  }
+
+  function runIt() {
+    var row = S.marked.per[S.rev];
+    if (!row.q.code) return;
+    var box = $('proofBox'), out = $('proofOut');
+    box.style.display = 'block';
+    out.innerHTML = '<div class="ohint">running&hellip;</div>';
+    JSRunner.run(row.q.code, 2000, 300).then(function (r) {
+      if ($('proofOut') === out) JSRunner.render(out, r, {});
+    });
+  }
+
+  $('goTheme').addEventListener('click', function () {
+    var cur = document.documentElement.getAttribute('data-theme');
+    var dark = cur ? cur === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
+  });
+
+  /* Losing a paper to a stray Ctrl-W is the one unrecoverable mistake
+     here, so the browser asks before it happens. */
+  window.addEventListener('beforeunload', function (e) {
+    if (S.started && !S.submitted) { e.preventDefault(); e.returnValue = ''; }
+  });
+
+  $('qCount').textContent = ROUNDS.reduce(function (a, r) { return a + r.qs.length; }, 0);
+  validateStart();
+  window.__EXAM = { S: S, begin: begin, stage: stage, move: move, checkScreen: checkScreen, submit: submit, review: review, ROUNDS: ROUNDS };
+})();
+
+</script>
+</body>
+</html>

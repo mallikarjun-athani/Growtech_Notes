@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTML Lab One</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#F4F7F8; --card:#FFFFFF; --sunk:#EDF2F3;
+    --ink:#12181C; --ink-2:#3D4A52; --ink-3:#6B7C86;
+    --line:#D8E1E4; --line-soft:#E7EDEF;
+    --accent:#0E6E68; --accent-soft:#DBEEEC;
+    --amber:#A85A11; --amber-soft:#F8EADA;
+    --blue:#1F5FA8;  --blue-s:#E0EAF7;
+    --plum:#7A3E86;  --plum-s:#F1E5F4;
+    --red:#B03A2E;   --red-s:#FBE6E3;
+    --green:#1E7A4C; --green-s:#DDF0E5;
+    --code-bg:#101A20; --code-ink:#D5E2E6;
+    --shadow:0 1px 2px rgba(18,24,28,.05), 0 8px 24px rgba(18,24,28,.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#0C1317; --card:#131C21; --sunk:#0F171B;
+      --ink:#E9F0F2; --ink-2:#AEBEC5; --ink-3:#7D9099;
+      --line:#26343B; --line-soft:#1C272D;
+      --accent:#5CC8BE; --accent-soft:#123230;
+      --amber:#E0A15C; --amber-soft:#2F2313;
+      --blue:#79B4EE;  --blue-s:#14263A;
+      --plum:#CE9ED9;  --plum-s:#2C1D31;
+      --red:#E88070;   --red-s:#331714;
+      --green:#5FC98C; --green-s:#0F2C1D;
+      --code-bg:#070D10; --code-ink:#D5E2E6;
+      --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 32px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0C1317; --card:#131C21; --sunk:#0F171B;
+    --ink:#E9F0F2; --ink-2:#AEBEC5; --ink-3:#7D9099;
+    --line:#26343B; --line-soft:#1C272D;
+    --accent:#5CC8BE; --accent-soft:#123230;
+    --amber:#E0A15C; --amber-soft:#2F2313;
+    --blue:#79B4EE;  --blue-s:#14263A;
+    --plum:#CE9ED9;  --plum-s:#2C1D31;
+    --red:#E88070;   --red-s:#331714;
+    --green:#5FC98C; --green-s:#0F2C1D;
+    --code-bg:#070D10; --code-ink:#D5E2E6;
+    --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 32px rgba(0,0,0,.3);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.55;-webkit-font-smoothing:antialiased;margin:0;
+  }
+  h1,h2,h3,h4{font-family:"Archivo","IBM Plex Sans",system-ui,sans-serif;margin:0;text-wrap:balance;letter-spacing:-.02em}
+  p{margin:0}
+  svg{max-width:100%;height:auto;display:block}
+  code{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.88em;background:var(--sunk);padding:1px 6px;border-radius:4px;border:1px solid var(--line-soft)}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 20px 90px}
+
+  header.top{padding:46px 0 24px;border-bottom:2px solid var(--ink);margin-bottom:8px}
+  .kicker{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+  header.top h1{font-size:clamp(32px,5.4vw,52px);font-weight:800;line-height:1.03;margin-bottom:12px}
+  header.top .lede{font-size:clamp(15.5px,1.6vw,18px);color:var(--ink-2);max-width:70ch}
+  header.top .lede b{color:var(--ink);font-weight:600}
+
+  /* nav */
+  .nav{position:sticky;top:0;z-index:40;background:var(--paper);box-shadow:0 6px 16px -10px rgba(0,0,0,.35);padding:12px 0;border-bottom:1px solid var(--line);margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .nav button{font-family:"IBM Plex Sans",sans-serif;font-size:13.5px;font-weight:600;padding:8px 14px;border-radius:9px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2)}
+  .nav button.on{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .nav button:hover{border-color:var(--accent)}
+  .nav button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .score{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-3);white-space:nowrap}
+  .score b{color:var(--green);font-size:15px}
+
+  .view{display:none}
+  .view.on{display:block}
+
+  section{margin:36px 0}
+  h2.head{font-size:clamp(20px,2.6vw,27px);font-weight:800;padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:16px}
+  .intro{color:var(--ink-2);font-size:15.5px;max-width:72ch;margin-bottom:18px}
+  .intro b{color:var(--ink);font-weight:600}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:20px;box-shadow:var(--shadow)}
+  .note{border-left:3px solid var(--amber);background:var(--amber-soft);padding:12px 16px;border-radius:0 9px 9px 0;font-size:14.5px;color:var(--ink-2);margin:14px 0}
+  .note b{color:var(--ink)}
+  .note .l{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--amber);margin-bottom:4px;font-weight:600}
+  .note.q{border-left-color:var(--plum);background:var(--plum-s)}
+  .note.q .l{color:var(--plum)}
+
+  .btn{font-family:"IBM Plex Sans",sans-serif;font-size:13.5px;font-weight:600;padding:9px 15px;border-radius:9px;cursor:pointer;border:1px solid var(--line);background:var(--sunk);color:var(--ink)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .btn:hover{border-color:var(--accent)}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .btn[disabled]{opacity:.4;cursor:default}
+  .btn.sm{font-size:12px;padding:6px 11px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+  textarea{
+    width:100%;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--line);
+    border-radius:10px;padding:14px 16px;
+    font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.65;
+    resize:vertical;tab-size:2;
+  }
+  textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+  pre{margin:12px 0;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:"IBM Plex Mono",monospace;font-size:12.7px;line-height:1.7;border:1px solid var(--line)}
+  pre .c{color:#6E828B;font-style:italic}
+  pre .t{color:#79D3C9}
+  pre .a{color:#9FC6E8}
+  pre .s{color:#E8B57A}
+
+  .lbl{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:7px;display:block}
+
+  /* ---------- DOM tree builder ---------- */
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .split > *{min-width:0}
+  @media (max-width:860px){.split{grid-template-columns:1fr}}
+  .tree{background:var(--sunk);border-radius:10px;padding:16px;min-height:230px;overflow:auto;font-family:"IBM Plex Mono",monospace;font-size:12.5px}
+  .tnode{padding-left:18px;position:relative;line-height:1.9}
+  .tnode::before{content:"";position:absolute;left:6px;top:0;bottom:0;border-left:1px dotted var(--ink-3);opacity:.5}
+  .tnode > .tl{display:inline-flex;align-items:center;gap:7px}
+  .tchip{padding:2px 9px;border-radius:6px;font-weight:600;border:1.5px solid}
+  .tchip.el{background:var(--blue-s);border-color:var(--blue);color:var(--blue)}
+  .tchip.tx{background:var(--sunk);border-color:var(--line);color:var(--ink-2);border-style:dashed;font-weight:400}
+  .tattr{color:var(--ink-3);font-size:11px}
+  .fixnote{margin-top:10px;font-size:13px;color:var(--red);font-weight:600;min-height:20px}
+  .fixnote.ok{color:var(--green)}
+
+  /* ---------- pipeline ---------- */
+  .stages{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+  .stg{flex:1;min-width:104px;border:2px solid var(--line);background:var(--card);border-radius:10px;padding:12px 8px;text-align:center;transition:all .35s ease}
+  .stg .n{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--ink-3);display:block;margin-bottom:4px}
+  .stg .t{font-family:"Archivo",sans-serif;font-size:14px;font-weight:700}
+  .stg.on{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-4px)}
+  .stg.done{border-color:var(--green);background:var(--green-s)}
+  @media (prefers-reduced-motion:reduce){.stg{transition:none}}
+  .stagesay{background:var(--accent-soft);border-left:3px solid var(--accent);border-radius:0 9px 9px 0;padding:13px 16px;font-size:15px;min-height:74px;display:flex;align-items:center;color:var(--ink)}
+
+  /* ---------- script race ---------- */
+  .track{margin-bottom:14px}
+  .track .tn{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;margin-bottom:5px;display:flex;gap:10px;align-items:baseline}
+  .bar{height:26px;background:var(--sunk);border-radius:6px;position:relative;overflow:hidden;border:1px solid var(--line)}
+  .seg{position:absolute;top:0;bottom:0;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:600;color:#fff;transition:width .1s linear}
+  .seg.parse{background:#3E7FC4}
+  .seg.block{background:#C0503E}
+  .seg.run{background:#1E8A5C}
+  .seg.wait{background:#B9C4CB}
+  .raceout{font-size:13.5px;color:var(--ink-2);margin-top:6px}
+  .raceout b{color:var(--ink)}
+
+  /* ---------- x-ray ---------- */
+  .xr{background:var(--sunk);border-radius:10px;padding:16px;min-height:200px;font-size:14px}
+  .xr .land{display:flex;gap:10px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--line-soft)}
+  .xr .role{font-family:"IBM Plex Mono",monospace;font-size:10.5px;padding:2px 8px;border-radius:5px;background:var(--plum-s);color:var(--plum);font-weight:600;flex:none}
+  .xr .role.gen{background:var(--red-s);color:var(--red)}
+  .xr .nm{color:var(--ink-2)}
+  .xr .empty{color:var(--ink-3);font-style:italic}
+
+  /* ---------- challenges ---------- */
+  .chlist{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
+  .chlist button{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2);display:flex;gap:6px;align-items:center}
+  .chlist button.on{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .chlist button.solved{border-color:var(--green)}
+  .chlist button.solved::after{content:"✓";color:var(--green);font-weight:700}
+  .chlist button.on.solved::after{color:var(--card)}
+
+  .chead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+  .chead h3{font-size:20px;font-weight:800}
+  .lvl{font-family:"IBM Plex Mono",monospace;font-size:10px;padding:3px 9px;border-radius:6px;font-weight:600;letter-spacing:.06em}
+  .lvl.m{background:var(--blue-s);color:var(--blue)}
+  .lvl.a{background:var(--plum-s);color:var(--plum)}
+  .lvl.b{background:var(--red-s);color:var(--red)}
+  .brief{color:var(--ink-2);font-size:15px;margin-bottom:14px;max-width:74ch}
+  .brief b{color:var(--ink);font-weight:600}
+  .scenario{background:var(--blue-s);border-left:3px solid var(--blue);border-radius:0 9px 9px 0;padding:11px 15px;font-size:14px;color:var(--ink-2);margin-bottom:14px}
+  .scenario .l{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--blue);margin-bottom:4px;font-weight:600}
+
+  iframe.prev{width:100%;height:260px;border:1px solid var(--line);border-radius:10px;background:#fff}
+  .checks{margin-top:14px;background:var(--sunk);border-radius:10px;padding:14px 16px}
+  .chk{display:flex;gap:10px;align-items:flex-start;padding:6px 0;font-size:14px;color:var(--ink-2)}
+  .chk .mk{flex:none;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;margin-top:2px}
+  .chk.pass .mk{background:var(--green);color:#fff}
+  .chk.fail .mk{background:var(--red-s);color:var(--red);border:1.5px solid var(--red)}
+  .chk.idle .mk{background:var(--card);border:1.5px solid var(--line);color:var(--ink-3)}
+  .chk.pass{color:var(--ink)}
+  .verdict{margin-top:12px;font-size:15px;font-weight:700;min-height:24px}
+  .verdict.ok{color:var(--green)}
+  .verdict.no{color:var(--red)}
+  .hint{margin-top:12px;font-size:14px;color:var(--ink-2);background:var(--amber-soft);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:11px 15px;display:none}
+  .hint.show{display:block}
+
+  /* drill */
+  .drill{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow)}
+  .drill .dh{padding:13px 17px;background:var(--sunk);border-bottom:1px solid var(--line);display:flex;gap:11px;align-items:flex-start;cursor:pointer}
+  .drill .dn{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;color:var(--plum);flex:none;padding-top:3px}
+  .drill .dt{font-size:15.5px;font-weight:700;line-height:1.3;flex:1}
+  .drill .tog{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);flex:none}
+  .drill .db{padding:15px 17px;display:none}
+  .drill.open .db{display:block}
+  .drill .db p{font-size:14.5px;color:var(--ink-2);margin-bottom:9px}
+  .drill .db p:last-child{margin-bottom:0}
+  .drill .db b{color:var(--ink)}
+  .drill .tip{margin-top:10px;font-size:13px;color:var(--ink-3);border-top:1px solid var(--line-soft);padding-top:8px}
+  .drill .tip b{color:var(--accent);font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase}
+
+  .g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+  .g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+  @media (max-width:820px){.g2,.g3{grid-template-columns:1fr}}
+  .mini{border:1px solid var(--line);border-radius:12px;padding:17px;background:var(--card)}
+  .mini h4{font-size:15.5px;margin-bottom:6px}
+  .mini p{font-size:14px;color:var(--ink-2)}
+  .mini .tag{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:600;display:block;margin-bottom:5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="kicker">Interactive Lab · HTML</div>
+  <h1>HTML Lab One</h1>
+  <p class="lede">Everything on this page runs. Type into the editors and watch the DOM tree rebuild itself. Step the rendering pipeline. Race a blocking script against a deferred one. Then solve <b>eight auto-checked coding challenges</b> taken from real production requirements — the checker reads your markup and tells you exactly what is missing.</p>
+</header>
+
+<nav class="nav" id="nav">
+  <button data-v="explore" class="on">Visualisers</button>
+  <button data-v="challenges">Coding Challenges</button>
+  <button data-v="drill">Debug Arena</button>
+  <span class="score" id="score">solved <b>0</b> / 8</span>
+</nav>
+
+<!-- ==================== VISUALISERS ==================== -->
+<div class="view on" id="v-explore">
+
+  <!-- DOM TREE -->
+  <section>
+    <h2 class="head">1 · Watch text become a tree</h2>
+    <p class="intro">Your HTML file is text. The browser turns it into an <b>object tree in memory</b> — the DOM. Type in the left box and the tree rebuilds on every keystroke. <b>Try breaking it on purpose</b> and watch the parser silently repair your markup.</p>
+
+    <div class="panel">
+      <div class="split">
+        <div>
+          <span class="lbl">Your markup — edit freely</span>
+          <textarea id="domIn" rows="12" spellcheck="false"></textarea>
+          <div class="row" style="margin-top:10px">
+            <button class="btn sm" data-dom="good">Valid markup</button>
+            <button class="btn sm" data-dom="broken">Missing close tags</button>
+            <button class="btn sm" data-dom="illegal">Illegal nesting</button>
+            <button class="btn sm" data-dom="table">Table auto-repair</button>
+          </div>
+        </div>
+        <div>
+          <span class="lbl">The DOM the browser actually built</span>
+          <div class="tree" id="domTree"></div>
+          <div class="fixnote" id="domFix"></div>
+        </div>
+      </div>
+      <div class="note">
+        <span class="l">Run this in class</span>
+        Load <b>Illegal nesting</b> and read the tree aloud. The <code>&lt;div&gt;</code> escaped the <code>&lt;p&gt;</code> and an empty paragraph appeared from nowhere. Now ask: <b>"your CSS says <code>p &gt; div</code> — why does nothing turn red?"</b>
+      </div>
+    </div>
+  </section>
+
+  <!-- PIPELINE -->
+  <section>
+    <h2 class="head">2 · The critical rendering path</h2>
+    <p class="intro">The single most asked front-end interview question is <b>"what happens between the browser getting HTML and pixels on screen?"</b> Step through it once and the answer is theirs for good.</p>
+
+    <div class="panel">
+      <div class="stages" id="stages"></div>
+      <div class="stagesay" id="stageSay">Press Step to walk the pipeline.</div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn primary" id="pipeStep">Step →</button>
+        <button class="btn" id="pipePlay">▶ Play</button>
+        <button class="btn" id="pipeReset">Reset</button>
+      </div>
+      <div class="g3" style="margin-top:18px">
+        <div class="mini"><span class="tag">Consequence 1</span><h4>display:none is not in the render tree</h4><p>It exists in the DOM but never reaches layout — no space, no paint. <code>visibility:hidden</code> does reach layout, which is why it keeps its space.</p></div>
+        <div class="mini"><span class="tag">Consequence 2</span><h4>CSS blocks the first paint</h4><p>No CSSOM means no render tree. A heavy stylesheet delays paint even when the HTML arrived instantly.</p></div>
+        <div class="mini"><span class="tag">Consequence 3</span><h4>Layout is the expensive stage</h4><p>Changing width re-runs layout. Changing colour only re-runs paint. Animating <code>transform</code> skips both.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCRIPT RACE -->
+  <section>
+    <h2 class="head">3 · Script loading race</h2>
+    <p class="intro">Three identical scripts, three different attributes. Press <b>Race</b> and watch which page shows content first. <b>This is the visual that ends the "put scripts at the bottom" myth.</b></p>
+
+    <div class="panel">
+      <div class="track">
+        <div class="tn"><span style="color:var(--red)">&lt;script&gt;</span> <span style="color:var(--ink-3);font-weight:400">no attribute — parser blocking</span></div>
+        <div class="bar" id="bar1"></div>
+      </div>
+      <div class="track">
+        <div class="tn"><span style="color:var(--green)">&lt;script defer&gt;</span> <span style="color:var(--ink-3);font-weight:400">downloads in parallel, runs after parsing</span></div>
+        <div class="bar" id="bar2"></div>
+      </div>
+      <div class="track">
+        <div class="tn"><span style="color:var(--amber)">&lt;script async&gt;</span> <span style="color:var(--ink-3);font-weight:400">runs the moment it lands</span></div>
+        <div class="bar" id="bar3"></div>
+      </div>
+      <div class="raceout" id="raceOut">Content visible at: — </div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn primary" id="raceGo">▶ Race</button>
+        <button class="btn" id="raceReset">Reset</button>
+        <span style="font-size:13px;color:var(--ink-3);margin-left:auto">Blue = parsing · Red = blocked · Green = script running</span>
+      </div>
+      <div class="note">
+        <span class="l">The rule they should memorise</span>
+        <b>defer for your own code</b> (order is guaranteed) · <b>async for third-party</b> like analytics (order does not matter) · <b>never a bare script tag in the head.</b>
+      </div>
+    </div>
+  </section>
+
+  <!-- X-RAY -->
+  <section>
+    <h2 class="head">4 · Semantic X-ray</h2>
+    <p class="intro">This is what a <b>screen reader</b> gets from your markup. Not what it looks like — what it <i>announces</i>. Switch between the two versions and watch the right-hand panel collapse into nothing.</p>
+
+    <div class="panel">
+      <div class="row" style="margin-bottom:14px">
+        <button class="btn primary" data-xr="0">Div soup version</button>
+        <button class="btn" data-xr="1">Semantic version</button>
+      </div>
+      <div class="split">
+        <div>
+          <span class="lbl">The markup</span>
+          <textarea id="xrIn" rows="14" spellcheck="false"></textarea>
+        </div>
+        <div>
+          <span class="lbl">What assistive tech announces</span>
+          <div class="xr" id="xrOut"></div>
+        </div>
+      </div>
+      <div class="note q">
+        <span class="l">The line that lands</span>
+        "Both versions look <b>identical</b> on screen. One of them is unusable for a blind user, and invisible to Google. <b>The difference cost you nothing to fix.</b>"
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== CHALLENGES ==================== -->
+<div class="view" id="v-challenges">
+  <section>
+    <h2 class="head">Coding challenges</h2>
+    <p class="intro">Each challenge is a real production requirement. Write your markup, hit <b>Run checks</b>, and the checker parses your DOM and reports exactly which requirements pass. <b>No answers are given</b> — hints only, after two failed attempts.</p>
+
+    <div class="chlist" id="chList"></div>
+
+    <div class="panel">
+      <div class="chead">
+        <h3 id="chTitle">—</h3>
+        <span class="lvl m" id="chLvl">—</span>
+      </div>
+      <div class="scenario" id="chScenario"></div>
+      <p class="brief" id="chBrief"></p>
+
+      <div class="split">
+        <div>
+          <span class="lbl">Your code</span>
+          <textarea id="chCode" rows="18" spellcheck="false"></textarea>
+          <div class="row" style="margin-top:10px">
+            <button class="btn primary" id="chRun">Run checks</button>
+            <button class="btn" id="chReset">Reset code</button>
+            <button class="btn" id="chHint">Show hint</button>
+          </div>
+        </div>
+        <div>
+          <span class="lbl">Live preview</span>
+          <iframe class="prev" id="chPrev" sandbox="" title="Live preview"></iframe>
+          <div class="checks" id="chChecks"></div>
+          <div class="verdict" id="chVerdict"></div>
+          <div class="hint" id="chHintBox"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== DEBUG ARENA ==================== -->
+<div class="view" id="v-drill">
+  <section>
+    <h2 class="head">Debug arena</h2>
+    <p class="intro">Eight pieces of markup that <b>look fine and render fine</b> — and are all wrong. Read each one, decide what breaks, then open it. Run these as a five-minute warm-up: put one on the projector, nobody speaks for sixty seconds, then take answers.</p>
+    <div id="drills"></div>
+  </section>
+</div>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var esc = function (s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  };
+
+  /* ============================================================
+     NAV
+     ============================================================ */
+  var nav = document.getElementById('nav');
+  nav.addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-v]');
+    if (!b) return;
+    Array.prototype.forEach.call(nav.querySelectorAll('button'), function (x) { x.classList.remove('on'); });
+    b.classList.add('on');
+    ['explore','challenges','drill'].forEach(function (v) {
+      document.getElementById('v-' + v).classList.toggle('on', v === b.dataset.v);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  /* ============================================================
+     1 · DOM TREE BUILDER
+     ============================================================ */
+  var SAMPLES = {
+    good:
+'<section>\n' +
+'  <h1>Indore Centre</h1>\n' +
+'  <ul>\n' +
+'    <li>HTML</li>\n' +
+'    <li>CSS</li>\n' +
+'  </ul>\n' +
+'</section>',
+    broken:
+'<ul>\n' +
+'  <li>One\n' +
+'  <li>Two\n' +
+'  <li>Three\n' +
+'</ul>',
+    illegal:
+'<p>Hello <div>World</div> again</p>',
+    table:
+'<table>\n' +
+'  <tr><td>A</td><td>B</td></tr>\n' +
+'</table>'
+  };
+
+  var domIn = document.getElementById('domIn');
+  var domTree = document.getElementById('domTree');
+  var domFix = document.getElementById('domFix');
+
+  function nodeHtml(node, depth) {
+    if (depth > 9) return '';
+    var out = '';
+    Array.prototype.forEach.call(node.childNodes, function (c) {
+      if (c.nodeType === 3) {
+        var t = c.textContent.replace(/\s+/g, ' ').trim();
+        if (!t) return;
+        out += '<div class="tnode"><span class="tl"><span class="tchip tx">"' + esc(t.slice(0, 34)) + '"</span></span></div>';
+      } else if (c.nodeType === 1) {
+        var attrs = '';
+        Array.prototype.forEach.call(c.attributes, function (a) {
+          attrs += ' ' + a.name + (a.value ? '="' + esc(a.value.slice(0, 18)) + '"' : '');
+        });
+        out += '<div class="tnode"><span class="tl"><span class="tchip el">' + c.tagName.toLowerCase() + '</span>'
+             + (attrs ? '<span class="tattr">' + esc(attrs) + '</span>' : '') + '</span>'
+             + nodeHtml(c, depth + 1) + '</div>';
+      }
+    });
+    return out;
+  }
+
+  function renderDom() {
+    var raw = domIn.value;
+    var doc = new DOMParser().parseFromString('<body>' + raw + '</body>', 'text/html');
+    domTree.innerHTML = nodeHtml(doc.body, 0) || '<span class="empty">(nothing yet)</span>';
+
+    // detect repairs by comparing counts of a few telltales
+    var msgs = [];
+    if (/<p[\s>][^]*?<(div|ul|ol|table|section|h[1-6])\b/i.test(raw)) {
+      msgs.push('Parser repaired illegal nesting — the block element escaped the paragraph.');
+    }
+    var liOpen = (raw.match(/<li\b/gi) || []).length;
+    var liClose = (raw.match(/<\/li>/gi) || []).length;
+    if (liOpen > liClose) msgs.push('Parser auto-closed ' + (liOpen - liClose) + ' unclosed <li> element(s).');
+    if (/<table\b/i.test(raw) && !/<tbody\b/i.test(raw) && doc.querySelector('tbody')) {
+      msgs.push('Parser inserted a <tbody> you never wrote.');
+    }
+    if (doc.querySelectorAll('p').length > (raw.match(/<p[\s>]/gi) || []).length) {
+      msgs.push('An extra empty <p> appeared.');
+    }
+    if (msgs.length) {
+      domFix.className = 'fixnote';
+      domFix.textContent = '⚠ ' + msgs.join('  ');
+    } else {
+      domFix.className = 'fixnote ok';
+      domFix.textContent = '✓ Parsed exactly as written — no repairs needed.';
+    }
+  }
+
+  domIn.addEventListener('input', renderDom);
+  document.querySelectorAll('[data-dom]').forEach(function (b) {
+    b.addEventListener('click', function () { domIn.value = SAMPLES[b.dataset.dom]; renderDom(); });
+  });
+  domIn.value = SAMPLES.good;
+  renderDom();
+
+  /* ============================================================
+     2 · RENDERING PIPELINE
+     ============================================================ */
+  var PIPE = [
+    { t: 'HTML', n: 'bytes', say: 'Bytes arrive from the server and are decoded into characters, then tokenised into start tags, end tags and text.' },
+    { t: 'DOM', n: 'stage 1', say: 'Tokens become nodes, and nodes become a tree — the DOM. This is the structure of your page in memory, and the only thing JavaScript can touch.' },
+    { t: 'CSSOM', n: 'stage 2', say: 'Every stylesheet is parsed into the CSSOM. This is render-blocking: the browser will not paint until it has finished, because painting first would flash unstyled content.' },
+    { t: 'Render tree', n: 'stage 3', say: 'DOM and CSSOM combine. Only visible nodes make it in — anything with display:none is dropped here, which is exactly why it takes up no space.' },
+    { t: 'Layout', n: 'stage 4', say: 'Also called reflow. The browser calculates the exact size and position of every box. This is the expensive stage — changing a width sends you back here.' },
+    { t: 'Paint', n: 'stage 5', say: 'Pixels are filled in — colours, text, shadows, borders. Changing only a colour re-runs paint but skips layout, which is why it is cheaper.' },
+    { t: 'Composite', n: 'stage 6', say: 'Painted layers are assembled in the right order and sent to the screen. Animating transform and opacity happens here, skipping layout and paint entirely — that is why they are the smooth ones.' }
+  ];
+
+  var stagesEl = document.getElementById('stages');
+  var stageSay = document.getElementById('stageSay');
+  var pipeAt = -1, pipeTimer = null;
+
+  PIPE.forEach(function (s, i) {
+    var d = document.createElement('div');
+    d.className = 'stg';
+    d.innerHTML = '<span class="n">' + s.n + '</span><span class="t">' + s.t + '</span>';
+    d.addEventListener('click', function () { pipeStop(); pipeAt = i; drawPipe(); });
+    stagesEl.appendChild(d);
+  });
+
+  function drawPipe() {
+    Array.prototype.forEach.call(stagesEl.children, function (el, i) {
+      el.classList.toggle('on', i === pipeAt);
+      el.classList.toggle('done', i < pipeAt);
+    });
+    stageSay.textContent = pipeAt < 0 ? 'Press Step to walk the pipeline.' : PIPE[pipeAt].say;
+    document.getElementById('pipeStep').disabled = pipeAt >= PIPE.length - 1;
+  }
+  function pipeStop() {
+    if (pipeTimer) { clearInterval(pipeTimer); pipeTimer = null; }
+    document.getElementById('pipePlay').textContent = '▶ Play';
+  }
+  document.getElementById('pipeStep').addEventListener('click', function () {
+    pipeStop(); if (pipeAt < PIPE.length - 1) { pipeAt++; drawPipe(); }
+  });
+  document.getElementById('pipeReset').addEventListener('click', function () {
+    pipeStop(); pipeAt = -1; drawPipe();
+  });
+  document.getElementById('pipePlay').addEventListener('click', function () {
+    if (pipeTimer) { pipeStop(); return; }
+    if (pipeAt >= PIPE.length - 1) { pipeAt = -1; drawPipe(); }
+    document.getElementById('pipePlay').textContent = '❚❚ Pause';
+    pipeTimer = setInterval(function () {
+      if (pipeAt >= PIPE.length - 1) { pipeStop(); return; }
+      pipeAt++; drawPipe();
+    }, 3200);
+  });
+  drawPipe();
+
+  /* ============================================================
+     3 · SCRIPT RACE
+     ============================================================ */
+  // timeline in arbitrary ticks (0-100)
+  var RACE = [
+    { id:'bar1', label:'blocking',
+      segs:[{c:'parse',a:0,b:22,t:'parsing'},{c:'block',a:22,b:62,t:'fetch + execute — parser STOPPED'},{c:'parse',a:62,b:100,t:'parsing resumes'}],
+      visible:100 },
+    { id:'bar2', label:'defer',
+      segs:[{c:'parse',a:0,b:60,t:'parsing, never interrupted'},{c:'run',a:60,b:78,t:'script runs'},{c:'wait',a:78,b:100,t:''}],
+      visible:60 },
+    { id:'bar3', label:'async',
+      segs:[{c:'parse',a:0,b:30,t:'parsing'},{c:'run',a:30,b:48,t:'runs now'},{c:'parse',a:48,b:86,t:'parsing resumes'},{c:'wait',a:86,b:100,t:''}],
+      visible:86 }
+  ];
+
+  function raceReset() {
+    RACE.forEach(function (r) { document.getElementById(r.id).innerHTML = ''; });
+    document.getElementById('raceOut').innerHTML = 'Content visible at: — ';
+  }
+  function raceGo() {
+    raceReset();
+    var t = 0;
+    var iv = setInterval(function () {
+      t += 2;
+      RACE.forEach(function (r) {
+        var bar = document.getElementById(r.id);
+        var html = '';
+        r.segs.forEach(function (s) {
+          if (t <= s.a) return;
+          var w = Math.min(t, s.b) - s.a;
+          html += '<div class="seg ' + s.c + '" style="left:' + s.a + '%;width:' + w + '%">'
+                + (w > 16 ? esc(s.t) : '') + '</div>';
+        });
+        bar.innerHTML = html;
+      });
+      if (t >= 100) {
+        clearInterval(iv);
+        document.getElementById('raceOut').innerHTML =
+          'Content visible at: <b style="color:var(--red)">blocking 100</b> · ' +
+          '<b style="color:var(--green)">defer 60</b> · ' +
+          '<b style="color:var(--amber)">async 86</b> &nbsp;—&nbsp; defer is <b>40% faster to first content</b> than the bare script tag.';
+      }
+    }, 26);
+  }
+  document.getElementById('raceGo').addEventListener('click', raceGo);
+  document.getElementById('raceReset').addEventListener('click', raceReset);
+  raceReset();
+
+  /* ============================================================
+     4 · SEMANTIC X-RAY
+     ============================================================ */
+  var XR = [
+'<div class="top">\n' +
+'  <div class="logo">Foundation</div>\n' +
+'  <div class="menu">\n' +
+'    <div onclick="go()">Home</div>\n' +
+'    <div onclick="go()">Courses</div>\n' +
+'  </div>\n' +
+'</div>\n' +
+'<div class="big">Skill Training</div>\n' +
+'<div class="content">\n' +
+'  <div class="card">\n' +
+'    <div class="ttl">Full Stack</div>\n' +
+'    <div onclick="go()">Apply</div>\n' +
+'  </div>\n' +
+'</div>\n' +
+'<div class="bottom">Contact us</div>',
+
+'<header>\n' +
+'  <a href="/">Foundation</a>\n' +
+'  <nav aria-label="Main">\n' +
+'    <a href="/">Home</a>\n' +
+'    <a href="/courses">Courses</a>\n' +
+'  </nav>\n' +
+'</header>\n' +
+'<main>\n' +
+'  <h1>Skill Training</h1>\n' +
+'  <article>\n' +
+'    <h2>Full Stack</h2>\n' +
+'    <button type="button">Apply</button>\n' +
+'  </article>\n' +
+'</main>\n' +
+'<footer>Contact us</footer>'
+  ];
+
+  var ROLES = {
+    header:'banner', nav:'navigation', main:'main', footer:'contentinfo',
+    article:'article', section:'region', aside:'complementary', form:'form',
+    button:'button', a:'link', h1:'heading 1', h2:'heading 2', h3:'heading 3',
+    ul:'list', ol:'list', li:'listitem', img:'image', table:'table'
+  };
+
+  var xrIn = document.getElementById('xrIn');
+  var xrOut = document.getElementById('xrOut');
+
+  function renderXr() {
+    var doc = new DOMParser().parseFromString('<body>' + xrIn.value + '</body>', 'text/html');
+    var rows = [];
+    (function walk(n) {
+      Array.prototype.forEach.call(n.children, function (c) {
+        var tag = c.tagName.toLowerCase();
+        var role = ROLES[tag];
+        if (role) {
+          var name = (c.getAttribute('aria-label') || c.getAttribute('alt') ||
+                      (c.children.length === 0 ? c.textContent.trim() : '')).slice(0, 40);
+          rows.push({ role: role, name: name, gen: false });
+        }
+        walk(c);
+      });
+    })(doc.body);
+
+    var divs = doc.querySelectorAll('div').length;
+    var clickDivs = doc.querySelectorAll('div[onclick]').length;
+
+    var html = '';
+    if (!rows.length) {
+      html += '<p class="empty">Nothing. No landmarks, no headings, no controls — the whole page is one undifferentiated blob of text.</p>';
+    } else {
+      rows.forEach(function (r) {
+        html += '<div class="land"><span class="role">' + esc(r.role) + '</span>'
+              + '<span class="nm">' + (r.name ? esc(r.name) : '<i>unnamed</i>') + '</span></div>';
+      });
+    }
+    if (clickDivs) {
+      html += '<div class="land"><span class="role gen">' + clickDivs + ' × generic</span>'
+            + '<span class="nm">clickable div — not focusable, not announced, ignored by keyboard</span></div>';
+    }
+    html += '<div style="margin-top:12px;font-size:13px;color:var(--ink-3)">'
+          + rows.length + ' announced element' + (rows.length === 1 ? '' : 's') + ' · '
+          + divs + ' meaningless div' + (divs === 1 ? '' : 's') + '</div>';
+    xrOut.innerHTML = html;
+  }
+  xrIn.addEventListener('input', renderXr);
+  document.querySelectorAll('[data-xr]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('[data-xr]').forEach(function (x) { x.classList.remove('primary'); });
+      b.classList.add('primary');
+      xrIn.value = XR[+b.dataset.xr];
+      renderXr();
+    });
+  });
+  xrIn.value = XR[0];
+  renderXr();
+
+  /* ============================================================
+     CHALLENGES
+     ============================================================ */
+  function P(raw) { return new DOMParser().parseFromString(raw, 'text/html'); }
+  function txt(el) { return el ? el.textContent.trim() : ''; }
+
+  var CH = [
+    {
+      id: 'C1', title: 'The document skeleton', lvl: 'm',
+      scen: 'You have joined a team. The first file you create must pass their HTML linter on commit — it rejects anything missing these six things.',
+      brief: 'Write a complete, valid HTML5 document. It needs a doctype, a language, an encoding, a viewport, a real title and some body content.',
+      start: '<!-- write a complete HTML5 document here -->\n\n',
+      hint: 'Six lines: the doctype, <html lang="en">, <meta charset="UTF-8">, the viewport meta with width=device-width, a <title>, and something inside <body>.',
+      checks: [
+        { l: 'Starts with a HTML5 doctype', f: function (d, r) { return /^\s*<!doctype\s+html\s*>/i.test(r); } },
+        { l: '<html> has a lang attribute', f: function (d) { var h = d.documentElement; return h && h.hasAttribute('lang') && h.getAttribute('lang').length >= 2; } },
+        { l: 'Declares a character encoding', f: function (d) { return !!d.querySelector('meta[charset]'); } },
+        { l: 'Has a responsive viewport meta', f: function (d) { var m = d.querySelector('meta[name="viewport"]'); return !!m && /width=device-width/i.test(m.getAttribute('content') || ''); } },
+        { l: 'Has a non-empty <title>', f: function (d) { return txt(d.querySelector('title')).length > 3; } },
+        { l: 'Body contains visible content', f: function (d) { return txt(d.body).length > 0; } }
+      ]
+    },
+    {
+      id: 'C2', title: 'Repair the broken list', lvl: 'm',
+      scen: 'A junior pushed this. It renders "fine" in Chrome so nobody noticed, but the CSS rule .menu li a stopped matching and the navigation lost its styling.',
+      brief: 'Fix the markup so the DOM contains <b>exactly three list items</b>, each a direct child of the list, each containing a link — and no stray paragraphs or divs anywhere inside the list.',
+      start: '<ul class="menu">\n  <li><a href="/">Home\n  <li><p><a href="/courses">Courses</a>\n  <li><div><a href="/apply">Apply</a></div>\n</ul>',
+      hint: 'Close every <li> and every <a>. Then ask what the <p> and the <div> are actually doing — a list item is already a block container.',
+      checks: [
+        { l: 'Exactly 3 direct <li> children of the list', f: function (d) { return d.querySelectorAll('ul > li').length === 3; } },
+        { l: 'Every <li> contains a link', f: function (d) { var li = d.querySelectorAll('ul > li'); return li.length === 3 && Array.prototype.every.call(li, function (x) { return !!x.querySelector('a[href]'); }); } },
+        { l: 'No <p> inside the list', f: function (d) { return d.querySelectorAll('ul p').length === 0; } },
+        { l: 'No <div> inside the list', f: function (d) { return d.querySelectorAll('ul div').length === 0; } },
+        { l: 'Every link has non-empty text', f: function (d) { var a = d.querySelectorAll('ul a'); return a.length === 3 && Array.prototype.every.call(a, function (x) { return txt(x).length > 0; }); } }
+      ]
+    },
+    {
+      id: 'C3', title: 'Semantic page shell', lvl: 'm',
+      scen: 'An accessibility audit flagged your landing page: "no landmarks, screen reader users cannot skip navigation". You have to rebuild the shell before release.',
+      brief: 'Build a page shell using <b>real landmark elements</b> — a banner, a navigation region, a main region and a footer. Exactly one h1. Include a skip link that jumps to the main content.',
+      start: '<div class="header">\n  <div class="nav">\n    <div>Home</div>\n  </div>\n</div>\n<div class="content">\n  <div class="title">Welcome</div>\n</div>\n<div class="footer">© 2026</div>',
+      hint: 'header, nav, main, footer. The skip link is an <a href="#id"> pointing at the id you put on <main>. And a nav full of divs is still not navigation — use links.',
+      checks: [
+        { l: 'Has a <header>', f: function (d) { return !!d.querySelector('header'); } },
+        { l: 'Has a <nav> containing links', f: function (d) { var n = d.querySelector('nav'); return !!n && n.querySelectorAll('a[href]').length > 0; } },
+        { l: 'Has exactly one <main>', f: function (d) { return d.querySelectorAll('main').length === 1; } },
+        { l: 'Has a <footer>', f: function (d) { return !!d.querySelector('footer'); } },
+        { l: 'Exactly one <h1>', f: function (d) { return d.querySelectorAll('h1').length === 1; } },
+        { l: 'Skip link targets the main region', f: function (d) { var m = d.querySelector('main'); if (!m || !m.id) return false; return !!d.querySelector('a[href="#' + m.id + '"]'); } },
+        { l: 'No clickable divs left', f: function (d) { return d.querySelectorAll('div[onclick]').length === 0; } }
+      ]
+    },
+    {
+      id: 'C4', title: 'The production <head>', lvl: 'a',
+      scen: 'Marketing says links to the site show a blank grey box on WhatsApp and LinkedIn, and Google is inventing its own description. Fix the head.',
+      brief: 'Write a complete production <b>&lt;head&gt;</b>: title, meta description of a sensible length, canonical URL, and the Open Graph tags needed for a link preview card (title, description, image).',
+      start: '<head>\n  <meta charset="UTF-8">\n  <title>Home</title>\n</head>',
+      hint: 'og:title, og:description and og:image use the property attribute, not name. A meta description under 50 characters is treated as missing by most crawlers.',
+      checks: [
+        { l: 'Title is descriptive (10–70 characters)', f: function (d) { var t = txt(d.querySelector('title')); return t.length >= 10 && t.length <= 70; } },
+        { l: 'Meta description present, 50–160 characters', f: function (d) { var m = d.querySelector('meta[name="description"]'); if (!m) return false; var c = (m.getAttribute('content') || '').trim(); return c.length >= 50 && c.length <= 160; } },
+        { l: 'Canonical link declared', f: function (d) { var l = d.querySelector('link[rel="canonical"]'); return !!l && /^https?:\/\//i.test(l.getAttribute('href') || ''); } },
+        { l: 'og:title set', f: function (d) { var m = d.querySelector('meta[property="og:title"]'); return !!m && (m.getAttribute('content') || '').trim().length > 3; } },
+        { l: 'og:description set', f: function (d) { var m = d.querySelector('meta[property="og:description"]'); return !!m && (m.getAttribute('content') || '').trim().length > 10; } },
+        { l: 'og:image is an absolute URL', f: function (d) { var m = d.querySelector('meta[property="og:image"]'); return !!m && /^https?:\/\//i.test((m.getAttribute('content') || '')); } }
+      ]
+    },
+    {
+      id: 'C5', title: 'Images that do not shift the page', lvl: 'a',
+      scen: 'Your Core Web Vitals report shows a bad Cumulative Layout Shift score. The culprit is the hero image — text jumps down when it finally loads.',
+      brief: 'Write an image that <b>reserves its space before loading</b> and is accessible, plus a link that makes sense out of context. Decorative images must be hidden from screen readers, not given fake alt text.',
+      start: '<img src="/hero.jpg">\n<img src="/divider.png" alt="decorative line">\n<a href="/report.pdf">Click here</a>',
+      hint: 'width and height attributes let the browser reserve the box. A purely decorative image takes alt="" — empty, not missing. And "click here" tells a screen reader user nothing when links are read as a list.',
+      checks: [
+        { l: 'Every image has an alt attribute', f: function (d) { var i = d.querySelectorAll('img'); return i.length >= 2 && Array.prototype.every.call(i, function (x) { return x.hasAttribute('alt'); }); } },
+        { l: 'Every image has width and height', f: function (d) { var i = d.querySelectorAll('img'); return i.length >= 2 && Array.prototype.every.call(i, function (x) { return x.hasAttribute('width') && x.hasAttribute('height'); }); } },
+        { l: 'The content image has meaningful alt text', f: function (d) { return Array.prototype.some.call(d.querySelectorAll('img'), function (x) { return (x.getAttribute('alt') || '').trim().length > 6; }); } },
+        { l: 'The decorative image has an empty alt', f: function (d) { return Array.prototype.some.call(d.querySelectorAll('img'), function (x) { return x.getAttribute('alt') === ''; }); } },
+        { l: 'No vague link text like "click here"', f: function (d) { return Array.prototype.every.call(d.querySelectorAll('a'), function (x) { return !/^(click here|here|read more|more|link)$/i.test(txt(x)); }); } },
+        { l: 'Link text is descriptive (4+ characters)', f: function (d) { var a = d.querySelectorAll('a'); return a.length > 0 && Array.prototype.every.call(a, function (x) { return txt(x).length >= 4; }); } }
+      ]
+    },
+    {
+      id: 'C6', title: 'A form that actually works', lvl: 'a',
+      scen: 'Support tickets say users on phones cannot tap the small checkboxes, and the form submits empty on the server. Both are the same root cause.',
+      brief: 'Build a signup form. <b>Every input needs a properly associated label and a name attribute.</b> Use the right input types so mobile keyboards change, mark required fields, and use a real submit button.',
+      start: '<form>\n  Email <input type="text">\n  Phone <input type="text">\n  <div onclick="submit()">Send</div>\n</form>',
+      hint: 'A label is associated by for="x" matching id="x" — not by sitting next to the input. No name attribute means the field is never sent to the server. type="email" and type="tel" change the mobile keyboard.',
+      checks: [
+        { l: 'At least 2 inputs present', f: function (d) { return d.querySelectorAll('form input').length >= 2; } },
+        { l: 'Every input has an id', f: function (d) { var i = d.querySelectorAll('form input'); return i.length >= 2 && Array.prototype.every.call(i, function (x) { return !!x.id; }); } },
+        { l: 'Every input has a matching <label for>', f: function (d) { var i = d.querySelectorAll('form input'); return i.length >= 2 && Array.prototype.every.call(i, function (x) { return !!d.querySelector('label[for="' + x.id + '"]'); }); } },
+        { l: 'Every input has a name attribute', f: function (d) { var i = d.querySelectorAll('form input'); return i.length >= 2 && Array.prototype.every.call(i, function (x) { return !!x.getAttribute('name'); }); } },
+        { l: 'Uses type="email" and type="tel"', f: function (d) { return !!d.querySelector('input[type="email"]') && !!d.querySelector('input[type="tel"]'); } },
+        { l: 'At least one required field', f: function (d) { return d.querySelectorAll('form [required]').length > 0; } },
+        { l: 'Real submit button, not a div', f: function (d) { return (!!d.querySelector('button[type="submit"]') || !!d.querySelector('input[type="submit"]') || !!d.querySelector('form button:not([type])')) && d.querySelectorAll('form div[onclick]').length === 0; } }
+      ]
+    },
+    {
+      id: 'C7', title: 'A data table screen readers can read', lvl: 'a',
+      scen: 'A blind analyst uses your attendance report daily. Right now every cell is read as a meaningless number with no idea which column it belongs to.',
+      brief: 'Build a table with a caption, a proper head and body, and <b>scoped header cells</b> so each data cell can be tied back to its column and row.',
+      start: '<table>\n  <tr><td>Name</td><td>Present</td></tr>\n  <tr><td>Priya</td><td>18</td></tr>\n</table>',
+      hint: 'Header cells are <th>, not <td>. scope="col" for column headers, scope="row" for the first cell of each row. The caption is the table\'s accessible name.',
+      checks: [
+        { l: 'Table has a <caption>', f: function (d) { return txt(d.querySelector('table caption')).length > 3; } },
+        { l: 'Uses <thead> and <tbody>', f: function (d) { return !!d.querySelector('table thead') && !!d.querySelector('table tbody'); } },
+        { l: 'Header row uses <th>, not <td>', f: function (d) { var h = d.querySelector('thead tr'); return !!h && h.querySelectorAll('th').length >= 2 && h.querySelectorAll('td').length === 0; } },
+        { l: 'Column headers have scope="col"', f: function (d) { var t = d.querySelectorAll('thead th'); return t.length >= 2 && Array.prototype.every.call(t, function (x) { return x.getAttribute('scope') === 'col'; }); } },
+        { l: 'Each body row starts with a scope="row" header', f: function (d) { var r = d.querySelectorAll('tbody tr'); return r.length >= 2 && Array.prototype.every.call(r, function (x) { var f = x.firstElementChild; return f && f.tagName === 'TH' && f.getAttribute('scope') === 'row'; }); } },
+        { l: 'At least 2 data rows', f: function (d) { return d.querySelectorAll('tbody tr').length >= 2; } }
+      ]
+    },
+    {
+      id: 'C8', title: 'Boss challenge — the product card', lvl: 'b',
+      scen: 'This is a real front-end screening task. You are given a design and a checklist, and the reviewer runs an automated audit before a human ever looks at it.',
+      brief: 'Build a single product card that passes a full audit: semantic container, correct heading level, accessible image with reserved space, a price marked up as data, a real button carrying the product id, and <b>zero inline styles</b>.',
+      start: '<!-- Product: Wireless Headphones, ₹2,499, id 8842 -->\n<!-- Build the card below -->\n\n',
+      hint: 'Use <article>. The price can carry <data value="2499">. Put the product id in a data-* attribute on the button and read it later with dataset. Inline style attributes are an automatic fail.',
+      checks: [
+        { l: 'Wrapped in an <article>', f: function (d) { return !!d.querySelector('article'); } },
+        { l: 'Has a heading with the product name', f: function (d) { var h = d.querySelector('article h2, article h3'); return !!h && txt(h).length > 3; } },
+        { l: 'Image has alt, width and height', f: function (d) { var i = d.querySelector('article img'); return !!i && (i.getAttribute('alt') || '').length > 3 && i.hasAttribute('width') && i.hasAttribute('height'); } },
+        { l: 'Price marked up with <data value>', f: function (d) { var x = d.querySelector('article data[value]'); return !!x && /^[0-9.]+$/.test(x.getAttribute('value') || ''); } },
+        { l: 'A real <button>, not a div or link', f: function (d) { return !!d.querySelector('article button') && !d.querySelector('article div[onclick]'); } },
+        { l: 'Button carries the id in a data-* attribute', f: function (d) { var b = d.querySelector('article button'); if (!b) return false; return Array.prototype.some.call(b.attributes, function (a) { return /^data-/.test(a.name) && /\d/.test(a.value); }); } },
+        { l: 'Button has an explicit type', f: function (d) { var b = d.querySelector('article button'); return !!b && !!b.getAttribute('type'); } },
+        { l: 'No inline style attributes anywhere', f: function (d) { return d.querySelectorAll('[style]').length === 0; } }
+      ]
+    }
+  ];
+
+  var chList = document.getElementById('chList');
+  var chIdx = 0;
+  var attempts = {};
+  var solved = {};
+
+  var chCode = document.getElementById('chCode');
+  var chPrev = document.getElementById('chPrev');
+  var chChecks = document.getElementById('chChecks');
+  var chVerdict = document.getElementById('chVerdict');
+  var chHintBox = document.getElementById('chHintBox');
+
+  CH.forEach(function (c, i) {
+    var b = document.createElement('button');
+    b.textContent = c.id;
+    b.addEventListener('click', function () { loadCh(i); });
+    chList.appendChild(b);
+  });
+
+  function updateScore() {
+    var n = Object.keys(solved).length;
+    document.getElementById('score').innerHTML = 'solved <b>' + n + '</b> / ' + CH.length;
+    Array.prototype.forEach.call(chList.children, function (b, i) {
+      b.classList.toggle('solved', !!solved[CH[i].id]);
+      b.classList.toggle('on', i === chIdx);
+    });
+  }
+
+  function preview() {
+    chPrev.srcdoc = '<style>body{font-family:system-ui,sans-serif;padding:14px;color:#111;background:#fff;line-height:1.5}'
+                  + 'img{max-width:100%;height:auto;background:#e6ecef}'
+                  + 'table{border-collapse:collapse}td,th{border:1px solid #bbb;padding:5px 9px;text-align:left}'
+                  + '</style>' + chCode.value;
+  }
+
+  function renderChecks(results) {
+    var c = CH[chIdx];
+    var html = '';
+    c.checks.forEach(function (ck, i) {
+      var st = results ? (results[i] ? 'pass' : 'fail') : 'idle';
+      var mk = results ? (results[i] ? '✓' : '✕') : '·';
+      html += '<div class="chk ' + st + '"><span class="mk">' + mk + '</span><span>' + esc(ck.l) + '</span></div>';
+    });
+    chChecks.innerHTML = html;
+  }
+
+  function loadCh(i) {
+    chIdx = i;
+    var c = CH[i];
+    document.getElementById('chTitle').textContent = c.id + ' · ' + c.title;
+    var lvlEl = document.getElementById('chLvl');
+    lvlEl.className = 'lvl ' + c.lvl;
+    lvlEl.textContent = c.lvl === 'm' ? 'MODERATE' : (c.lvl === 'a' ? 'ADVANCED' : 'BOSS');
+    document.getElementById('chScenario').innerHTML = '<span class="l">Real scenario</span>' + c.scen;
+    document.getElementById('chBrief').innerHTML = c.brief;
+    chCode.value = c.start;
+    chVerdict.textContent = '';
+    chVerdict.className = 'verdict';
+    chHintBox.className = 'hint';
+    chHintBox.textContent = c.hint;
+    renderChecks(null);
+    preview();
+    updateScore();
+  }
+
+  function runChecks() {
+    var c = CH[chIdx];
+    var raw = chCode.value;
+    var doc = P(raw);
+    var results = c.checks.map(function (ck) {
+      try { return !!ck.f(doc, raw); } catch (e) { return false; }
+    });
+    renderChecks(results);
+    var passed = results.filter(Boolean).length;
+    if (passed === results.length) {
+      solved[c.id] = true;
+      chVerdict.className = 'verdict ok';
+      chVerdict.textContent = '✓ All ' + results.length + ' requirements met. This would pass the audit.';
+    } else {
+      attempts[c.id] = (attempts[c.id] || 0) + 1;
+      chVerdict.className = 'verdict no';
+      chVerdict.textContent = passed + ' of ' + results.length + ' passed — keep going.';
+      if (attempts[c.id] >= 2) chHintBox.className = 'hint show';
+    }
+    updateScore();
+  }
+
+  chCode.addEventListener('input', preview);
+  document.getElementById('chRun').addEventListener('click', runChecks);
+  document.getElementById('chReset').addEventListener('click', function () { loadCh(chIdx); });
+  document.getElementById('chHint').addEventListener('click', function () { chHintBox.classList.toggle('show'); });
+  loadCh(0);
+
+  /* ============================================================
+     DEBUG ARENA
+     ============================================================ */
+  var DRILLS = [
+    { q: '&lt;div class="btn" onclick="buy()"&gt;Buy now&lt;/div&gt;',
+      a: '<p>It renders and it clicks — with a mouse. <b>It is invisible to a keyboard.</b> A div is not focusable, does not respond to Enter or Space, and is announced by a screen reader as nothing at all.</p><p>A real <b>&lt;button type="button"&gt;</b> gives you focus, keyboard activation, the correct role and a disabled state — all for free.</p>',
+      t: 'Test by pressing Tab. If you cannot reach it, a real user cannot either.' },
+    { q: '&lt;img src="team.jpg" alt="image"&gt;',
+      a: '<p>The alt text is present but <b>worthless</b>. A screen reader announces "image, image". Alt text should say what the picture <i>communicates</i>, not that it is a picture.</p><p>Better: <b>alt="Trainees at the Indore centre during a lab session"</b>. If the image is purely decorative, use <b>alt=""</b> so it is skipped entirely.</p>',
+      t: 'Rule: describe the meaning, never start with "image of".' },
+    { q: '&lt;h1&gt;Welcome&lt;/h1&gt;\n&lt;h4&gt;Our courses&lt;/h4&gt;',
+      a: '<p>The h4 was chosen because it <i>looked</i> the right size. But headings are a <b>document outline</b>, not a font-size picker — skipping from h1 to h4 tells assistive tech that two levels are missing.</p><p>Use <b>h2</b> and set the size in CSS.</p>',
+      t: 'Screen reader users navigate by heading level. A broken outline is a broken map.' },
+    { q: '&lt;script src="app.js"&gt;&lt;/script&gt;\n&lt;/head&gt;',
+      a: '<p>A bare script tag in the head <b>stops HTML parsing completely</b> while it downloads and executes. On a slow connection that is a blank white screen.</p><p>Add <b>defer</b>. The script downloads in parallel and runs after parsing, in order. "Move it to the bottom of the body" is 2012 advice that defer replaced.</p>',
+      t: 'Throttle to Slow 4G in DevTools and reload. The white screen is visible to the naked eye.' },
+    { q: '&lt;input type="text" placeholder="Email"&gt;',
+      a: '<p>Three faults. <b>No label</b> — the placeholder vanishes the moment typing starts, so the user forgets what the field was. <b>No name</b> — the value is never sent to the server. <b>Wrong type</b> — mobile users get the alphabet keyboard instead of one with @.</p><p>Fix: a real &lt;label for&gt;, a name attribute, and type="email".</p>',
+      t: 'A placeholder is a hint, never a label. This one bug generates real support tickets.' },
+    { q: '&lt;a href="#" onclick="deleteUser()"&gt;Delete&lt;/a&gt;',
+      a: '<p>A link means navigation. This performs a <b>destructive action</b>, so it should be a button. The href="#" also scrolls the page to the top and adds a junk history entry.</p><p>Anything that changes data is a <b>&lt;button&gt;</b>. Anything that goes somewhere is an <b>&lt;a&gt;</b>.</p>',
+      t: 'Ask: "would it make sense to open this in a new tab?" If no, it is not a link.' },
+    { q: '&lt;div class="card"&gt;\n  &lt;div class="title"&gt;Full Stack&lt;/div&gt;\n&lt;/div&gt;',
+      a: '<p>Div soup. Nothing here tells the browser, Google, or a screen reader what any of it <i>is</i>. The card produces no landmark, the title produces no heading.</p><p><b>&lt;article&gt;</b> with an <b>&lt;h2&gt;</b> renders identically once styled — and is suddenly navigable, indexable and announced.</p>',
+      t: 'Every div is a missed chance to tell the browser what this thing is.' },
+    { q: '&lt;p&gt;Result: &lt;div id="out"&gt;&lt;/div&gt;&lt;/p&gt;',
+      a: '<p>A div cannot live inside a p. The parser <b>silently closes the paragraph</b> before the div and leaves an empty stray p behind — so your DOM has three elements where you wrote two.</p><p>Your CSS selector <b>p &gt; #out</b> then matches nothing, and the bug looks like a CSS problem when it is a markup problem.</p>',
+      t: 'Use the DOM tree visualiser on this exact snippet. Seeing it beats being told.' }
+  ];
+
+  var drillsEl = document.getElementById('drills');
+  DRILLS.forEach(function (d, i) {
+    var el = document.createElement('div');
+    el.className = 'drill';
+    el.innerHTML = '<div class="dh"><span class="dn">BUG ' + (i + 1) + '</span>'
+      + '<span class="dt"><code style="white-space:pre-wrap;display:inline-block">' + d.q + '</code></span>'
+      + '<span class="tog">reveal</span></div>'
+      + '<div class="db">' + d.a + '<div class="tip"><b>How to prove it</b> ' + d.t + '</div></div>';
+    el.querySelector('.dh').addEventListener('click', function () {
+      el.classList.toggle('open');
+      el.querySelector('.tog').textContent = el.classList.contains('open') ? 'hide' : 'reveal';
+    });
+    drillsEl.appendChild(el);
+  });
+
+  updateScore();
+})();
+</script>
+</body>
+</html>

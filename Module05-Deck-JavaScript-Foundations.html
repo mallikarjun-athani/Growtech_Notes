@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JavaScript Foundations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#F5F7F8; --card:#FFFFFF; --sunk:#EDF2F3;
+    --ink:#12181C; --ink-2:#3D4A52; --ink-3:#6B7C86;
+    --line:#DCE3E6; --line-soft:#E9EEF0;
+    --accent:#0E6E68; --accent-soft:#DCEEEC;
+    --amber:#A85A11; --amber-soft:#F7E9D8;
+    --blue:#1F5FA8;  --blue-s:#E0EAF7;
+    --plum:#7A3E86;  --plum-s:#F1E5F4;
+    --red:#B03A2E;   --red-s:#FBE6E3;
+    --green:#1E7A4C; --green-s:#DDF0E5;
+    --code-bg:#101820; --code-ink:#D7E3E6;
+    --shadow:0 1px 2px rgba(18,24,28,.06), 0 8px 24px rgba(18,24,28,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#0D1418; --card:#141D22; --sunk:#101A1F;
+      --ink:#E8EFF1; --ink-2:#AEBEC5; --ink-3:#7E9099;
+      --line:#26343B; --line-soft:#1D282E;
+      --accent:#5CC8BE; --accent-soft:#12312F;
+      --amber:#E0A15C; --amber-soft:#2E2213;
+      --blue:#79B4EE;  --blue-s:#14263A;
+      --plum:#CE9ED9;  --plum-s:#2C1D31;
+      --red:#E88070;   --red-s:#331714;
+      --green:#5FC98C; --green-s:#0F2C1D;
+      --code-bg:#070C0F; --code-ink:#D7E3E6;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0D1418; --card:#141D22; --sunk:#101A1F;
+    --ink:#E8EFF1; --ink-2:#AEBEC5; --ink-3:#7E9099;
+    --line:#26343B; --line-soft:#1D282E;
+    --accent:#5CC8BE; --accent-soft:#12312F;
+    --amber:#E0A15C; --amber-soft:#2E2213;
+    --blue:#79B4EE;  --blue-s:#14263A;
+    --plum:#CE9ED9;  --plum-s:#2C1D31;
+    --red:#E88070;   --red-s:#331714;
+    --green:#5FC98C; --green-s:#0F2C1D;
+    --code-bg:#070C0F; --code-ink:#D7E3E6;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--paper); color:var(--ink); margin:0;
+    font-family:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:"Archivo","IBM Plex Sans",system-ui,sans-serif;text-wrap:balance;margin:0;letter-spacing:-.02em}
+  p{margin:0}
+  svg{max-width:100%;height:auto;display:block}
+  code,.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+
+  .deck{max-width:1180px;margin:0 auto;padding:0 20px 96px}
+  .slide{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--shadow);padding:clamp(24px,3.2vw,48px);margin:24px 0;
+    min-height:clamp(420px,74vh,730px);display:flex;flex-direction:column;gap:20px;
+  }
+  .slide.hidden{display:none}
+
+  .eyebrow{
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
+  .slide h2{font-size:clamp(25px,3.3vw,40px);font-weight:800;line-height:1.12}
+  .sub{color:var(--ink-2);font-size:clamp(15px,1.35vw,18px);max-width:66ch}
+  .sub b{color:var(--ink);font-weight:600}
+  .grow{flex:1}
+
+  .title-slide{justify-content:center;gap:24px;position:relative;overflow:hidden}
+  .title-slide h1{font-size:clamp(36px,6vw,74px);font-weight:800;line-height:1.03}
+  .title-slide h1 .thin{display:block;font-weight:600;color:var(--ink-3);font-size:.36em;margin-bottom:.55em}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{font-family:"IBM Plex Mono",monospace;font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);color:var(--ink-2);background:var(--paper)}
+  .chip b{color:var(--accent);font-weight:600}
+
+  .grid{display:grid;gap:15px}
+  .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  @media (max-width:860px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+  .card{border:1px solid var(--line);border-radius:10px;padding:17px;background:var(--paper);display:flex;flex-direction:column;gap:7px}
+  .card h3{font-size:16.5px;font-weight:700}
+  .card p{color:var(--ink-2);font-size:14.5px}
+  .card .tag{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+  .card.b{background:var(--blue-s);border-color:var(--blue)} .card.b .tag{color:var(--blue)}
+  .card.g{background:var(--green-s);border-color:var(--green)} .card.g .tag{color:var(--green)}
+  .card.p{background:var(--plum-s);border-color:var(--plum)} .card.p .tag{color:var(--plum)}
+  .card.a{background:var(--amber-soft);border-color:var(--amber)} .card.a .tag{color:var(--amber)}
+  .card.r{background:var(--red-s);border-color:var(--red)} .card.r .tag{color:var(--red)}
+
+  ul.clean{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:11px}
+  ul.clean li{display:flex;gap:11px;font-size:clamp(14.5px,1.35vw,17px);color:var(--ink-2);line-height:1.45}
+  ul.clean li b{color:var(--ink);font-weight:600}
+  ul.clean li::before{content:"";flex:none;width:7px;height:7px;margin-top:.55em;border-radius:2px;background:var(--accent);transform:rotate(45deg)}
+
+  pre{margin:0;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:16px 18px;overflow-x:auto;font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.68;border:1px solid var(--line)}
+  pre .c{color:#7E9099;font-style:italic}
+  pre .t{color:#7FD1C7}
+  pre .a{color:#9FC6E8}
+  pre .s{color:#E0A15C}
+  pre .hl{background:rgba(224,161,92,.16);display:inline-block;width:100%}
+  .fname{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);letter-spacing:.05em;margin-bottom:7px;display:block}
+
+  .callout{border-left:3px solid var(--amber);background:var(--amber-soft);padding:13px 17px;border-radius:0 8px 8px 0;color:var(--ink-2);font-size:15px}
+  .callout b{color:var(--ink)}
+  .callout.q{border-left-color:var(--plum);background:var(--plum-s)}
+  .callout.g{border-left-color:var(--green);background:var(--green-s)}
+
+  .scroll-x{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:14.5px}
+  th{text-align:left;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);padding:0 12px 9px 0;border-bottom:1px solid var(--line);font-weight:600;white-space:nowrap}
+  td{padding:9px 12px 9px 0;border-bottom:1px solid var(--line-soft);color:var(--ink-2);vertical-align:top}
+  td:first-child{color:var(--ink);font-weight:600;white-space:nowrap}
+  td code,th code{color:var(--accent)}
+
+  .navbar{
+    position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);
+    border-top:1px solid var(--line);display:flex;align-items:center;gap:13px;
+    padding:10px max(20px, calc(50vw - 590px));box-shadow:0 -6px 18px -12px rgba(0,0,0,.4);
+  }
+  .navbar button{font-family:"IBM Plex Mono",monospace;font-size:12.5px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:7px 13px;cursor:pointer}
+  .navbar button:hover{border-color:var(--accent);color:var(--accent)}
+  .navbar button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .counter{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+  .bar{flex:1;height:3px;background:var(--line-soft);border-radius:2px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s ease}
+  .navbar .hint{font-size:12px;color:var(--ink-3)}
+  @media (max-width:700px){.navbar .hint{display:none}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+  @media print{
+    .navbar{display:none}
+    .slide{page-break-after:always;box-shadow:none;min-height:0}
+    .slide.hidden{display:flex}
+  }
+
+  /* ---- additions for CSS properties / box model ---- */
+  .swatchrow{display:flex;gap:9px;flex-wrap:wrap}
+  .sw{flex:1;min-width:92px;border-radius:9px;border:1px solid var(--line);overflow:hidden;background:var(--card)}
+  .sw .fill{height:52px}
+  .sw .nm{font-family:"IBM Plex Mono",monospace;font-size:10.5px;padding:7px 9px;color:var(--ink-2);line-height:1.35}
+  .sw .nm b{display:block;color:var(--ink);font-size:11.5px}
+
+  .demo{border:1px dashed var(--accent);border-radius:10px;padding:16px 18px;background:var(--card);position:relative}
+  .demo::before{content:"LIVE ON THIS SLIDE";position:absolute;top:-9px;left:16px;background:var(--accent);color:var(--card);
+    font-family:"IBM Plex Mono",monospace;font-size:9px;letter-spacing:.13em;padding:2px 9px;border-radius:5px;font-weight:600}
+
+  .scale li{display:flex;align-items:baseline;gap:14px;padding:5px 0;border-bottom:1px solid var(--line-soft)}
+  .scale li .v{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);width:88px;flex:none}
+  .scale li .t{color:var(--ink);font-weight:700;line-height:1.1}
+  ul.scale{list-style:none;margin:0;padding:0}
+
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:5px 16px;font-size:14.5px;align-items:baseline}
+  .kv dt{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--accent);font-weight:600;white-space:nowrap}
+  .kv dd{margin:0;color:var(--ink-2)}
+
+  .clock{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+  @media (max-width:860px){.clock{grid-template-columns:repeat(2,1fr)}}
+  .cl{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)}
+  .cl .h{font-family:"IBM Plex Mono",monospace;font-size:12px;padding:8px 11px;background:var(--sunk);color:var(--ink);border-bottom:1px solid var(--line);font-weight:600}
+  .cl .b{padding:11px;display:grid;place-items:center}
+  .cl .cap{font-size:12.5px;color:var(--ink-2);padding:0 11px 11px;text-align:center}
+
+  .big-num{font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:clamp(26px,3.6vw,46px);color:var(--accent);line-height:1}
+  .eq{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:"IBM Plex Mono",monospace;font-size:clamp(14px,1.6vw,20px);font-weight:600}
+  .eq .op{color:var(--ink-3)}
+  .eq .pill{padding:6px 12px;border-radius:8px;border:2px solid}
+  .eq .pc{background:var(--blue-s);border-color:var(--blue);color:var(--blue)}
+  .eq .pp{background:var(--green-s);border-color:var(--green);color:var(--green)}
+  .eq .pb{background:var(--sunk);border-color:var(--ink-2);color:var(--ink)}
+  .eq .pt{background:var(--amber-soft);border-color:var(--amber);color:var(--amber)}
+
+
+  /* ---- module 05: live JavaScript on the slide ---- */
+  pre.js .k{color:#7FD1C7;font-weight:600}
+  pre.js .s{color:#E8B57A}
+  pre.js .n{color:#8FC0F0}
+  pre.js .f{color:#D6A8E0}
+  pre.js .c{color:#7E9099;font-style:italic}
+
+  .live{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--code-bg);display:flex;flex-direction:column}
+  .live .lbar{display:flex;align-items:center;gap:6px;padding:6px 8px 6px 14px;background:#16222A;border-bottom:1px solid #22313A}
+  .live .lname{flex:1;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#7E9099}
+  .live button{font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:6px;cursor:pointer;
+    border:1px solid #2B3B45;background:#1C2A33;color:#D7E3E6}
+  .live button:hover{border-color:#5CC8BE;color:#5CC8BE}
+  .live button.run{background:#0E6E68;border-color:#0E6E68;color:#fff}
+  .live button.run:hover{background:#12857E;color:#fff}
+  .live button:focus-visible{outline:2px solid #5CC8BE;outline-offset:2px}
+  .live pre{margin:0;border:0;border-radius:0;background:transparent;font-size:13.5px;line-height:1.7}
+  .live textarea{margin:0;border:0;border-radius:0;background:#0B1418;color:#D7E3E6;font-family:"IBM Plex Mono",monospace;
+    font-size:13.5px;line-height:1.7;padding:16px 18px;resize:vertical;min-height:120px;outline:none;tab-size:2}
+  .live textarea:focus{box-shadow:inset 0 0 0 2px #0E6E68}
+  .out{background:#081014;border-top:1px solid #22313A;font-family:"IBM Plex Mono",monospace;font-size:13.5px;line-height:1.6;
+    padding:10px 16px;min-height:42px;color:#D7E3E6}
+  .out .ol,.out .or{padding:2px 0;border-bottom:1px solid #111E24;white-space:pre-wrap;word-break:break-word}
+  .out .or{color:#8FA3AD}
+  .out .or .arrow{color:#566B75}
+  .out .ow{padding:3px 8px;margin:2px -8px;background:#2B2210;color:#F0C27A;border-radius:4px}
+  .out .oe{padding:5px 9px;margin:3px -8px;background:#2C1512;color:#F4A193;border-radius:4px;white-space:pre-wrap}
+  .out .oe b{color:#FF8E7C}
+  .out .onote{display:block;color:#D9B0A8;font-size:12px;margin-top:3px}
+  .out .ot{padding:7px 10px;margin:3px -8px;background:#2B2210;color:#F0C27A;border-radius:4px}
+  .out .oa{padding:3px 8px;margin:2px -8px;background:#12263A;color:#AFD3F5;border-radius:4px}
+  .out .tagalert{font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:#1F5FA8;color:#fff;padding:1px 6px;border-radius:3px}
+  .out .oempty,.out .ohint{color:#566B75;font-style:italic}
+  .v-string{color:#E7ECEE} .v-number,.v-bigint{color:#7FB8F0} .v-boolean{color:#D9A8E3}
+  .v-null,.v-undefined{color:#8FA3AD} .v-function{color:#7FD1C7} .v-error{color:#F4A193}
+  .v-array,.v-object{color:#E7ECEE} .v-symbol{color:#F0C27A}
+
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+  .pair > *{min-width:0}
+  @media (max-width:980px){.pair{grid-template-columns:1fr}}
+  .falsy{display:flex;flex-wrap:wrap;gap:8px}
+  .falsy span{font-family:"IBM Plex Mono",monospace;font-size:15px;font-weight:700;padding:8px 14px;border-radius:9px;
+    background:var(--red-s);border:2px solid var(--red);color:var(--red)}
+  .truthy span{background:var(--green-s);border-color:var(--green);color:var(--green)}
+  .eqtab td{font-family:"IBM Plex Mono",monospace;font-size:13.5px}
+  .eqtab td.t{color:var(--green);font-weight:700} .eqtab td.f{color:var(--red);font-weight:700}
+  /* ---- three-depth tier layers ---- */
+  .tier{display:none;border-radius:0 10px 10px 0;padding:14px 18px;font-size:15px;line-height:1.55;margin-top:2px}
+  .tier .tl{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.14em;
+    text-transform:uppercase;font-weight:700;margin-bottom:6px}
+  .tier b{font-weight:700}
+  .tier code{font-family:"IBM Plex Mono",monospace;font-size:.9em}
+  .tier-plain{background:var(--green-s);border-left:4px solid var(--green);color:var(--ink-2)}
+  .tier-plain .tl{color:var(--green)} .tier-plain b{color:var(--ink)} .tier-plain code{color:var(--green)}
+  .tier-deep{background:var(--plum-s);border-left:4px solid var(--plum);color:var(--ink-2)}
+  .tier-deep .tl{color:var(--plum)} .tier-deep b{color:var(--ink)} .tier-deep code{color:var(--plum)}
+  body.show-plain .tier-plain{display:block}
+  body.show-deep  .tier-deep{display:block}
+  .navbar button.tbtn{font-size:12px;padding:7px 11px}
+  .navbar button.tbtn.on{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .navbar button#tPlain.on{background:var(--green);border-color:var(--green)}
+  .navbar button#tDeep.on{background:var(--plum);border-color:var(--plum)}
+  @media print{ .tier{display:block!important} }
+</style>
+</head>
+<body>
+
+<main class="deck" id="deck">
+
+<!-- 1 -->
+<section class="slide title-slide">
+  <div class="eyebrow">Module 05</div>
+  <h1><span class="thin">JavaScript foundations</span>Making the page think</h1>
+  <p class="sub">HTML says what things are. CSS says how they look. <b>JavaScript decides what happens</b> — when a button is pressed, when a form is wrong, when data arrives. It is also the one language you will use in every layer of the MERN stack, from the browser to the server.</p>
+  <div class="chips">
+    <span class="chip"><b>01</b>&nbsp; Values, variables, types</span>
+    <span class="chip"><b>02</b>&nbsp; Operators and the == trap</span>
+    <span class="chip"><b>03</b>&nbsp; Decisions and loops</span>
+    <span class="chip"><b>04</b>&nbsp; Functions and scope</span>
+  </div>
+  <div class="grow"></div>
+  <div class="callout g"><b>Every code block in this deck runs.</b> Press <b>Run</b>, or press <b>Edit</b> and change it first. If you write an infinite loop by accident, the runner stops it after a second and a half — nothing freezes.</div>
+</section>
+
+<!-- 2 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Where it fits</div>
+  <h2>Three languages, three jobs</h2>
+  <div class="scroll-x">
+    <svg viewBox="0 0 940 250" role="img" aria-label="HTML is the structure, CSS is the presentation, JavaScript is the behaviour">
+      <rect x="20" y="20" width="280" height="150" rx="12" fill="var(--blue-s)" stroke="var(--blue)" stroke-width="2"/>
+      <text x="40" y="54" font-family="IBM Plex Mono, monospace" font-size="18" font-weight="700" fill="var(--blue)">HTML</text>
+      <text x="40" y="82" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="var(--ink)">What things ARE</text>
+      <text x="40" y="106" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink-3)">the nouns — a heading,</text>
+      <text x="40" y="124" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink-3)">a button, a form</text>
+      <text x="40" y="152" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--blue)">&lt;button&gt;Buy&lt;/button&gt;</text>
+
+      <rect x="330" y="20" width="280" height="150" rx="12" fill="var(--plum-s)" stroke="var(--plum)" stroke-width="2"/>
+      <text x="350" y="54" font-family="IBM Plex Mono, monospace" font-size="18" font-weight="700" fill="var(--plum)">CSS</text>
+      <text x="350" y="82" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="var(--ink)">How they LOOK</text>
+      <text x="350" y="106" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink-3)">the adjectives — green,</text>
+      <text x="350" y="124" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink-3)">rounded, centred</text>
+      <text x="350" y="152" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--plum)">button { color: green }</text>
+
+      <rect x="640" y="20" width="280" height="150" rx="12" fill="var(--amber-soft)" stroke="var(--amber)" stroke-width="2"/>
+      <text x="660" y="54" font-family="IBM Plex Mono, monospace" font-size="18" font-weight="700" fill="var(--amber)">JavaScript</text>
+      <text x="660" y="82" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="var(--ink)">What HAPPENS</text>
+      <text x="660" y="106" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink-3)">the verbs — calculate,</text>
+      <text x="660" y="124" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink-3)">check, decide, fetch</text>
+      <text x="660" y="152" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--amber)">if (cart.length === 0) …</text>
+
+      <text x="20" y="214" font-family="IBM Plex Sans, sans-serif" font-size="13.5" font-weight="600" fill="var(--ink)">The same language runs in two places:</text>
+      <rect x="290" y="196" width="300" height="30" rx="7" fill="var(--card)" stroke="var(--line)" stroke-width="1.5"/>
+      <text x="306" y="216" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--ink-2)">the browser — Chrome's V8 engine</text>
+      <rect x="610" y="196" width="310" height="30" rx="7" fill="var(--green-s)" stroke="var(--green)" stroke-width="1.5"/>
+      <text x="626" y="216" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--green)">the server — Node.js, the N in MERN</text>
+    </svg>
+  </div>
+  <div class="grid g2">
+    <div class="callout"><b>This is why JavaScript matters for placement:</b> in a MERN job you write it in the browser (React), on the server (Express on Node) and in the database queries (MongoDB). One language, three layers. Nothing you learn in this module is wasted.</div>
+    <div class="callout q"><b>JavaScript is not Java.</b> The name was a 1995 marketing decision. They share some syntax and nothing else. Saying "Java script" in an interview is a small, avoidable red flag.</div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · First program</div>
+  <h2>console.log is how you see what the code is doing</h2>
+  <div class="pair">
+    <div>
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">console.log("Hello from JavaScript");
+console.log(2 + 3);
+console.log("2" + "3");
+console.log("Seats left:", 50 - 38);
+</pre><div class="out" aria-live="polite"></div></div>
+      <p class="sub" style="font-size:14.5px;margin-top:12px">Press <b>Run</b>. Notice <code>2 + 3</code> and <code>"2" + "3"</code> give different answers — the quotes change everything. That is the first lesson of this module, and we will come back to it.</p>
+    </div>
+    <div>
+      <span class="fname">Where the script goes in a real page</span>
+<pre style="font-size:13px"><span class="c">&lt;!-- at the end of &lt;head&gt;, with defer --&gt;</span>
+<span class="t">&lt;script</span> <span class="a">src=</span><span class="s">"js/app.js"</span> <span class="a">defer</span><span class="t">&gt;&lt;/script&gt;</span></pre>
+      <ul class="clean" style="margin-top:14px">
+        <li><b>In its own file</b>, linked with <code>src</code> — the same reason CSS goes in its own file: it is cached, and it stays out of your markup.</li>
+        <li><b>With <code>defer</code></b>. The browser downloads it while building the page and runs it once the HTML is ready. Without it, the page stops loading while the script downloads.</li>
+        <li><b>Press F12</b> in any browser and open the <b>Console</b> tab. That is where <code>console.log</code> writes — and where every error will appear.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Variables</div>
+  <h2>A variable is a labelled box that holds a value</h2>
+  <div class="scroll-x">
+    <table>
+      <tr><th>Keyword</th><th>Can you put a new value in the box?</th><th>Where does it exist?</th><th>Use it</th></tr>
+      <tr><td><code>const</code></td><td><b>No</b> — the label is glued to one value</td><td>Inside the nearest <code>{ }</code></td><td><b>By default.</b> Most values never change.</td></tr>
+      <tr><td><code>let</code></td><td>Yes</td><td>Inside the nearest <code>{ }</code></td><td>When the value genuinely changes — a counter, a running total.</td></tr>
+      <tr><td><code>var</code></td><td>Yes</td><td>The whole function, ignoring <code>{ }</code></td><td><b>Never</b> in new code. You will read it in old code.</td></tr>
+    </table>
+  </div>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const course = "Full Stack";
+let seatsFilled = 38;
+
+seatsFilled = seatsFilled + 1;   // fine: let can change
+console.log(course, seatsFilled);
+
+course = "Data Science";         // not fine
+console.log(course);
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <div class="callout" style="margin-top:0"><b>Run it and read the error.</b> The first two lines print, then JavaScript stops at <code>course = …</code> with <i>"Assignment to constant variable"</i>. Errors are not failures — they are the language telling you precisely which rule you broke.</div>
+      <div class="callout g"><b>The habit to build now:</b> write <code>const</code> first, every time. Only change it to <code>let</code> when the code actually needs to reassign it. Your code then tells the reader which values can move.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Naming</div>
+  <h2>Rules the language enforces, conventions the industry enforces</h2>
+  <div class="grid g2">
+    <div class="card r">
+      <span class="tag">Rules — break these and the code will not run</span>
+      <ul class="clean">
+        <li>Letters, digits, <code>_</code> and <code>$</code> only — <b>no spaces, no hyphens</b></li>
+        <li>Cannot <b>start</b> with a digit: <code>2ndPlace</code> is an error</li>
+        <li>Cannot be a reserved word: <code>let</code>, <code>if</code>, <code>class</code>, <code>return</code></li>
+        <li><b>Case-sensitive:</b> <code>total</code> and <code>Total</code> are two different boxes</li>
+      </ul>
+    </div>
+    <div class="card g">
+      <span class="tag">Conventions — break these and code review will</span>
+      <ul class="clean">
+        <li><b>camelCase</b> for variables and functions: <code>seatsFilled</code>, <code>getTotal</code></li>
+        <li><b>UPPER_SNAKE</b> for fixed settings: <code>MAX_SEATS</code>, <code>TAX_RATE</code></li>
+        <li>Booleans read as a question: <code>isLoggedIn</code>, <code>hasPaid</code></li>
+        <li>Say what it holds, not what type it is: <code>price</code>, never <code>num1</code></li>
+      </ul>
+    </div>
+  </div>
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">let userName = "Asha";
+let username = "Ravi";
+console.log(userName, username);   // two different variables
+
+const MAX_SEATS = 50;
+const isFull = 38 &gt;= MAX_SEATS;
+console.log("Batch full?", isFull);
+</pre><div class="out" aria-live="polite"></div></div>
+</section>
+
+<!-- 6 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Types</div>
+  <h2>Every value has a type — and typeof will tell you which</h2>
+  <div class="pair">
+    <div class="scroll-x">
+      <table>
+        <tr><th>Type</th><th>Example</th><th>What it is</th></tr>
+        <tr><td><code>string</code></td><td><code>"Indore"</code></td><td>Text, in quotes</td></tr>
+        <tr><td><code>number</code></td><td><code>42</code>, <code>3.14</code></td><td>Every number — whole and decimal are one type</td></tr>
+        <tr><td><code>boolean</code></td><td><code>true</code>, <code>false</code></td><td>Yes or no</td></tr>
+        <tr><td><code>undefined</code></td><td><code>undefined</code></td><td>"Nothing has been put here yet"</td></tr>
+        <tr><td><code>null</code></td><td><code>null</code></td><td>"Deliberately empty" — you chose this</td></tr>
+        <tr><td><code>bigint</code></td><td><code>9007199254740993n</code></td><td>Whole numbers too big for number</td></tr>
+        <tr><td><code>symbol</code></td><td><code>Symbol("id")</code></td><td>A guaranteed-unique key — rare</td></tr>
+        <tr><td><code>object</code></td><td><code>{ }</code>, <code>[ ]</code></td><td>A collection of values — next module</td></tr>
+      </table>
+    </div>
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">console.log(typeof "Indore");
+console.log(typeof 42);
+console.log(typeof true);
+console.log(typeof undefined);
+console.log(typeof [1, 2, 3]);
+console.log(typeof null);   // look closely
+</pre><div class="out" aria-live="polite"></div></div>
+  </div>
+  <div class="callout q"><b><code>typeof null</code> says "object".</b> That is a bug from the very first version of JavaScript in 1995 — and it can never be fixed, because fixing it would break millions of existing websites. It is a favourite interview question precisely because it looks wrong. To test for null, write <code>value === null</code>.</div>
+</section>
+
+<!-- 7 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Strings</div>
+  <h2>Strings — and the only quotes you need</h2>
+  <div class="pair">
+    <div>
+      <ul class="clean">
+        <li><code>'single'</code> and <code>"double"</code> quotes are identical. Pick one and be consistent.</li>
+        <li><b>Backticks — template literals — are the ones to reach for.</b> They drop values straight into text with <code>${ }</code>, and they can span several lines.</li>
+        <li>A string is a sequence of characters, <b>counted from zero</b>. <code>.length</code> tells you how many.</li>
+        <li>String methods <b>return a new string</b>. They never change the original — strings in JavaScript cannot be modified.</li>
+      </ul>
+    </div>
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const name = "Asha";
+const seat = 12;
+
+// the old way — easy to get the spaces wrong
+console.log("Hello " + name + ", seat " + seat);
+
+// the way to write it
+console.log(`Hello ${name}, seat ${seat}`);
+
+const city = "Indore";
+console.log(city.length);        // 6
+console.log(city[0], city[5]);   // counted from 0
+console.log(city.toUpperCase());
+console.log(city.includes("do"));
+console.log("  padded  ".trim());
+</pre><div class="out" aria-live="polite"></div></div>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Numbers</div>
+  <h2>Numbers — one type, and two surprises</h2>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">console.log(10 / 3);
+console.log(0.1 + 0.2);          // surprise one
+
+console.log(Number("42"));       // text to number
+console.log(Number("42px"));     // surprise two: NaN
+console.log(parseInt("42px"));   // reads until it can't
+
+console.log(Math.round(4.6), Math.floor(4.6), Math.ceil(4.1));
+console.log((1299.5).toFixed(2)); // money: always 2 places
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <ul class="clean">
+        <li><b><code>0.1 + 0.2</code> is not exactly <code>0.3</code>.</b> Computers store decimals in binary, and 0.1 has no exact binary form — just as 1/3 has no exact decimal form. Every language has this, not just JavaScript.</li>
+        <li><b><code>NaN</code> means "Not a Number"</b> — the result of maths that made no sense, like turning <code>"42px"</code> into a number. Its <code>typeof</code> is, confusingly, <code>"number"</code>.</li>
+        <li><b>Values from a form are always strings</b>, even when the user types digits. Convert with <code>Number()</code> before doing arithmetic — or <code>"5" + 1</code> gives you <code>"51"</code>.</li>
+      </ul>
+      <div class="callout" style="margin-top:14px"><b>For money,</b> never trust a decimal result directly. Work in whole paise and divide at the end, or format with <code>toFixed(2)</code> for display.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · Operators</div>
+  <h2>Arithmetic, and the operator every placement test uses</h2>
+  <div class="pair">
+    <div class="scroll-x">
+      <table>
+        <tr><th>Operator</th><th>Meaning</th><th>Example → result</th></tr>
+        <tr><td><code>+ - * /</code></td><td>The usual four</td><td><code>7 / 2</code> → <code>3.5</code></td></tr>
+        <tr><td><code>%</code></td><td><b>Remainder</b> after dividing</td><td><code>7 % 2</code> → <code>1</code></td></tr>
+        <tr><td><code>**</code></td><td>Power</td><td><code>2 ** 10</code> → <code>1024</code></td></tr>
+        <tr><td><code>+=  -=  *=</code></td><td>Update in place</td><td><code>total += 5</code></td></tr>
+        <tr><td><code>++  --</code></td><td>Add or take one</td><td><code>count++</code></td></tr>
+      </table>
+      <div class="callout g" style="margin-top:14px"><b><code>%</code> is the operator placement tests love.</b> Even or odd, every third item, the last digit of a number, wrapping around a list — all of them are the remainder. If a question says "every nth", reach for <code>%</code>.</div>
+    </div>
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">console.log(17 % 5);       // 2
+console.log(10 % 2);       // 0 → even
+console.log(7 % 2);        // 1 → odd
+
+const n = 1234;
+console.log(n % 10);       // last digit: 4
+
+let total = 100;
+total += 50;               // same as total = total + 50
+total -= 20;
+console.log(total);
+
+let count = 0;
+count++;
+count++;
+console.log(count);
+</pre><div class="out" aria-live="polite"></div></div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · Comparison</div>
+  <h2>== versus === — the most-asked question in JavaScript interviews</h2>
+  <div class="pair">
+    <div>
+      <div class="scroll-x">
+        <table class="eqtab">
+          <tr><th>Comparison</th><th><code>==</code> loose</th><th><code>===</code> strict</th></tr>
+          <tr><td>5 vs "5"</td><td class="t">true</td><td class="f">false</td></tr>
+          <tr><td>0 vs ""</td><td class="t">true</td><td class="f">false</td></tr>
+          <tr><td>0 vs false</td><td class="t">true</td><td class="f">false</td></tr>
+          <tr><td>null vs undefined</td><td class="t">true</td><td class="f">false</td></tr>
+          <tr><td>"1" vs true</td><td class="t">true</td><td class="f">false</td></tr>
+          <tr><td>NaN vs NaN</td><td class="f">false</td><td class="f">false</td></tr>
+        </table>
+      </div>
+      <p class="sub" style="font-size:14px;margin-top:10px"><code>==</code> converts both sides to a common type first, using rules almost nobody can recite. <code>===</code> checks the value <b>and</b> the type, with no conversion.</p>
+    </div>
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">console.log(5 == "5");     // true  — converted first
+console.log(5 === "5");    // false — different types
+
+console.log(0 == "");      // true  — really
+console.log(0 === "");     // false
+
+const age = "18";          // from a form: a string!
+if (age === 18) {
+  console.log("adult");
+} else {
+  console.log("did not match — convert first");
+}
+console.log(Number(age) === 18);
+</pre><div class="out" aria-live="polite"></div></div>
+  </div>
+  <div class="callout g"><b>The rule, with no exceptions for beginners:</b> always use <code>===</code> and <code>!==</code>. When the types might differ, convert deliberately with <code>Number()</code> or <code>String()</code> first — so the conversion is written down where the next person can see it.</div>
+</section>
+
+<!-- 11 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · Coercion</div>
+  <h2>Why "5" + 3 and "5" − 3 give different answers</h2>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">console.log("5" + 3);     // "53"
+console.log("5" - 3);     // 2
+console.log("5" * "2");   // 10
+console.log("5" + 3 + 2); // "532"
+console.log(3 + 2 + "5"); // "55"
+console.log(true + 1);    // 2
+console.log("abc" - 1);   // NaN
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <p class="sub" style="font-size:15.5px"><b><code>+</code> has two jobs</b> — adding numbers and joining strings. If <b>either</b> side is a string, it joins. Every other maths operator — <code>-</code> <code>*</code> <code>/</code> <code>%</code> — only knows how to do maths, so it converts the string to a number first.</p>
+      <div class="callout" style="margin-top:14px"><b>Read left to right:</b> <code>"5" + 3 + 2</code> → <code>"53" + 2</code> → <code>"532"</code>. But <code>3 + 2 + "5"</code> → <code>5 + "5"</code> → <code>"55"</code>. The same three values, a different order, a different answer.</div>
+      <div class="callout q"><b>This is the bug in real forms:</b> two quantity inputs, <code>qty1.value + qty2.value</code>, and the total of 2 and 3 comes out as "23". The fix is always the same — <code>Number()</code> both sides before you add.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · Truthy and falsy</div>
+  <h2>Only eight values are falsy. Learn the list.</h2>
+  <p class="sub">An <code>if</code> does not need a <code>true</code> or <code>false</code>. It accepts <b>any</b> value and asks "does this count as true?" These eight count as false. <b>Everything else — every other value in the language — counts as true.</b></p>
+  <div class="falsy">
+    <span>false</span><span>0</span><span>-0</span><span>0n</span><span>""</span><span>null</span><span>undefined</span><span>NaN</span>
+  </div>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">// Boolean(x) asks: would an if() treat x as true?
+console.log(Boolean(0));        // false
+console.log(Boolean(""));       // false
+console.log(Boolean(NaN));      // false
+console.log(Boolean(null));     // false
+
+console.log(Boolean("0"));      // true  — a non-empty string
+console.log(Boolean("false"));  // true  — still just text
+console.log(Boolean(" "));      // true  — a space is a character
+console.log(Boolean([]));       // true  — an empty list still exists
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <div class="falsy truthy" style="margin-bottom:12px"><span>"0"</span><span>"false"</span><span>" "</span><span>[ ]</span><span>{ }</span><span>-1</span></div>
+      <p class="sub" style="font-size:14.5px">All of these are <b>truthy</b>. The string <code>"0"</code> is not the number 0 — it is a one-character string, and every non-empty string is truthy. An empty array is still an array that exists.</p>
+      <div class="callout" style="margin-top:12px"><b>Why it matters:</b> <code>if (cart)</code> is true even when the cart array is empty. To check for "no items", test <code>cart.length === 0</code> — say exactly what you mean.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · Logical operators</div>
+  <h2>&amp;&amp;, || and ?? — and the default-value trap</h2>
+  <div class="pair">
+    <div>
+      <dl class="kv">
+        <dt>a &amp;&amp; b</dt><dd>AND — true only if <b>both</b> are true. Stops at the first falsy value.</dd>
+        <dt>a || b</dt><dd>OR — true if <b>either</b> is true. Stops at the first truthy value.</dd>
+        <dt>!a</dt><dd>NOT — flips it. <code>!!a</code> turns any value into a true boolean.</dd>
+        <dt>a ?? b</dt><dd>Use <code>b</code> only if <code>a</code> is <b>null or undefined</b>.</dd>
+        <dt>a?.b</dt><dd>Read <code>b</code> only if <code>a</code> exists — no crash if it does not.</dd>
+      </dl>
+      <div class="callout q" style="margin-top:14px"><b>The trap:</b> <code>||</code> treats <code>0</code> and <code>""</code> as "missing", because they are falsy. So a quantity of 0 becomes your default of 10 — a real bug in real carts. <code>??</code> only replaces <code>null</code> and <code>undefined</code>, which is almost always what you meant.</div>
+    </div>
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const age = 21, hasId = true;
+console.log(age &gt;= 18 &amp;&amp; hasId);   // true
+
+const qty = 0;
+console.log(qty || 10);            // 10 — WRONG, 0 was real
+console.log(qty ?? 10);            // 0  — correct
+
+const nickname = null;
+console.log(nickname ?? "Guest"); // "Guest"
+
+const user = null;
+console.log(user?.name);           // undefined, no crash
+</pre><div class="out" aria-live="polite"></div></div>
+  </div>
+</section>
+
+<!-- 14 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · Decisions</div>
+  <h2>if, else if, else — and why the order matters</h2>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const marks = 82;   // edit this and run again
+
+if (marks &lt; 0 || marks &gt; 100) {
+  console.log("Invalid marks");
+} else if (marks &gt;= 90) {
+  console.log("Grade A");
+} else if (marks &gt;= 75) {
+  console.log("Grade B");
+} else if (marks &gt;= 60) {
+  console.log("Grade C");
+} else if (marks &gt;= 40) {
+  console.log("Grade D");
+} else {
+  console.log("Grade F");
+}
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <ul class="clean">
+        <li><b>JavaScript checks each condition top to bottom and stops at the first true one.</b> Nothing below it is even looked at.</li>
+        <li>So the order is part of the logic. Put <code>marks >= 40</code> first and a score of 95 prints "Grade D" — the first condition that matched.</li>
+        <li><b>Check the invalid cases first.</b> Throw out the impossible inputs before you start reasoning about the normal ones — this is called a <b>guard</b>, and it keeps the rest of the logic simple.</li>
+      </ul>
+      <div class="callout g" style="margin-top:14px"><b>Try this live:</b> press <b>Edit</b>, set marks to 90, then 89, then 101, then -5. Boundaries are exactly where placement tests put their hidden test cases.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · Decisions</div>
+  <h2>The ternary and switch — and the switch trap</h2>
+  <div class="pair">
+    <div>
+      <span class="fname">Ternary — an if/else that produces a value</span>
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const age = 17;
+const status = age &gt;= 18 ? "adult" : "minor";
+console.log(status);
+
+// condition ? value-if-true : value-if-false
+const seats = 1;
+console.log(`${seats} seat${seats === 1 ? "" : "s"} left`);
+</pre><div class="out" aria-live="polite"></div></div>
+      <p class="sub" style="font-size:13.5px;margin-top:9px">Use it to <b>choose a value</b>. Do not nest ternaries inside ternaries — use an if/else instead.</p>
+    </div>
+    <div>
+      <span class="fname">switch — one value compared against many</span>
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const day = "sat";
+
+switch (day) {
+  case "sat":
+  case "sun":
+    console.log("Weekend — no session");
+    break;
+  case "fri":
+    console.log("Weekly task due");
+    break;          // delete this line and run again
+  default:
+    console.log("Session at 10 am");
+}
+</pre><div class="out" aria-live="polite"></div></div>
+    </div>
+  </div>
+  <div class="callout q"><b>The switch trap:</b> without <code>break</code>, execution <b>falls through</b> into the next case and runs that too. Delete the <code>break</code> after the <code>"fri"</code> case, set <code>day</code> to <code>"fri"</code>, and run it — you get two lines. Sometimes you want that (<code>sat</code> and <code>sun</code> share one body above); usually it is a bug. And <code>switch</code> compares with <code>===</code>, so <code>"1"</code> never matches <code>case 1</code>.</div>
+</section>
+
+<!-- 16 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · Loops</div>
+  <h2>The for loop has three parts, and they run in a fixed order</h2>
+  <div class="scroll-x">
+    <svg viewBox="0 0 940 170" role="img" aria-label="Anatomy of a for loop: start, condition, update, and the body">
+      <text x="30" y="58" font-family="IBM Plex Mono, monospace" font-size="24" font-weight="700" fill="var(--ink)">for (</text>
+      <rect x="112" y="30" width="170" height="40" rx="8" fill="var(--blue-s)" stroke="var(--blue)" stroke-width="2"/>
+      <text x="197" y="57" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="19" font-weight="700" fill="var(--blue)">let i = 1</text>
+      <text x="290" y="58" font-family="IBM Plex Mono, monospace" font-size="24" font-weight="700" fill="var(--ink)">;</text>
+      <rect x="310" y="30" width="150" height="40" rx="8" fill="var(--green-s)" stroke="var(--green)" stroke-width="2"/>
+      <text x="385" y="57" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="19" font-weight="700" fill="var(--green)">i &lt;= 5</text>
+      <text x="468" y="58" font-family="IBM Plex Mono, monospace" font-size="24" font-weight="700" fill="var(--ink)">;</text>
+      <rect x="488" y="30" width="96" height="40" rx="8" fill="var(--amber-soft)" stroke="var(--amber)" stroke-width="2"/>
+      <text x="536" y="57" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="19" font-weight="700" fill="var(--amber)">i++</text>
+      <text x="594" y="58" font-family="IBM Plex Mono, monospace" font-size="24" font-weight="700" fill="var(--ink)">) {</text>
+      <rect x="650" y="30" width="270" height="40" rx="8" fill="var(--plum-s)" stroke="var(--plum)" stroke-width="2"/>
+      <text x="785" y="57" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="17" font-weight="700" fill="var(--plum)">the body — runs each time</text>
+
+      <text x="197" y="100" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="700" fill="var(--blue)">① START</text>
+      <text x="197" y="118" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--ink-3)">runs once, before anything</text>
+      <text x="385" y="100" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="700" fill="var(--green)">② CHECK</text>
+      <text x="385" y="118" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--ink-3)">before every round —</text>
+      <text x="385" y="134" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--ink-3)">false means stop</text>
+      <text x="536" y="100" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="700" fill="var(--amber)">④ UPDATE</text>
+      <text x="536" y="118" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--ink-3)">after every round</text>
+      <text x="785" y="100" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="700" fill="var(--plum)">③ BODY</text>
+      <text x="785" y="118" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--ink-3)">then back to ② CHECK</text>
+      <text x="30" y="160" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="var(--ink)">Order: ① once, then ② ③ ④  ② ③ ④  ② ③ ④ … until ② is false.</text>
+    </svg>
+  </div>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">let total = 0;
+
+for (let i = 1; i &lt;= 5; i++) {
+  total += i;
+  console.log(`i = ${i}   total = ${total}`);
+}
+
+console.log("final total:", total);
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <p class="sub" style="font-size:14.5px">Run it and read the output as a <b>trace table</b> — one row per round, showing every variable. When a loop gives the wrong answer, writing this table by hand is the single fastest way to find out why.</p>
+      <div class="callout" style="margin-top:12px"><b>Off-by-one is the classic loop bug.</b> <code>i &lt; 5</code> runs four times starting from 1; <code>i &lt;= 5</code> runs five. Before you run any loop, say out loud: <i>what is the first value, what is the last value, how many rounds?</i></div>
+    </div>
+  </div>
+</section>
+
+<!-- 17 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · Loops</div>
+  <h2>while — when you do not know how many rounds</h2>
+  <div class="pair">
+    <div>
+      <span class="fname">How many times can you halve 100 before it drops below 1?</span>
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">let value = 100;
+let steps = 0;
+
+while (value &gt;= 1) {
+  value = value / 2;
+  steps++;
+}
+
+console.log(`${steps} halvings`);
+</pre><div class="out" aria-live="polite"></div></div>
+      <p class="sub" style="font-size:13.5px;margin-top:9px">A <code>for</code> loop is for "do this n times". A <code>while</code> loop is for "keep going until something is true" — you cannot know the count in advance.</p>
+    </div>
+    <div>
+      <span class="fname">Break it on purpose — this loop never ends</span>
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">let i = 10;
+
+while (i &gt; 0) {
+  console.log(i);
+  i++;   // should be i-- … nothing ever reaches 0
+}
+</pre><div class="out" aria-live="polite"></div></div>
+      <div class="callout q" style="margin-top:12px"><b>Run it.</b> In a normal page this freezes the tab. The runner stops it after a second and a half and tells you why. <b>Every loop must change something its condition depends on</b> — otherwise the condition can never become false.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 18 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · Loops</div>
+  <h2>Just enough about arrays to loop over one</h2>
+  <p class="sub">An array is an ordered list of values. You will study arrays properly in the next module — this is the minimum you need so loops have something to walk through.</p>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const cities = ["Indore", "Bhopal", "Pune"];
+
+console.log(cities.length);   // 3
+console.log(cities[0]);       // counted from 0
+cities.push("Nagpur");        // add to the end
+console.log(cities);
+
+// the classic loop, by position
+for (let i = 0; i &lt; cities.length; i++) {
+  console.log(i, cities[i]);
+}
+
+// for…of — when you only need the values
+for (const city of cities) {
+  console.log(city.toUpperCase());
+}
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <ul class="clean">
+        <li><b>Positions start at 0</b>, so the last item is always at <code>length - 1</code>. That is why the loop is <code>i &lt; cities.length</code> and not <code>&lt;=</code>.</li>
+        <li><b><code>for…of</code></b> hands you each value in turn — no counter, no off-by-one. Reach for it whenever you do not need the position.</li>
+        <li><code>const cities</code> and then <code>push</code> is allowed: <code>const</code> stops you swapping the whole list for another one, not changing what is in it.</li>
+      </ul>
+      <div class="callout" style="margin-top:14px"><b>Avoid <code>for…in</code> on arrays.</b> It walks the <i>keys</i> as strings — <code>"0"</code>, <code>"1"</code> — not the values, and it can pick up extra properties. It is for objects, and even there there are better tools.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 19 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · Loops</div>
+  <h2>break stops the loop. continue skips one round.</h2>
+  <div class="pair">
+    <div>
+      <span class="fname">break — stop as soon as you find it</span>
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const marks = [45, 72, 38, 91, 60];
+
+for (const m of marks) {
+  if (m &lt; 40) {
+    console.log(`Found a fail: ${m}`);
+    break;       // no need to look further
+  }
+  console.log(`checked ${m}`);
+}
+</pre><div class="out" aria-live="polite"></div></div>
+    </div>
+    <div>
+      <span class="fname">continue — skip this one, carry on</span>
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const marks = [45, 72, 38, 91, 60];
+let passTotal = 0;
+
+for (const m of marks) {
+  if (m &lt; 40) continue;   // skip fails
+  passTotal += m;
+}
+
+console.log("sum of passes:", passTotal);
+</pre><div class="out" aria-live="polite"></div></div>
+    </div>
+  </div>
+  <div class="callout g"><b>Where this shows up:</b> searching (stop at the first match with <code>break</code>) and filtering (skip what you do not want with <code>continue</code>). Both make a loop faster <i>and</i> easier to read — the intent is written on the line where it happens.</div>
+</section>
+
+<!-- 20 -->
+<section class="slide">
+  <div class="eyebrow">Part 4 · Functions</div>
+  <h2>A function is a named, reusable step</h2>
+  <div class="scroll-x">
+    <svg viewBox="0 0 940 150" role="img" aria-label="Anatomy of a function: name, parameters, body and return value">
+      <text x="24" y="52" font-family="IBM Plex Mono, monospace" font-size="21" font-weight="700" fill="var(--accent)">function</text>
+      <rect x="138" y="24" width="150" height="40" rx="8" fill="var(--blue-s)" stroke="var(--blue)" stroke-width="2"/>
+      <text x="213" y="51" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="19" font-weight="700" fill="var(--blue)">area</text>
+      <text x="296" y="52" font-family="IBM Plex Mono, monospace" font-size="21" font-weight="700" fill="var(--ink)">(</text>
+      <rect x="312" y="24" width="190" height="40" rx="8" fill="var(--green-s)" stroke="var(--green)" stroke-width="2"/>
+      <text x="407" y="51" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="19" font-weight="700" fill="var(--green)">width, height</text>
+      <text x="510" y="52" font-family="IBM Plex Mono, monospace" font-size="21" font-weight="700" fill="var(--ink)">) {</text>
+      <rect x="560" y="24" width="360" height="40" rx="8" fill="var(--amber-soft)" stroke="var(--amber)" stroke-width="2"/>
+      <text x="740" y="51" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="18" font-weight="700" fill="var(--amber)">return width * height;  }</text>
+      <text x="213" y="92" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="700" fill="var(--blue)">NAME</text>
+      <text x="213" y="110" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--ink-3)">a verb: what it does</text>
+      <text x="407" y="92" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="700" fill="var(--green)">PARAMETERS</text>
+      <text x="407" y="110" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--ink-3)">the inputs it needs</text>
+      <text x="740" y="92" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="700" fill="var(--amber)">RETURN</text>
+      <text x="740" y="110" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--ink-3)">the answer it hands back — and the function stops here</text>
+      <text x="24" y="140" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="var(--ink)">Defining a function does nothing on its own. It runs only when you CALL it:  area(4, 5)</text>
+    </svg>
+  </div>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">function area(width, height) {
+  return width * height;
+}
+
+// the values passed in are called ARGUMENTS
+console.log(area(4, 5));
+console.log(area(10, 2));
+
+const room = area(3.5, 4);
+console.log(`Room: ${room} sq m`);
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <ul class="clean">
+        <li><b>Parameter</b> — the name in the definition (<code>width</code>). <b>Argument</b> — the actual value you pass in (<code>4</code>). Interviewers do ask the difference.</li>
+        <li><b>Write it once, use it everywhere.</b> If you find yourself copying the same three lines, they want to be a function.</li>
+        <li><b>A good function does one thing,</b> and its name says what. If you need the word "and" to name it, it is two functions.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 21 -->
+<section class="slide">
+  <div class="eyebrow">Part 4 · Functions</div>
+  <h2>Three ways to write the same function</h2>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">// 1. declaration
+function double(n) {
+  return n * 2;
+}
+
+// 2. expression — a function stored in a const
+const triple = function (n) {
+  return n * 3;
+};
+
+// 3. arrow — the modern short form
+const square = (n) =&gt; n * n;
+
+console.log(double(5), triple(5), square(5));
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <div class="scroll-x">
+        <table>
+          <tr><th>Form</th><th>Use it for</th></tr>
+          <tr><td>declaration</td><td>Named, top-level functions — the main steps of your program</td></tr>
+          <tr><td>arrow</td><td>Short functions, and the ones you pass to other functions — you will do this constantly with arrays and in React</td></tr>
+          <tr><td>expression</td><td>Mostly reading older code</td></tr>
+        </table>
+      </div>
+      <div class="callout" style="margin-top:14px"><b>Arrow shorthand:</b> with one expression and no braces, the value is returned automatically — <code>(n) => n * n</code>. The moment you add <code>{ }</code>, you must write <code>return</code> yourself, or you get <code>undefined</code>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 22 -->
+<section class="slide">
+  <div class="eyebrow">Part 4 · Functions</div>
+  <h2>return is not console.log</h2>
+  <p class="sub">This is the single most common beginner mistake, and every placement test catches it. <b><code>console.log</code> shows a value to a human. <code>return</code> hands a value back to the code that called the function.</b> They look similar on screen and do completely different jobs.</p>
+  <div class="pair">
+    <div>
+      <span class="fname">prints the answer — returns nothing</span>
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">function addPrint(a, b) {
+  console.log(a + b);
+}
+
+const result = addPrint(2, 3);
+console.log("result is", result);
+console.log(result * 10);
+</pre><div class="out" aria-live="polite"></div></div>
+    </div>
+    <div>
+      <span class="fname">returns the answer — the caller can use it</span>
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">function addReturn(a, b) {
+  return a + b;
+}
+
+const result = addReturn(2, 3);
+console.log("result is", result);
+console.log(result * 10);
+</pre><div class="out" aria-live="polite"></div></div>
+    </div>
+  </div>
+  <div class="callout q"><b>Why placement tests catch it:</b> the grader calls your function and checks what comes <i>back</i>. It never looks at what you printed. A function that prints the perfect answer and returns nothing scores <b>zero</b> on every test case. The lab for this module detects exactly this mistake and tells you when you have made it.</div>
+</section>
+
+<!-- 23 -->
+<section class="slide">
+  <div class="eyebrow">Part 4 · Scope</div>
+  <h2>Scope — which variables can this line see?</h2>
+  <div class="pair">
+    <div class="scroll-x">
+      <svg viewBox="0 0 440 290" role="img" aria-label="Nested scopes: global contains function contains block; inner code sees outward, never inward">
+        <rect x="10" y="10" width="420" height="270" rx="12" fill="var(--blue-s)" stroke="var(--blue)" stroke-width="2"/>
+        <text x="28" y="36" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700" fill="var(--blue)">global scope</text>
+        <text x="28" y="56" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--ink-2)">const TAX = 0.18</text>
+        <rect x="30" y="72" width="380" height="192" rx="10" fill="var(--green-s)" stroke="var(--green)" stroke-width="2"/>
+        <text x="48" y="96" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700" fill="var(--green)">function bill(price)</text>
+        <text x="48" y="116" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--ink-2)">const tax = price * TAX</text>
+        <rect x="50" y="132" width="340" height="112" rx="9" fill="var(--amber-soft)" stroke="var(--amber)" stroke-width="2"/>
+        <text x="68" y="156" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700" fill="var(--amber)">if (price &gt; 1000) { … }</text>
+        <text x="68" y="176" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--ink-2)">const discount = 50</text>
+        <text x="68" y="202" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--ink-3)">sees discount, tax, price, TAX</text>
+        <text x="68" y="222" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--ink-3)">— it can look OUTWARD</text>
+      </svg>
+      <p class="sub" style="font-size:13.5px;margin-top:8px"><b>Inner code can see outward. Outer code can never see inward.</b> The function cannot see <code>discount</code>; the global code cannot see <code>tax</code>.</p>
+    </div>
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const TAX = 0.18;
+
+function bill(price) {
+  const tax = price * TAX;       // sees TAX: outward is fine
+  if (price &gt; 1000) {
+    const discount = 50;
+    return price + tax - discount;
+  }
+  return price + tax;
+}
+
+console.log(bill(2000));
+console.log(bill(500));
+console.log(tax);                // outer can't see inner
+</pre><div class="out" aria-live="polite"></div></div>
+  </div>
+  <div class="callout"><b><code>let</code> and <code>const</code> live inside the nearest <code>{ }</code></b> — a function, an if, a loop. That is called <b>block scope</b>, and it is why a loop's <code>let i</code> does not leak out after the loop ends. Keeping variables in the smallest scope that works is how large programs stay understandable.</div>
+</section>
+
+<!-- 24 -->
+<section class="slide">
+  <div class="eyebrow">Part 4 · Habits</div>
+  <h2>Four habits that make code pass tests — and code review</h2>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">// 1. default parameters
+function greet(name = "Guest") {
+  return `Welcome, ${name}`;
+}
+console.log(greet("Asha"));
+console.log(greet());
+
+// 2. guard clause: reject bad input first, return early
+function percent(part, whole) {
+  if (whole === 0) return 0;
+  return Math.round((part / whole) * 100);
+}
+console.log(percent(38, 50));
+console.log(percent(5, 0));
+
+// 3. pure: same input, same output, changes nothing else
+const withGst = (amount) =&gt; amount * 1.18;
+console.log(withGst(100), withGst(100));
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <ul class="clean">
+        <li><b>Default parameters</b> handle a missing argument without an <code>if</code>. Note they only apply to <code>undefined</code> — pass <code>""</code> and the default does not kick in.</li>
+        <li><b>Guard clauses</b> deal with the edge cases at the top and <code>return</code> immediately. The rest of the function can then assume the input is sensible — no deep nesting.</li>
+        <li><b>Pure functions</b> depend only on their parameters and change nothing outside. They are trivial to test, which is exactly why test-based interviews are built from them.</li>
+        <li><b>4 · Name it like an instruction.</b> <code>calculateTotal</code>, <code>isValidEmail</code>, <code>formatPrice</code>. You should know what it returns without reading the body.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 25 -->
+<section class="slide">
+  <div class="eyebrow">Close</div>
+  <h2>What to carry out of this module</h2>
+  <div class="grid g2">
+    <div>
+      <ul class="clean">
+        <li><b><code>const</code> by default, <code>let</code> when it changes, never <code>var</code>.</b></li>
+        <li><b>Always <code>===</code>.</b> Convert types on purpose with <code>Number()</code> and <code>String()</code>, never by accident.</li>
+        <li><b><code>+</code> joins if either side is a string.</b> Values from forms are always strings.</li>
+        <li><b>Eight falsy values.</b> Everything else — including <code>"0"</code> and <code>[]</code> — is truthy.</li>
+        <li><b><code>??</code> for defaults,</b> not <code>||</code>, whenever 0 or an empty string is a real answer.</li>
+      </ul>
+    </div>
+    <div>
+      <ul class="clean">
+        <li><b>Order your if/else from the edge cases in.</b> The first true condition wins.</li>
+        <li><b>Every loop must change what its condition checks,</b> or it never ends.</li>
+        <li><b>Say the first value, the last value and the count</b> before you run any loop.</li>
+        <li><b><code>return</code> hands back. <code>console.log</code> only shows.</b> Tests read what you return.</li>
+        <li><b>Inner scope sees outward, never inward.</b></li>
+      </ul>
+    </div>
+  </div>
+  <div class="scroll-x" style="margin-top:6px">
+    <table>
+      <tr><th>Next</th><th>Module</th><th>What it unlocks</th></tr>
+      <tr><td>06</td><td>Arrays and objects</td><td>map, filter, reduce — how real data is shaped and transformed</td></tr>
+      <tr><td>07</td><td>The DOM</td><td>JavaScript reaching into the page — select, change, create elements</td></tr>
+      <tr><td>08</td><td>Events and forms</td><td>The portfolio's contact form starts validating for real</td></tr>
+      <tr><td>09</td><td>Async and fetch</td><td>Talking to a server — the bridge into Node, Express and MongoDB</td></tr>
+    </table>
+  </div>
+  <div class="grow"></div>
+  <div class="callout g"><b>Next:</b> the practice lab. It works like the coding round of a placement test — you write real functions, <b>Run</b> checks the sample cases, <b>Submit</b> runs the hidden ones too.</div>
+</section>
+</main>
+
+<nav class="navbar">
+  <button id="prev" aria-label="Previous slide">← Prev</button>
+  <button id="next" aria-label="Next slide">Next →</button>
+  <span class="counter" id="counter">1 / 1</span>
+  <span class="bar"><i id="fill"></i></span>
+  <button id="mode" aria-label="Toggle slide or scroll view">Scroll view</button>
+  <button id="tPlain" class="tbtn" aria-label="Toggle the plain-English layer">1 · Ground floor</button>
+  <button id="tDeep" class="tbtn" aria-label="Toggle the interview-depth layer">2 · Deeper</button>
+  <span class="hint">Arrows to navigate · 1 and 2 for depth</span>
+</nav>
+
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter = document.getElementById('counter');
+  var fill = document.getElementById('fill');
+  var modeBtn = document.getElementById('mode');
+  var i = 0, one = true;
+
+  function render() {
+    if (one) {
+      slides.forEach(function (s, n) { s.classList.toggle('hidden', n !== i); });
+      window.scrollTo(0, 0);
+    } else {
+      slides.forEach(function (s) { s.classList.remove('hidden'); });
+    }
+    counter.textContent = (i + 1) + ' / ' + slides.length;
+    fill.style.width = ((i + 1) / slides.length * 100) + '%';
+  }
+  function go(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    if (!one) slides[i].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    render();
+  }
+  document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+  document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+  modeBtn.addEventListener('click', function () {
+    one = !one; modeBtn.textContent = one ? 'Scroll view' : 'Slide view'; render();
+  });
+  document.addEventListener('keydown', function (e) {
+    // while live-coding on a slide, keys belong to the editor, not the deck
+    var tg = e.target && e.target.tagName;
+    if (tg === 'TEXTAREA' || tg === 'INPUT' || tg === 'SELECT') return;
+    if (e.key === ' ' && (tg === 'BUTTON' || tg === 'SUMMARY')) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(i + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+    if (e.key === 'Home') { e.preventDefault(); go(0); }
+    if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+  });
+  render();
+})();
+</script>
+
+<script>
+/* =====================================================================
+   JSRunner — runs learner JavaScript in a Web Worker.
+
+   Why a worker: a beginner's first while-loop is often infinite. In the
+   page itself that freezes the tab (and the projector). In a worker we
+   simply terminate it after a timeout and explain what happened.
+
+   Shared by the deck (live slides) and the lab (challenges + tools).
+   ===================================================================== */
+var JSRunner = (function () {
+  'use strict';
+
+  var WORKER_SRC = [
+    "'use strict';",
+    "var OUT = [];",
+    "function ser(v, d) {",
+    "  d = d || 0; var t = typeof v;",
+    "  if (v === null) return { t:'null', s:'null' };",
+    "  if (t === 'undefined') return { t:'undefined', s:'undefined' };",
+    "  if (t === 'string') return { t:'string', s:v };",
+    "  if (t === 'number') return { t:'number', s: Object.is(v, -0) ? '-0' : String(v) };",
+    "  if (t === 'boolean') return { t:'boolean', s:String(v) };",
+    "  if (t === 'bigint') return { t:'bigint', s:String(v) + 'n' };",
+    "  if (t === 'symbol') return { t:'symbol', s:v.toString() };",
+    "  if (t === 'function') return { t:'function', s:'ƒ ' + (v.name || 'anonymous') + '()' };",
+    "  if (v instanceof Error) return { t:'error', s:v.name + ': ' + v.message };",
+    "  if (Array.isArray(v)) return { t:'array', s:inner(v, d) };",
+    "  return { t:'object', s:inner(v, d) };",
+    "}",
+    "function rep(x, d) { return typeof x === 'string' ? \"'\" + x + \"'\" : ser(x, d).s; }",
+    "function inner(v, d) {",
+    "  if (d > 2) return Array.isArray(v) ? '[Array]' : '{…}';",
+    "  if (Array.isArray(v)) return '[' + v.map(function (x) { return rep(x, d + 1); }).join(', ') + ']';",
+    "  var ks = Object.keys(v);",
+    "  if (!ks.length) return '{}';",
+    "  return '{' + ks.map(function (k) { return k + ': ' + rep(v[k], d + 1); }).join(', ') + '}';",
+    "}",
+    "function canon(v) {",
+    "  if (typeof v === 'string') return 's:' + JSON.stringify(v);",
+    "  if (typeof v === 'number') return Number.isNaN(v) ? 'n:NaN' : 'n:' + String(v);",
+    "  if (v === null) return 'null';",
+    "  if (v === undefined) return 'undef';",
+    "  if (typeof v === 'boolean') return 'b:' + v;",
+    "  if (Array.isArray(v)) return 'a:[' + v.map(canon).join(',') + ']';",
+    "  if (typeof v === 'object') return 'o:{' + Object.keys(v).sort().map(function (k) { return k + '=' + canon(v[k]); }).join(',') + '}';",
+    "  return typeof v + ':' + String(v);",
+    "}",
+    "var CAP = 300, capped = false;",
+    "function push(kind, args) {",
+    "  if (capped) return;",
+    "  OUT.push({ k:kind, parts:[].map.call(args, function (a) { return ser(a, 0); }) });",
+    "  if (OUT.length >= CAP) { capped = true; postMessage({ partial:true, out:OUT }); }",
+    "}",
+    "console.log   = function () { push('log', arguments); };",
+    "console.info  = function () { push('log', arguments); };",
+    "console.warn  = function () { push('warn', arguments); };",
+    "console.error = function () { push('error', arguments); };",
+    "console.table = function () { push('log', arguments); };",
+    "self.alert  = function (m) { OUT.push({ k:'alert', parts:[ser(String(m))] }); };",
+    "self.prompt = function () { OUT.push({ k:'warn', parts:[ser('prompt() is not available here - pass values into your function as parameters instead.')] }); return null; };",
+    "function err(e) {",
+    "  var name = (e && e.name) || 'Error', msg = (e && e.message) || String(e), note = '';",
+    "  if (/\\b(document|window) is not defined/.test(msg)) note = 'This runner has no web page attached - the DOM comes in a later module. Use console.log for now.';",
+    "  return { name:name, message:msg, note:note };",
+    "}",
+    "self.onmessage = function (e) {",
+    "  var m = e.data;",
+    "  if (m.cap) CAP = m.cap;",
+    "  if (m.mode === 'run') {",
+    "    try {",
+    "      var r = (0, eval)(m.code);",
+    "      postMessage({ ok:true, out:OUT, result:ser(r, 0), truncated:capped });",
+    "    } catch (x) { postMessage({ ok:false, out:OUT, error:err(x), truncated:capped }); }",
+    "    return;",
+    "  }",
+    "  if (m.mode === 'test') {",
+    "    var fn;",
+    "    try {",
+    "      fn = (0, eval)(m.code + '\\n;\\n(typeof ' + m.fname + \" === 'function' ? \" + m.fname + ' : undefined)');",
+    "    } catch (x) { postMessage({ ok:false, out:OUT, error:err(x) }); return; }",
+    "    if (typeof fn !== 'function') {",
+    "      postMessage({ ok:false, out:OUT, error:{ name:'NotFound', message:'No function called ' + m.fname + ' was found.', note:'Check the spelling - the name must match exactly, including capital letters.' } });",
+    "      return;",
+    "    }",
+    "    var results = m.cases.map(function (c) {",
+    "      var before = OUT.length;",
+    "      try {",
+    "        var got = fn.apply(null, c.args);",
+    "        return { pass: canon(got) === canon(c.expect), got: ser(got, 0), printed: OUT.length > before, gotUndef: got === undefined };",
+    "      } catch (x) { return { pass:false, threw:err(x), printed: OUT.length > before }; }",
+    "    });",
+    "    postMessage({ ok:true, out:OUT, results:results });",
+    "  }",
+    "};"
+  ].join('\n');
+
+  var url = null;
+  function workerURL() {
+    if (!url) url = URL.createObjectURL(new Blob([WORKER_SRC], { type: 'text/javascript' }));
+    return url;
+  }
+
+  function exec(msg, ms) {
+    return new Promise(function (resolve) {
+      var w, done = false;
+      try { w = new Worker(workerURL()); }
+      catch (e) {
+        resolve({ ok:false, fatal:true, error:{ name:'RunnerError', message:'This browser blocked the code runner.', note:'Open the file in Chrome or Edge.' } });
+        return;
+      }
+      var partial = null;
+      var t = setTimeout(function () {
+        if (done) return; done = true; w.terminate();
+        resolve({ ok:false, timeout:true, ms:ms, out:partial || [], truncated:!!partial });
+      }, ms);
+      w.onmessage = function (e) {
+        if (done) return;
+        if (e.data && e.data.partial) { partial = e.data.out; return; }
+        done = true; clearTimeout(t); w.terminate(); resolve(e.data);
+      };
+      w.onerror = function (e) {
+        if (done) return; done = true; clearTimeout(t); w.terminate();
+        if (e && e.preventDefault) e.preventDefault();
+        resolve({ ok:false, error:{ name:'Error', message:(e && e.message) || 'The code could not run.' } });
+      };
+      w.postMessage(msg);
+    });
+  }
+
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  /* one value as the console would draw it */
+  function val(v, quoteStrings) {
+    if (!v) return '';
+    var s = (v.t === 'string' && quoteStrings) ? "'" + v.s + "'" : v.s;
+    return '<span class="v-' + v.t + '">' + esc(s) + '</span>';
+  }
+
+  /* render a run result into an output element */
+  function render(el, r, opts) {
+    opts = opts || {};
+    var h = '';
+    (r.out || []).forEach(function (line) {
+      var cls = line.k === 'error' ? 'oe' : line.k === 'warn' ? 'ow' : line.k === 'alert' ? 'oa' : 'ol';
+      var body = line.parts.map(function (p) { return val(p, false); }).join(' ');
+      if (line.k === 'alert') body = '<span class="tagalert">alert</span> ' + body;
+      h += '<div class="' + cls + '">' + (body || '&nbsp;') + '</div>';
+    });
+    if (r.truncated) h += '<div class="ow">… output stopped after ' + (r.out || []).length + ' lines</div>';
+    if (r.timeout) {
+      h += '<div class="ot"><b>Stopped after ' + (r.ms / 1000) + ' seconds.</b> The code never finished — this almost always means an infinite loop. Check that the loop condition eventually becomes false.</div>';
+    } else if (r.error) {
+      h += '<div class="oe"><b>Uncaught ' + esc(r.error.name) + ':</b> ' + esc(r.error.message) +
+           (r.error.note ? '<span class="onote">' + esc(r.error.note) + '</span>' : '') + '</div>';
+    } else if (opts.showResult && r.result && !(r.result.t === 'undefined' && (r.out || []).length)) {
+      h += '<div class="or"><span class="arrow">←</span> ' + val(r.result, true) + '</div>';
+    }
+    if (!h) h = '<div class="oempty">No output. Use console.log(…) to print something.</div>';
+    el.innerHTML = h;
+  }
+
+  /* single-pass syntax highlighter — tokens are consumed once, never re-scanned */
+  var KW = /^(const|let|var|function|return|if|else|for|while|do|switch|case|break|continue|default|new|typeof|instanceof|in|of|class|this|try|catch|finally|throw|async|await)$/;
+  var LIT = /^(true|false|null|undefined|NaN|Infinity)$/;
+  function highlight(src) {
+    var re = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(`(?:\\[\s\S]|[^`\\])*`|'(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*")|(\b\d+(?:\.\d+)?n?\b)|([A-Za-z_$][\w$]*)|([\s\S])/g;
+    var out = '', m;
+    while ((m = re.exec(src)) !== null) {
+      if (m[1]) out += '<span class="c">' + esc(m[1]) + '</span>';
+      else if (m[2]) out += '<span class="s">' + esc(m[2]) + '</span>';
+      else if (m[3]) out += '<span class="n">' + m[3] + '</span>';
+      else if (m[4]) {
+        var w = m[4], next = src.charAt(re.lastIndex);
+        if (KW.test(w)) out += '<span class="k">' + w + '</span>';
+        else if (LIT.test(w)) out += '<span class="n">' + w + '</span>';
+        else if (next === '(') out += '<span class="f">' + w + '</span>';
+        else out += w;
+      }
+      else out += esc(m[5]);
+    }
+    return out;
+  }
+
+  /* strip comments and strings, for static rules like "no .reverse()" */
+  function codeOnly(src) {
+    var re = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(`(?:\\[\s\S]|[^`\\])*`|'(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*")|([\s\S])/g;
+    var out = '', m;
+    while ((m = re.exec(src)) !== null) {
+      if (m[1]) out += ' ';
+      else if (m[2]) out += m[2].charAt(0) === '`' ? '``' : '""';
+      else out += m[3];
+    }
+    return out;
+  }
+
+  return {
+    run: function (code, ms, cap) { return exec({ mode:'run', code:code, cap:cap || 300 }, ms || 1500); },
+    test: function (code, fname, cases, ms) { return exec({ mode:'test', code:code, fname:fname, cases:cases }, ms || 2500); },
+    render: render,
+    val: val,
+    highlight: highlight,
+    codeOnly: codeOnly,
+    esc: esc
+  };
+})();
+
+/* ---- wire every live code block on the slides ---- */
+(function () {
+  function trimCode(s) { return s.replace(/^\s*\n/, '').replace(/\s+$/, ''); }
+
+  document.querySelectorAll('pre.js.static').forEach(function (pre) {
+    pre.innerHTML = JSRunner.highlight(trimCode(pre.textContent));
+  });
+
+  document.querySelectorAll('.live').forEach(function (b) {
+    var pre = b.querySelector('pre.js'), out = b.querySelector('.out');
+    var runBtn = b.querySelector('.run'), editBtn = b.querySelector('.edit'), resetBtn = b.querySelector('.reset');
+    var raw = trimCode(pre.textContent);
+    var ta = null;
+    pre.innerHTML = JSRunner.highlight(raw);
+    out.innerHTML = '<div class="ohint">Press Run to see the output</div>';
+
+    function current() { return ta ? ta.value : raw; }
+
+    runBtn.addEventListener('click', function () {
+      out.innerHTML = '<div class="ohint">running…</div>';
+      JSRunner.run(current(), 1500, 80).then(function (r) { JSRunner.render(out, r, { showResult:false }); });
+    });
+
+    editBtn.addEventListener('click', function () {
+      if (ta) { ta.focus(); return; }
+      ta = document.createElement('textarea');
+      ta.value = raw;
+      ta.spellcheck = false;
+      ta.setAttribute('aria-label', 'Edit this code');
+      ta.style.height = Math.max(pre.offsetHeight, 120) + 'px';
+      ta.addEventListener('keydown', function (e) {
+        if (e.key === 'Tab') {                       // indent instead of leaving the box
+          e.preventDefault();
+          var s = ta.selectionStart, en = ta.selectionEnd;
+          ta.value = ta.value.slice(0, s) + '  ' + ta.value.slice(en);
+          ta.selectionStart = ta.selectionEnd = s + 2;
+        }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); runBtn.click(); }
+      });
+      pre.replaceWith(ta);
+      ta.focus();
+      editBtn.textContent = 'Editing';
+    });
+
+    resetBtn.addEventListener('click', function () {
+      if (ta) { ta.replaceWith(pre); ta = null; }
+      editBtn.textContent = 'Edit';
+      out.innerHTML = '<div class="ohint">Press Run to see the output</div>';
+    });
+  });
+})();
+
+</script>
+<script>
+/* ============================================================================
+   THREE DEPTHS, ONE DECK.
+
+   Every content slide can carry two extra layers, both hidden by default so
+   the main flow is exactly as it was:
+
+     · GROUND FLOOR  — plain English, no jargon, for anyone meeting the idea
+                       for the first time. Opened when the room looks lost.
+     · INTERVIEW DEPTH — the version that scores marks in an interview, for
+                       anyone who already knew the slide's content.
+
+   The trainer toggles either layer with the navbar buttons or keys 1 and 2.
+   Learners reading ahead can open the deep layer themselves.
+   ========================================================================= */
+(function () {
+  var TIERS = {
+    2: { plain:'Think of a web page as a person. <b>HTML is the skeleton, CSS is the clothes, JavaScript is the brain and the muscles</b> — the part that reacts when something happens. A page with no JavaScript can look perfect and still do nothing when you click it.',
+         deep:'Two interview favourites. <b>"Is JavaScript single-threaded?"</b> — yes: one call stack per page, and the <b>event loop</b> lets it wait for timers and network replies without blocking. <b>"Is it interpreted?"</b> — not purely: V8 watches which code runs often and compiles it to machine code on the fly (<b>JIT compilation</b>).' },
+
+    3: { plain:'<code>console.log</code> is you talking to yourself through the code. <b>Whenever you are not sure what a value is, print it.</b> Professional developers do this all day — it is not a beginner thing.',
+         deep:'<code>defer</code> keeps scripts in order and runs them after the HTML is parsed. <code>async</code> runs a script the moment it downloads, in any order — only for independent scripts like analytics. <code>type="module"</code> scripts are deferred automatically, and each one gets its own scope instead of sharing globals.' },
+
+    4: { plain:'<b><code>const</code></b> is a box with the lid glued shut. <b><code>let</code></b> is a box you can open and swap what is inside. <b><code>var</code></b> is an old box with a hole in the side — things leak out where you do not expect them.',
+         deep:'<b>Temporal dead zone:</b> <code>let</code> and <code>const</code> are hoisted but not initialised, so reading one before its line throws a <code>ReferenceError</code>; <code>var</code> is hoisted and set to <code>undefined</code>, hiding the bug. And <code>const</code> does not make an object unchangeable — only the binding. <code>Object.freeze</code> does that, and only one level deep.' },
+
+    5: { plain:'Name things so that someone else can read your code without asking you. <code>seatsFilled</code> tells a story. <code>x</code> does not. You are that someone else, three weeks from now.',
+         deep:'<code>$</code> and <code>_</code> are legal first characters, which is why jQuery took <code>$</code> and Lodash took <code>_</code>. Avoid naming variables after things the browser already defines on <code>window</code> — <code>name</code>, <code>status</code>, <code>event</code> — an undeclared use silently picks up the browser\'s one instead of failing.' },
+
+    6: { plain:'Every value has a type, the way every product in a shop has a category. <code>typeof</code> asks <b>"what category is this?"</b> — and the answer decides what you are allowed to do with it.',
+         deep:'<b>Primitives are compared by value; objects by reference.</b> <code>"a" === "a"</code> is true, but <code>[1] === [1]</code> is false — they are two different arrays that happen to hold the same thing. That one fact explains a large share of React\'s re-rendering behaviour later in the course.' },
+
+    7: { plain:'A string is text in quotes. <b>Backticks let you drop a variable straight into the text</b> with <code>${ }</code> — no plus signs, no missing spaces. That is the only kind of quote you really need to remember.',
+         deep:'Strings are <b>immutable</b>: <code>str[0] = "X"</code> silently does nothing. Methods worth knowing cold for tests: <code>slice</code>, <code>indexOf</code>, <code>includes</code>, <code>split</code>, <code>trim</code>, <code>padStart</code>, <code>replaceAll</code>, <code>at(-1)</code>. And <code>.length</code> counts UTF-16 units, so a single emoji can report a length of 2.' },
+
+    8: { plain:'In JavaScript, 5 and 5.5 are the same type — just <b>number</b>. And anything a user types into a form arrives as <b>text</b>, even digits. So turn it into a number with <code>Number()</code> before you do any maths.',
+         deep:'Numbers are 64-bit IEEE-754 doubles. Integers are only exact up to <code>2⁵³ − 1</code> (<code>Number.MAX_SAFE_INTEGER</code>); beyond that use <code>BigInt</code>. Compare decimals with <code>Math.abs(a - b) &lt; Number.EPSILON</code>, and test for NaN with <code>Number.isNaN</code> — the global <code>isNaN</code> converts its argument first and lies about strings.' },
+
+    9: { plain:'<code>%</code> gives the <b>remainder</b>. <code>7 % 2</code> is 1, because 2 goes into 7 three times with 1 left over. If dividing by 2 leaves nothing over — <code>n % 2 === 0</code> — the number is even.',
+         deep:'<code>%</code> keeps the sign of the <b>left</b> number: <code>-7 % 2</code> is <code>-1</code>, not 1. So <code>n % 2 === 1</code> wrongly says -7 is not odd — test <code>n % 2 !== 0</code> instead. Hidden test cases love negative numbers for exactly this reason. Also: <code>count++</code> evaluates to the old value, <code>++count</code> to the new one.' },
+
+    10:{ plain:'<code>==</code> asks <b>"do these look alike if I squint?"</b> <code>===</code> asks <b>"are these exactly the same thing?"</b> You want the second question, every time.',
+         deep:'The one use of <code>==</code> that style guides accept is <code>value == null</code>, which matches both <code>null</code> and <code>undefined</code> in a single check. <code>Object.is</code> differs from <code>===</code> in exactly two places: <code>Object.is(NaN, NaN)</code> is true, and <code>Object.is(0, -0)</code> is false.' },
+
+    11:{ plain:'<code>+</code> with any text in it <b>glues</b> things together. <code>-</code>, <code>*</code> and <code>/</code> only know maths, so they turn the text into a number first. That is the whole mystery.',
+         deep:'The actual rule: <code>+</code> converts both sides to primitives; if either is a string it concatenates, otherwise it converts both to numbers. That is why <code>[] + []</code> is <code>""</code> and <code>[] + {}</code> is <code>"[object Object]"</code>. Unary plus is the fastest numeric conversion: <code>+"42"</code> gives <code>42</code>.' },
+
+    12:{ plain:'An <code>if</code> asks <b>"does this count as a yes?"</b> Only eight values count as no. Everything else — even the text <code>"0"</code>, even an empty list — counts as yes.',
+         deep:'The complete falsy list: <code>false</code>, <code>0</code>, <code>-0</code>, <code>0n</code>, <code>""</code>, <code>null</code>, <code>undefined</code>, <code>NaN</code> — plus the legacy <code>document.all</code>, a deliberate browser quirk. Truthiness checks on numbers are a classic production bug whenever 0 is valid data: a stock count, a score, a discount.' },
+
+    13:{ plain:'<code>||</code> means <b>"use this — or if it is empty, use that"</b>. The trouble is that 0 counts as empty. <code>??</code> only steps in when the value is genuinely missing: <code>null</code> or <code>undefined</code>.',
+         deep:'<b>Short-circuiting:</b> in <code>a &amp;&amp; b()</code>, <code>b</code> is never called when <code>a</code> is falsy — React relies on this in <code>{isLoggedIn &amp;&amp; &lt;Menu /&gt;}</code>. Logical assignment: <code>count ??= 0</code> sets <code>count</code> only if it is null or undefined. And mixing <code>??</code> with <code>||</code> without brackets is a SyntaxError.' },
+
+    14:{ plain:'Think of a row of doors. JavaScript tries the first; if it is locked, the next; <b>the first one that opens is the only one it walks through</b>. So the order you write them in is part of the answer.',
+         deep:'Prefer <b>guard clauses</b> with early <code>return</code> over nesting ifs inside ifs — the "arrow anti-pattern". Once a branch returns, its <code>else</code> is unnecessary. Test design mirrors this: boundaries (exactly 90, exactly 40), both sides of each boundary, and invalid input (-5, 101, the string <code>"85"</code>).' },
+
+    15:{ plain:'The ternary is a <b>one-line if/else for choosing a value</b>. <code>switch</code> is a tidier way to compare one value against a list — as long as you remember <code>break</code>.',
+         deep:'A common modern alternative to <code>switch</code> is an object lookup: <code>const label = { sat: "Weekend", sun: "Weekend" }[day] ?? "Weekday"</code> — no fallthrough risk, and the data is separate from the logic. Note all <code>case</code> blocks share one scope, so declaring the same <code>const</code> in two cases is a SyntaxError unless each case gets its own braces.' },
+
+    16:{ plain:'A for loop is three sentences: <b>start here, keep going while this is true, take this step each time</b>. Say those three things out loud before you write one, and most loop bugs never happen.',
+         deep:'With <code>let</code>, every iteration gets a <b>fresh binding</b> of <code>i</code>. That is why functions created inside the loop remember 0, 1, 2 rather than 3, 3, 3 as they did with <code>var</code> — a very common interview question built on closures. Caching <code>arr.length</code> is unnecessary in modern engines; write the readable version.' },
+
+    17:{ plain:'<code>for</code> is for <b>"do this ten times"</b>. <code>while</code> is for <b>"keep going until…"</b> — like pressing refresh until the result appears. You use it when you cannot know the count in advance.',
+         deep:'<code>do…while</code> runs the body once before checking — useful for "ask until the input is valid". The halving loop is worth pausing on: halving each round finishes in about <b>log₂(n)</b> steps. That idea is the core of binary search, <b>O(log n)</b>, one of the most-asked algorithms in placement interviews.' },
+
+    18:{ plain:'An array is a <b>numbered list</b>. The numbering starts at 0, so the first item is <code>[0]</code> and the last is <code>[length - 1]</code>. Getting that "minus one" wrong is the most common array bug there is.',
+         deep:'<code>for…of</code> works on any <b>iterable</b> — strings, arrays, Maps, Sets. <code>arr.at(-1)</code> reads the last item. <code>typeof []</code> is <code>"object"</code>, so test with <code>Array.isArray</code>. And <code>push</code>/<code>pop</code> are O(1) while <code>shift</code>/<code>unshift</code> are O(n), because every index after the first has to move.' },
+
+    19:{ plain:'<code>break</code> means <b>"found it — stop looking"</b>. <code>continue</code> means <b>"not this one — next, please"</b>. Picture searching a pile of answer sheets for one name: once you find it you stop, and a blank sheet you simply skip.',
+         deep:'Both only affect the <b>innermost</b> loop; a labelled statement (<code>outer: for …</code>) can break an outer one, though you rarely need it. There is no <code>break</code> inside <code>forEach</code> — use <code>for…of</code>, or <code>some()</code> and <code>find()</code>, which stop early on their own. That comes up in the arrays module.' },
+
+    20:{ plain:'A function is a <b>recipe card</b>. The name is the title, the parameters are the ingredients, and <code>return</code> is the finished dish handed back. Writing the card cooks nothing — you have to call it.',
+         deep:'Functions are <b>first-class values</b>: they can be stored in variables, passed into other functions and returned from them. That single property is what makes callbacks, array methods and React components possible. A function with no <code>return</code> — or a bare <code>return;</code> — hands back <code>undefined</code>.' },
+
+    21:{ plain:'Three spellings of one idea. <b>Learn the declaration first and the arrow second.</b> You will mostly just <i>read</i> the middle one, in older code.',
+         deep:'The differences that matter: declarations are <b>fully hoisted</b> and can be called above the line they are written on; expressions and arrows cannot. Arrows have <b>no <code>this</code> of their own</b> and no <code>arguments</code> — they borrow <code>this</code> from the surrounding code, which is precisely why they are used for callbacks inside classes and components.' },
+
+    22:{ plain:'<code>console.log</code> is shouting the answer across the room. <code>return</code> is writing it on the answer sheet and handing it in. <b>Only the answer sheet gets marked.</b>',
+         deep:'A function that only logs has a <b>side effect</b> but no output, so it cannot be composed — <code>addPrint(2, 3) * 10</code> is <code>NaN</code>, because it is <code>undefined * 10</code>. Any statement after <code>return</code> is unreachable. In test-based rounds, the grader calls your function and compares the return value — logs are ignored completely.' },
+
+    23:{ plain:'Scope is about which rooms can see into which. <b>A room inside can see out through its window; nobody outside can see in.</b> A variable made inside an <code>if</code> stays inside that <code>if</code>.',
+         deep:'JavaScript uses <b>lexical scope</b>: what a function can see is decided by where it is <i>written</i>, not where it is called. A <b>closure</b> is a function that keeps access to its outer variables even after the outer function has finished — the foundation of React hooks, the module pattern and private state. Expect it in any front-end interview.' },
+
+    24:{ plain:'Three habits: <b>handle the strange inputs first</b>, give missing values a sensible default, and make each function do one clear job with a name that says what it returns.',
+         deep:'Pure functions are <b>referentially transparent</b> — a call can be replaced with its result without changing the program. That makes them cacheable (memoisation) and trivially unit-testable, which is why Redux reducers and React render functions are required to be pure. Default parameters are evaluated at call time, so <code>(list = [])</code> gives a fresh array on every call.' }
+  };
+
+
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+
+  function panel(kind, html) {
+    var d = document.createElement('div');
+    d.className = 'tier tier-' + kind;
+    d.innerHTML = '<span class="tl">' +
+      (kind === 'plain' ? 'Ground floor · if this is new to you' : 'Going deeper · if you already knew this') +
+      '</span>' + html;
+    return d;
+  }
+
+  Object.keys(TIERS).forEach(function (k) {
+    var s = slides[+k - 1]; if (!s) return;
+    var t = TIERS[k];
+    var anchor = s.querySelector('.grow');       // keep the spacer last on title slides
+    var frag = document.createDocumentFragment();
+    if (t.plain) frag.appendChild(panel('plain', t.plain));
+    if (t.deep)  frag.appendChild(panel('deep',  t.deep));
+    if (anchor) s.insertBefore(frag, anchor); else s.appendChild(frag);
+  });
+
+  var on = { plain:false, deep:false };
+  function apply() {
+    document.body.classList.toggle('show-plain', on.plain);
+    document.body.classList.toggle('show-deep',  on.deep);
+    var bp = document.getElementById('tPlain'), bd = document.getElementById('tDeep');
+    if (bp) bp.classList.toggle('on', on.plain);
+    if (bd) bd.classList.toggle('on', on.deep);
+  }
+  var bp = document.getElementById('tPlain'), bd = document.getElementById('tDeep');
+  if (bp) bp.addEventListener('click', function () { on.plain = !on.plain; apply(); });
+  if (bd) bd.addEventListener('click', function () { on.deep  = !on.deep;  apply(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === '1') { on.plain = !on.plain; apply(); }
+    if (e.key === '2') { on.deep  = !on.deep;  apply(); }
+  });
+  apply();
+})();
+</script>
+
+</body>
+</html>
