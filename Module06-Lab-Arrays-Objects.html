@@ -1,0 +1,1916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shaping Real Data Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#F4F7F8; --card:#FFFFFF; --sunk:#EDF2F3;
+    --ink:#12181C; --ink-2:#3D4A52; --ink-3:#6B7C86;
+    --line:#D8E1E4; --line-soft:#E7EDEF;
+    --accent:#0E6E68; --accent-soft:#DBEEEC;
+    --amber:#A85A11; --amber-soft:#F8EADA;
+    --blue:#1F5FA8;  --blue-s:#E0EAF7;
+    --plum:#7A3E86;  --plum-s:#F1E5F4;
+    --red:#B03A2E;   --red-s:#FBE6E3;
+    --green:#1E7A4C; --green-s:#DDF0E5;
+    --code-bg:#101A20; --code-ink:#D5E2E6;
+    --shadow:0 1px 2px rgba(18,24,28,.05), 0 8px 24px rgba(18,24,28,.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#0C1317; --card:#131C21; --sunk:#0F171B;
+      --ink:#E9F0F2; --ink-2:#AEBEC5; --ink-3:#7D9099;
+      --line:#26343B; --line-soft:#1C272D;
+      --accent:#5CC8BE; --accent-soft:#123230;
+      --amber:#E0A15C; --amber-soft:#2F2313;
+      --blue:#79B4EE;  --blue-s:#14263A;
+      --plum:#CE9ED9;  --plum-s:#2C1D31;
+      --red:#E88070;   --red-s:#331714;
+      --green:#5FC98C; --green-s:#0F2C1D;
+      --code-bg:#070D10; --code-ink:#D5E2E6;
+      --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 32px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0C1317; --card:#131C21; --sunk:#0F171B;
+    --ink:#E9F0F2; --ink-2:#AEBEC5; --ink-3:#7D9099;
+    --line:#26343B; --line-soft:#1C272D;
+    --accent:#5CC8BE; --accent-soft:#123230;
+    --amber:#E0A15C; --amber-soft:#2F2313;
+    --blue:#79B4EE;  --blue-s:#14263A;
+    --plum:#CE9ED9;  --plum-s:#2C1D31;
+    --red:#E88070;   --red-s:#331714;
+    --green:#5FC98C; --green-s:#0F2C1D;
+    --code-bg:#070D10; --code-ink:#D5E2E6;
+    --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 32px rgba(0,0,0,.3);
+  }
+
+  *{box-sizing:border-box}
+  body{background:var(--paper);color:var(--ink);margin:0;
+    font-family:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4{font-family:"Archivo","IBM Plex Sans",system-ui,sans-serif;margin:0;text-wrap:balance;letter-spacing:-.02em}
+  p{margin:0}
+  code{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.88em;background:var(--sunk);padding:1px 6px;border-radius:4px;border:1px solid var(--line-soft)}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 20px 90px}
+
+  header.top{padding:44px 0 22px;border-bottom:2px solid var(--ink);margin-bottom:6px}
+  .kicker{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+  header.top h1{font-size:clamp(31px,5.2vw,50px);font-weight:800;line-height:1.03;margin-bottom:12px}
+  header.top .lede{font-size:clamp(15px,1.6vw,17.5px);color:var(--ink-2);max-width:72ch}
+  header.top .lede b{color:var(--ink);font-weight:600}
+
+  .nav{position:sticky;top:0;z-index:40;background:var(--paper);box-shadow:0 6px 16px -10px rgba(0,0,0,.35);padding:12px 0;border-bottom:1px solid var(--line);margin-bottom:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .nav button{font-family:"IBM Plex Sans",sans-serif;font-size:13.5px;font-weight:600;padding:8px 14px;border-radius:9px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2)}
+  .nav button.on{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .nav button:hover{border-color:var(--accent)}
+  .nav button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .score{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-3);white-space:nowrap}
+  .score b{color:var(--green);font-size:15px}
+
+  .view{display:none}
+  .view.on{display:block}
+
+  section{margin:34px 0}
+  h2.head{font-size:clamp(19px,2.5vw,26px);font-weight:800;padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:15px}
+  .intro{color:var(--ink-2);font-size:15.5px;max-width:74ch;margin-bottom:16px}
+  .intro b{color:var(--ink);font-weight:600}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:20px;box-shadow:var(--shadow)}
+  .note{border-left:3px solid var(--amber);background:var(--amber-soft);padding:12px 16px;border-radius:0 9px 9px 0;font-size:14.5px;color:var(--ink-2);margin:14px 0}
+  .note b{color:var(--ink)}
+  .note .l{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--amber);margin-bottom:4px;font-weight:600}
+  .note.q{border-left-color:var(--plum);background:var(--plum-s)}
+  .note.q .l{color:var(--plum)}
+
+  .btn{font-family:"IBM Plex Sans",sans-serif;font-size:13.5px;font-weight:600;padding:9px 15px;border-radius:9px;cursor:pointer;border:1px solid var(--line);background:var(--sunk);color:var(--ink)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .btn:hover{border-color:var(--accent)}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .btn[disabled]{opacity:.4;cursor:default}
+  .btn.sm{font-size:12px;padding:6px 11px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+  textarea,input.tx{
+    width:100%;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--line);
+    border-radius:10px;padding:13px 15px;
+    font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.65;resize:vertical;tab-size:2;
+  }
+  input.tx{padding:11px 15px;font-size:15px}
+  textarea:focus,input.tx:focus{outline:2px solid var(--accent);outline-offset:1px}
+  pre{margin:12px 0;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:"IBM Plex Mono",monospace;font-size:12.7px;line-height:1.7;border:1px solid var(--line)}
+  pre .c{color:#6E828B;font-style:italic}
+  pre .t{color:#79D3C9}
+  pre .a{color:#9FC6E8}
+  pre .s{color:#E8B57A}
+  .lbl{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:7px;display:block}
+
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .split > *{min-width:0}
+  @media (max-width:900px){.split{grid-template-columns:1fr}}
+
+  /* ---- selector playground ---- */
+  .stage{background:var(--sunk);border-radius:10px;padding:16px;min-height:300px;font-size:14px}
+  .stage .sh{background:var(--card);border:2px dashed var(--line);border-radius:9px;padding:12px;margin-bottom:10px}
+  .stage .sh .nm{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3);display:block;margin-bottom:6px}
+  .node{border:2px solid var(--line);border-radius:8px;padding:9px 12px;margin:6px 0;background:var(--card);transition:all .2s ease;position:relative}
+  .node .tg{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3)}
+  .node.hit{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+  @media (prefers-reduced-motion:reduce){.node{transition:none}}
+  .selin{display:flex;gap:9px;align-items:center;margin-bottom:12px}
+  .selin span{font-family:"IBM Plex Mono",monospace;font-size:18px;color:var(--accent);font-weight:600}
+  .hitcount{font-family:"IBM Plex Mono",monospace;font-size:13.5px;margin-top:10px;font-weight:600}
+  .hitcount.ok{color:var(--green)} .hitcount.no{color:var(--red)}
+  .presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .presets button{font-family:"IBM Plex Mono",monospace;font-size:11.5px;padding:5px 10px;border-radius:7px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2)}
+  .presets button:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* ---- specificity calc ---- */
+  .spec{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;background:var(--sunk);border-radius:10px;padding:14px 16px;margin-bottom:10px}
+  .spec .sel{font-family:"IBM Plex Mono",monospace;font-size:15px;color:var(--ink);word-break:break-all}
+  .spec .sc{display:flex;gap:5px}
+  .spec .sc i{font-family:"IBM Plex Mono",monospace;font-style:normal;font-size:15px;font-weight:700;width:34px;height:34px;border-radius:7px;display:grid;place-items:center;border:2px solid}
+  .sc i.i0{background:var(--red-s);border-color:var(--red);color:var(--red)}
+  .sc i.i1{background:var(--plum-s);border-color:var(--plum);color:var(--plum)}
+  .sc i.i2{background:var(--blue-s);border-color:var(--blue);color:var(--blue)}
+  .sc i.i3{background:var(--green-s);border-color:var(--green);color:var(--green)}
+  .winner{margin-top:12px;padding:13px 16px;border-radius:10px;background:var(--green-s);border-left:3px solid var(--green);font-size:15px;color:var(--ink)}
+  .winner b{color:var(--green)}
+
+  /* ---- cascade lab ---- */
+  .casc{display:grid;grid-template-columns:1fr 200px;gap:16px}
+  @media (max-width:820px){.casc{grid-template-columns:1fr}}
+  .swatch{border:2px solid var(--line);border-radius:10px;min-height:150px;display:grid;place-items:center;font-family:"Archivo",sans-serif;font-size:22px;font-weight:700;background:var(--card);transition:all .25s}
+  .toggles{display:flex;flex-direction:column;gap:9px}
+  .tog{display:flex;align-items:center;gap:10px;padding:10px 13px;border:1px solid var(--line);border-radius:9px;background:var(--sunk);cursor:pointer;font-size:13.5px}
+  .tog input{accent-color:var(--accent);width:17px;height:17px}
+  .tog.on{border-color:var(--accent);background:var(--accent-soft)}
+  .tog .mono{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3);display:block}
+
+  /* ---- tag matcher ---- */
+  .match{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:820px){.match{grid-template-columns:1fr}}
+  .mq{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--card);margin-bottom:10px}
+  .mq p{font-size:14.5px;color:var(--ink-2);margin-bottom:10px}
+  .mq .opts{display:flex;gap:6px;flex-wrap:wrap}
+  .mq .opts button{font-family:"IBM Plex Mono",monospace;font-size:12px;padding:6px 11px;border-radius:7px;cursor:pointer;border:1px solid var(--line);background:var(--sunk);color:var(--ink-2)}
+  .mq .opts button.right{background:var(--green-s);border-color:var(--green);color:var(--green);font-weight:700}
+  .mq .opts button.wrong{background:var(--red-s);border-color:var(--red);color:var(--red)}
+  .mq .why{margin-top:10px;font-size:13.5px;color:var(--ink-2);display:none;border-top:1px solid var(--line-soft);padding-top:9px}
+  .mq .why.show{display:block}
+
+  /* ---- challenges ---- */
+  .chlist{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+  .chlist button{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2);display:flex;gap:6px;align-items:center}
+  .chlist button.on{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .chlist button.solved{border-color:var(--green)}
+  .chlist button.solved::after{content:"✓";color:var(--green);font-weight:700}
+  .chlist button.on.solved::after{color:var(--card)}
+
+  .chead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+  .chead h3{font-size:19px;font-weight:800}
+  .lvl{font-family:"IBM Plex Mono",monospace;font-size:10px;padding:3px 9px;border-radius:6px;font-weight:600;letter-spacing:.06em}
+  .lvl.m{background:var(--blue-s);color:var(--blue)}
+  .lvl.a{background:var(--plum-s);color:var(--plum)}
+  .lvl.b{background:var(--red-s);color:var(--red)}
+  .brief{color:var(--ink-2);font-size:15px;margin-bottom:12px;max-width:76ch}
+  .brief b{color:var(--ink);font-weight:600}
+  .scenario{background:var(--blue-s);border-left:3px solid var(--blue);border-radius:0 9px 9px 0;padding:11px 15px;font-size:14px;color:var(--ink-2);margin-bottom:12px}
+  .scenario .l{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--blue);margin-bottom:4px;font-weight:600}
+
+  iframe.prev{width:100%;height:250px;border:1px solid var(--line);border-radius:10px;background:#fff}
+  .checks{margin-top:13px;background:var(--sunk);border-radius:10px;padding:14px 16px}
+  .chk{display:flex;gap:10px;align-items:flex-start;padding:5px 0;font-size:13.8px;color:var(--ink-2)}
+  .chk .mk{flex:none;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;margin-top:2px}
+  .chk.pass .mk{background:var(--green);color:#fff}
+  .chk.fail .mk{background:var(--red-s);color:var(--red);border:1.5px solid var(--red)}
+  .chk.idle .mk{background:var(--card);border:1.5px solid var(--line);color:var(--ink-3)}
+  .chk.pass{color:var(--ink)}
+  .verdict{margin-top:11px;font-size:15px;font-weight:700;min-height:24px}
+  .verdict.ok{color:var(--green)}
+  .verdict.no{color:var(--red)}
+  .hint{margin-top:11px;font-size:14px;color:var(--ink-2);background:var(--amber-soft);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:11px 15px;display:none}
+  .hint.show{display:block}
+
+  .g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+  .g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+  @media (max-width:820px){.g2,.g3{grid-template-columns:1fr}}
+  .mini{border:1px solid var(--line);border-radius:12px;padding:17px;background:var(--card)}
+  .mini h4{font-size:15.5px;margin-bottom:6px}
+  .mini p{font-size:14px;color:var(--ink-2)}
+  .mini .tag{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:600;display:block;margin-bottom:5px}
+
+  /* ================= runner output (shared look with the deck) ================= */
+  .code-ed{width:100%;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--line);border-radius:10px 10px 0 0;
+    padding:14px 16px;font-family:"IBM Plex Mono",monospace;font-size:13.5px;line-height:1.7;resize:vertical;tab-size:2;min-height:150px;display:block}
+  .code-ed:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .out{background:#081014;border:1px solid var(--line);border-top:0;border-radius:0 0 10px 10px;font-family:"IBM Plex Mono",monospace;
+    font-size:13.5px;line-height:1.6;padding:10px 16px;min-height:44px;max-height:300px;overflow:auto;color:#D7E3E6}
+  .out .ol,.out .or{padding:2px 0;border-bottom:1px solid #111E24;white-space:pre-wrap;word-break:break-word}
+  .out .or{color:#8FA3AD} .out .or .arrow{color:#566B75}
+  .out .ow{padding:3px 8px;margin:2px -8px;background:#2B2210;color:#F0C27A;border-radius:4px}
+  .out .oe{padding:5px 9px;margin:3px -8px;background:#2C1512;color:#F4A193;border-radius:4px;white-space:pre-wrap}
+  .out .oe b{color:#FF8E7C} .out .onote{display:block;color:#D9B0A8;font-size:12px;margin-top:3px}
+  .out .ot{padding:7px 10px;margin:3px -8px;background:#2B2210;color:#F0C27A;border-radius:4px}
+  .out .oa{padding:3px 8px;margin:2px -8px;background:#12263A;color:#AFD3F5;border-radius:4px}
+  .out .tagalert{font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:#1F5FA8;color:#fff;padding:1px 6px;border-radius:3px}
+  .out .oempty,.out .ohint{color:#566B75;font-style:italic}
+  .v-string{color:#E7ECEE} .v-number,.v-bigint{color:#7FB8F0} .v-boolean{color:#D9A8E3}
+  .v-null,.v-undefined{color:#8FA3AD} .v-function{color:#7FD1C7} .v-error{color:#F4A193}
+  .v-array,.v-object{color:#E7ECEE} .v-symbol{color:#F0C27A}
+  pre .k{color:#79D3C9;font-weight:600} pre .n{color:#8FC0F0} pre .f{color:#D6A8E0}
+
+  .chips2{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+  .chips2 button{font-family:"IBM Plex Mono",monospace;font-size:12px;padding:6px 10px;border-radius:7px;cursor:pointer;
+    border:1px solid var(--line);background:var(--card);color:var(--ink-2)}
+  .chips2 button:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* ================= == vs === explorer ================= */
+  .eqpick{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:820px){.eqpick{grid-template-columns:1fr}}
+  .vals{display:flex;flex-wrap:wrap;gap:6px}
+  .vals button{font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600;padding:7px 11px;border-radius:8px;cursor:pointer;
+    border:1px solid var(--line);background:var(--sunk);color:var(--ink-2);min-width:52px}
+  .vals button.on{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .eqres{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+  .eqbox{border:2px solid var(--line);border-radius:11px;padding:14px 16px;background:var(--card)}
+  .eqbox .ex{font-family:"IBM Plex Mono",monospace;font-size:16px;color:var(--ink);font-weight:600;word-break:break-all}
+  .eqbox .rv{font-family:"IBM Plex Mono",monospace;font-size:26px;font-weight:800;margin-top:6px}
+  .eqbox.t{border-color:var(--green);background:var(--green-s)} .eqbox.t .rv{color:var(--green)}
+  .eqbox.f{border-color:var(--red);background:var(--red-s)} .eqbox.f .rv{color:var(--red)}
+  .eqwhy{margin-top:12px;font-size:14.5px;color:var(--ink-2);background:var(--sunk);border-radius:9px;padding:12px 15px}
+  .eqwhy b{color:var(--ink)}
+  .eqgrid{margin-top:16px}
+  .eqgrid table{border-collapse:collapse;font-family:"IBM Plex Mono",monospace;font-size:11.5px}
+  .eqgrid th,.eqgrid td{border:1px solid var(--line-soft);padding:0;width:44px;height:30px;text-align:center}
+  .eqgrid th{background:var(--sunk);color:var(--ink-2);font-weight:600;padding:0 6px;white-space:nowrap}
+  .eqgrid td.y{background:var(--green-s);color:var(--green);font-weight:700}
+  .eqgrid td.n{color:var(--line)}
+  .eqgrid td.hot{outline:3px solid var(--amber);outline-offset:-3px}
+
+  /* ================= truthy / falsy sorter ================= */
+  .tfgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+  .tfcard{border:2px solid var(--line);border-radius:11px;padding:12px;background:var(--card);display:flex;flex-direction:column;gap:8px}
+  .tfcard .v{font-family:"IBM Plex Mono",monospace;font-size:17px;font-weight:700;color:var(--ink);text-align:center;padding:6px 0}
+  .tfcard .bt{display:flex;gap:6px}
+  .tfcard .bt button{flex:1;font-size:12.5px;font-weight:600;padding:7px 4px;border-radius:7px;cursor:pointer;border:1px solid var(--line);
+    background:var(--sunk);color:var(--ink-2);font-family:"IBM Plex Sans",sans-serif}
+  .tfcard .bt button:hover{border-color:var(--accent)}
+  .tfcard.ok{border-color:var(--green);background:var(--green-s)}
+  .tfcard.bad{border-color:var(--red);background:var(--red-s)}
+  .tfcard .why{font-size:12.5px;color:var(--ink-2);display:none;line-height:1.4}
+  .tfcard.ok .why,.tfcard.bad .why{display:block}
+  .tfscore{font-family:"IBM Plex Mono",monospace;font-size:15px;font-weight:700;margin:12px 0}
+
+  /* ================= loop tracer ================= */
+  .trwrap{display:grid;grid-template-columns:1.05fr 1fr;gap:18px}
+  @media (max-width:940px){.trwrap{grid-template-columns:1fr}}
+  .trcode{background:var(--code-bg);border-radius:10px;padding:12px 0;font-family:"IBM Plex Mono",monospace;font-size:13.5px;line-height:1.75;color:var(--code-ink);overflow-x:auto}
+  .trcode .ln{display:flex;padding:0 14px;border-left:4px solid transparent;white-space:pre}
+  .trcode .ln .no{color:#566B75;width:26px;flex:none;text-align:right;margin-right:14px;user-select:none}
+  .trcode .ln.cur{background:rgba(224,161,92,.16);border-left-color:#E0A15C}
+  .trphase{display:flex;gap:8px;align-items:center;margin:12px 0 4px;flex-wrap:wrap}
+  .trphase .ph{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;background:var(--sunk);color:var(--ink-3);border:1px solid var(--line)}
+  .trphase .ph.on{background:var(--amber-soft);border-color:var(--amber);color:var(--amber)}
+  .trnote{font-size:15px;color:var(--ink);background:var(--amber-soft);border-left:3px solid var(--amber);border-radius:0 9px 9px 0;padding:11px 15px;margin-top:8px;min-height:46px}
+  .trnote b{color:var(--amber)}
+  .trvars{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .trvars .vv{border:2px solid var(--blue);background:var(--blue-s);border-radius:9px;padding:7px 12px;font-family:"IBM Plex Mono",monospace}
+  .trvars .vv .k{font-size:11px;color:var(--blue);font-weight:700;display:block}
+  .trvars .vv .x{font-size:18px;font-weight:800;color:var(--ink)}
+  .trvars .vv.chg{border-color:var(--amber);background:var(--amber-soft)}
+  .trtable{margin-top:12px;max-height:210px;overflow:auto;border:1px solid var(--line);border-radius:9px}
+  .trtable table{font-size:13px}
+  .trtable th{position:sticky;top:0;background:var(--sunk);padding:7px 10px}
+  .trtable td{padding:6px 10px;font-family:"IBM Plex Mono",monospace}
+  .trtable td.ct{color:var(--green);font-weight:700} .trtable td.cf{color:var(--red);font-weight:700}
+  .trout{margin-top:12px}
+  .trcount{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3);margin-left:auto}
+
+  /* ================= challenges ================= */
+  .lanes{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+  .lanes .cap{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-right:3px}
+  .lanes button{font-family:"IBM Plex Sans",sans-serif;font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:8px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-2)}
+  .lanes button:hover{border-color:var(--accent)}
+  .lanes button.on{color:var(--card)}
+  .lanes button[data-l="guided"].on{background:var(--green);border-color:var(--green)}
+  .lanes button[data-l="standard"].on{background:var(--accent);border-color:var(--accent)}
+  .lanes button[data-l="stretch"].on{background:var(--plum);border-color:var(--plum)}
+  .lanenote{font-size:12.5px;color:var(--ink-3);margin-bottom:9px}
+  .stretchbox{display:none;border-left:3px solid var(--plum);background:var(--plum-s);border-radius:0 9px 9px 0;padding:12px 16px;font-size:14px;color:var(--ink-2);margin-bottom:11px}
+  .stretchbox.show{display:block}
+  .stretchbox .l{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--plum);margin-bottom:4px;font-weight:600}
+  .stretchbox b{color:var(--ink)}
+
+  .sig{font-family:"IBM Plex Mono",monospace;font-size:13.5px;background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:9px 13px;margin-bottom:12px;color:var(--ink)}
+  .sig b{color:var(--accent)}
+  .examples{font-family:"IBM Plex Mono",monospace;font-size:12.8px;color:var(--ink-2);margin:-4px 0 12px;display:flex;flex-direction:column;gap:3px}
+  .examples span b{color:var(--ink)}
+
+  .chbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+  .chbtns .btn.submit{background:var(--green);border-color:var(--green);color:var(--card)}
+  .chbtns .kbd{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);margin-left:auto}
+
+  .tests{margin-top:12px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .tests .th{display:flex;gap:10px;align-items:center;padding:9px 13px;background:var(--sunk);border-bottom:1px solid var(--line);
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+  .tests .th .sc{margin-left:auto;letter-spacing:0;text-transform:none;font-size:13px;color:var(--ink)}
+  .tr{display:grid;grid-template-columns:22px 1fr;gap:10px;padding:8px 13px;border-bottom:1px solid var(--line-soft);font-size:13.5px;align-items:start}
+  .tr:last-child{border-bottom:0}
+  .tr .mk{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;margin-top:1px}
+  .tr.pass .mk{background:var(--green);color:#fff}
+  .tr.fail .mk{background:var(--red-s);color:var(--red);border:1.5px solid var(--red)}
+  .tr.idle .mk{background:var(--card);border:1.5px solid var(--line);color:var(--ink-3)}
+  .tr .call{font-family:"IBM Plex Mono",monospace;color:var(--ink);word-break:break-all}
+  .tr .det{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-3);margin-top:2px;word-break:break-all}
+  .tr .det b{color:var(--ink-2);font-weight:600}
+  .tr .hid{font-family:"IBM Plex Sans",sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--plum);font-weight:700;margin-left:6px}
+  .rules .tr{grid-template-columns:22px 1fr}
+  .diag{margin-top:12px;border-left:3px solid var(--amber);background:var(--amber-soft);border-radius:0 9px 9px 0;padding:12px 16px;font-size:14px;color:var(--ink-2);display:none}
+  .diag.show{display:block}
+  .diag .l{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--amber);margin-bottom:6px;font-weight:600}
+  .diag ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+  .diag code{font-size:.9em}
+  .conlbl{margin-top:12px}
+
+  .drill .runproof{margin-top:10px}
+  /* ---- module 06 lab: method explorer ---- */
+  .mxin{font-family:"IBM Plex Mono",monospace;font-size:15px;padding:9px 12px;border-radius:9px;border:1.5px solid var(--line);
+    background:var(--paper);color:var(--ink);min-width:0;flex:1;max-width:420px}
+  .mxin:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .mxscore{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-3);margin-left:auto}
+  .mxerr{font-size:13px;color:var(--red);min-height:18px;margin-top:5px}
+  .mxgrid{display:flex;flex-direction:column;gap:10px;margin:8px 0 14px}
+  .mxg{display:grid;grid-template-columns:140px 1fr;gap:10px;align-items:start}
+  @media (max-width:700px){.mxg{grid-template-columns:1fr}}
+  .mxgl{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);padding-top:8px}
+  .mxchips{display:flex;flex-wrap:wrap;gap:6px}
+  .mxchips button{font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600;padding:6px 11px;border-radius:8px;cursor:pointer;
+    border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+  .mxchips button:hover{border-color:var(--accent);color:var(--accent)}
+  .mxchips button.sel{outline:2px solid var(--ink);outline-offset:1px}
+  .mxchips button.mut{border-color:var(--red);background:var(--red-s);color:var(--red)}
+  .mxchips button.safe{border-color:var(--green);background:var(--green-s);color:var(--green)}
+  .mxres{border:1px solid var(--line);border-radius:11px;padding:16px;background:var(--paper);min-height:130px}
+  .mxhint,.cphint{color:var(--ink-3);font-size:14px;font-style:italic}
+  .mxcall{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+  .mxcall code{font-family:"IBM Plex Mono",monospace;font-size:18px;font-weight:600;color:var(--ink)}
+  .mxbadge{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;
+    padding:4px 10px;border-radius:999px;border:1.5px solid}
+  .mxbadge.mut{color:var(--red);border-color:var(--red);background:var(--red-s)}
+  .mxbadge.safe{color:var(--green);border-color:var(--green);background:var(--green-s)}
+  .mxq{font-size:15px;color:var(--ink-2);margin-bottom:10px}
+  .btn.ghost{background:transparent;border-style:dashed}
+  .mxguess{font-size:14px;font-weight:700;margin:4px 0 10px}
+  .mxguess.ok{color:var(--green)} .mxguess.bad{color:var(--red)}
+  .mxrows{display:flex;flex-direction:column;gap:6px}
+  .mxrow,.cprow{display:grid;grid-template-columns:96px 1fr auto;gap:12px;align-items:baseline;padding:8px 12px;border-radius:8px;
+    background:var(--card);border:1px solid var(--line-soft)}
+  .mxrow .k,.cprow .k{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+  .mxrow code,.cprow code{font-family:"IBM Plex Mono",monospace;font-size:15px;color:var(--ink);word-break:break-word}
+  .mxrow .t,.cprow .t{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3)}
+  .mxrow.hot,.cprow.hot{background:var(--red-s);border-color:var(--red)}
+  .mxrow.hot code,.cprow.hot code{color:var(--red)}
+  .cprow.cool{background:var(--green-s);border-color:var(--green)}
+  .mxrow.ret{background:var(--blue-s);border-color:var(--blue)}
+  .mxwhy{margin-top:12px;font-size:14.5px;color:var(--ink-2);line-height:1.5}
+  .mxwhy code{font-family:"IBM Plex Mono",monospace;color:var(--accent);font-size:.92em}
+
+  /* ---- reduce stepper ---- */
+  .rswrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;margin-top:4px}
+  @media (max-width:900px){.rswrap{grid-template-columns:minmax(0,1fr)}}
+  .chips2 button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .rstable{max-height:260px}
+  .rstable tr.now td{background:var(--amber-soft)}
+  .rsfinal{margin-top:12px;font-size:16px;color:var(--ink-2);min-height:24px}
+  .rsfinal b{font-family:"IBM Plex Mono",monospace;color:var(--green);font-size:17px}
+  .rsfinal .bad{color:var(--red);font-family:"IBM Plex Mono",monospace}
+  .rsstart{display:block;margin-top:6px;font-size:14px;color:var(--ink-2)}
+  .rswarn{color:var(--red);font-weight:600}
+  .trnote code{font-family:"IBM Plex Mono",monospace;font-size:.92em}
+
+  /* ---- copy or reference ---- */
+  .cpgrid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:20px}
+  @media (max-width:900px){.cpgrid{grid-template-columns:minmax(0,1fr)}}
+  .cpopts{display:flex;flex-direction:column;gap:6px}
+  .cpopts button{text-align:left;padding:8px 12px;border-radius:8px;border:1.5px solid var(--line);background:var(--card);cursor:pointer}
+  .cpopts button code{font-family:"IBM Plex Mono",monospace;font-size:13.5px;color:var(--ink)}
+  .cpopts button:hover{border-color:var(--accent)}
+  .cpopts button.on{border-color:var(--accent);background:var(--accent-soft)}
+  .cpcode{margin:0 0 12px;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:13px 16px;font-family:"IBM Plex Mono",monospace;
+    font-size:13px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+  .cpcode .k{color:#79D3C9;font-weight:600} .cpcode .s{color:#E8B57A} .cpcode .n{color:#8FC0F0} .cpcode .f{color:#D6A8E0} .cpcode .c{color:#7E9099}
+  .cpout{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+  .cpscore{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3);font-weight:400;margin-left:6px}
+  .cpsvg{width:100%;max-width:620px;height:auto;display:block;margin:6px 0}
+  .cpsvg .ob{fill:var(--card);stroke:var(--ink-3);stroke-width:1.6}
+  .cpsvg .nb{fill:var(--green-s);stroke:var(--green);stroke-width:1.6}
+  .cpsvg .sh{fill:var(--amber-soft);stroke:var(--amber);stroke-width:2.2}
+  .cpsvg .bl{font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:700;fill:var(--ink)}
+  .cpsvg .bs{font-family:"IBM Plex Mono",monospace;font-size:11px;fill:var(--ink-3)}
+  .cpsvg .nm{font-family:"IBM Plex Mono",monospace;font-size:15px;font-weight:700}
+  .cpsvg .nm.u{fill:var(--blue)} .cpsvg .nm.c{fill:var(--plum)}
+  .cpsvg .ar{fill:none;stroke-width:1.8}
+  .cpsvg .ar.u{stroke:var(--blue)} .cpsvg .ar.c{stroke:var(--plum)}
+  .cpsvg .ah{fill:var(--ink-3)}
+  .cpsvg .cap{font-family:"IBM Plex Sans",sans-serif;font-size:12px;fill:var(--ink-2)}
+  .cpwhy{font-size:14.5px;color:var(--ink-2);line-height:1.5;border-left:3px solid var(--plum);background:var(--plum-s);padding:10px 14px;border-radius:0 9px 9px 0}
+  .cpwhy:empty{display:none}
+  .cpwhy code{font-family:"IBM Plex Mono",monospace;color:var(--plum)}
+
+  /* syntax colour in the stepper, and no grey chip behind values in result rows */
+  .trcode .k{color:#79D3C9;font-weight:600} .trcode .s{color:#E8B57A} .trcode .n{color:#8FC0F0}
+  .trcode .f{color:#D6A8E0} .trcode .c{color:#7E9099;font-style:italic}
+  .mxrow code,.cprow code,.mxcall code,.cpopts button code{background:transparent;border:0;padding:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="kicker">Practice Lab · Arrays and Objects</div>
+  <h1>Shaping Real Data — Lab</h1>
+  <p class="lede">Four tools and twelve coding challenges on the skill every MERN screen depends on: <b>taking a list of records and turning it into what the page needs</b>. The tools show you what each method really does. The challenges work like a placement coding round — and every one of them also checks that <b>you never changed the data you were given</b>.</p>
+</header>
+
+<nav class="nav" id="nav">
+  <button data-v="tools" class="on">Tools</button>
+  <button data-v="ch">Challenges</button>
+  <button data-v="logic">Logic drills</button>
+  <span class="score" id="score">solved <b>0</b> / 12</span>
+</nav>
+
+<!-- ======================= TOOLS ======================= -->
+<div class="view on" id="v-tools">
+
+  <section>
+    <h2 class="head">1 · Scratchpad</h2>
+    <p class="intro">Write anything and press <b>Run</b> — or <b>Ctrl + Enter</b>. You see what <code>console.log</code> prints, and the value of the last line after the <code>←</code> arrow, the way the browser console shows it. <b>Click a surprise</b> to load one of the array and object oddities that turn up in interviews — predict the answer before it runs.</p>
+    <div class="panel">
+      <span class="lbl">Surprises — predict first, then click</span>
+      <div class="chips2" id="spPresets"></div>
+      <textarea class="code-ed" id="spCode" spellcheck="false" aria-label="Scratchpad code">const jobs = [
+  { company: "Nimbus Labs", city: "Pune", lpa: 6 },
+  { company: "Kestrel Tech", city: "Indore", lpa: 4.5 },
+  { company: "Orbit Systems", city: "Pune", lpa: 7.5 },
+];
+console.log(jobs.filter(j => j.city === "Pune").map(j => j.company));
+jobs.reduce((sum, j) => sum + j.lpa, 0) / jobs.length</textarea>
+      <div class="out" id="spOut" aria-live="polite"><div class="ohint">Press Run to see the output</div></div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn primary" id="spRun">Run ▶</button>
+        <button class="btn" id="spClear">Clear</button>
+        <span style="font-size:12.5px;color:var(--ink-3)">An infinite loop is stopped after 1.5 seconds — nothing freezes.</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="head">2 · Method explorer — does it change the original?</h2>
+    <p class="intro">Every array method answers two questions: <b>what does it give back</b>, and <b>does it change the array it was called on</b>? Pick a method and see both — the array before, the array after, and what came back. <b>To test yourself</b>, press <i>changes it</i> or <i>leaves it</i> on a method before you run it. Everything is worked out by actually calling the method, not looked up in a list.</p>
+    <div class="panel">
+      <div class="mxtop">
+        <label class="lbl" for="mxInput">Start with this array (numbers, edit freely)</label>
+        <div class="row">
+          <input type="text" id="mxInput" class="mxin" value="[40, 10, 30, 20]" spellcheck="false" autocomplete="off">
+          <button class="btn" id="mxReset">Reset</button>
+          <span class="mxscore" id="mxScore">guesses: 0 right of 0</span>
+        </div>
+        <div class="mxerr" id="mxErr"></div>
+      </div>
+      <div class="mxgrid" id="mxGrid"></div>
+      <div class="mxres" id="mxRes"><div class="mxhint">Pick a method above to see what it does.</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="head">3 · Reduce, one step at a time</h2>
+    <p class="intro"><code>reduce</code> is the method people find hardest, because the <b>accumulator</b> is invisible. Here it is not. Step through and watch what goes <b>in</b> to each call and what comes <b>out</b> — the value that is carried to the next item. The last two programs are the classic mistakes: no starting value, and a forgotten <code>return</code>.</p>
+    <div class="panel">
+      <div class="chips2" id="rsPick"></div>
+      <div class="rswrap">
+        <div>
+          <div class="trcode" id="rsCode"></div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn primary" id="rsStep">Step ▶</button>
+            <button class="btn" id="rsAll">Run to the end</button>
+            <button class="btn" id="rsReset">Reset</button>
+            <span class="trcount" id="rsCount"></span>
+          </div>
+          <div class="trnote" id="rsNote"></div>
+        </div>
+        <div>
+          <span class="lbl">Every call so far</span>
+          <div class="trtable scroll-x rstable"><table id="rsTable"></table></div>
+          <div class="rsfinal" id="rsFinal"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="head">4 · Copy or reference?</h2>
+    <p class="intro">Choose how <code>copy</code> is made, then choose what you change on it. <b>Predict</b> whether the original <code>user</code> changes too — then look. The diagram shows which boxes the two names share. Every result comes from running the code for real.</p>
+    <div class="panel">
+      <div class="cpgrid">
+        <div>
+          <span class="lbl">1 · How the copy is made</span>
+          <div class="cpopts" id="cpHow"></div>
+          <span class="lbl" style="margin-top:14px">2 · What you change on the copy</span>
+          <div class="cpopts" id="cpWhat"></div>
+          <span class="lbl" style="margin-top:14px">3 · Your prediction — does <code>user</code> change?</span>
+          <div class="row" id="cpGuess">
+            <button class="btn" data-g="yes">Yes, user changes</button>
+            <button class="btn" data-g="no">No, only copy</button>
+          </div>
+        </div>
+        <div>
+          <pre class="cpcode" id="cpCode"></pre>
+          <div class="cpout" id="cpOut"></div>
+          <div id="cpDiagram"></div>
+          <div class="cpwhy" id="cpWhy"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ======================= CHALLENGES ======================= -->
+<div class="view" id="v-ch">
+  <section>
+    <h2 class="head">Twelve coding challenges</h2>
+    <p class="intro">Each asks for one function. <b>The grader calls it with data and compares what it returns</b> — what you print is ignored. <b>Run</b> tries the samples; <b>Submit</b> adds the hidden edge cases. Every test in this module also checks one more thing: <b>that your function did not change the data it was given.</b> A right answer that damages the input is still a wrong answer.</p>
+    <div class="chlist" id="chList"></div>
+    <div class="panel">
+      <div class="chead"><h3 id="chTitle">—</h3><span class="lvl m" id="chLvl">—</span></div>
+      <div class="scenario" id="chScenario"></div>
+      <p class="brief" id="chBrief"></p>
+      <div class="sig" id="chSig"></div>
+      <div class="examples" id="chEx"></div>
+      <div class="split">
+        <div>
+          <div class="lanes" id="chLanes">
+            <span class="cap">How much help</span>
+            <button data-l="guided">Guided</button>
+            <button data-l="standard" class="on">Standard</button>
+            <button data-l="stretch">Stretch</button>
+          </div>
+          <div class="lanenote" id="chLaneNote"></div>
+          <div class="stretchbox" id="chStretch"></div>
+          <textarea class="code-ed" id="chCode" rows="18" spellcheck="false" aria-label="Your solution" style="border-radius:10px"></textarea>
+          <div class="chbtns">
+            <button class="btn" id="chRun">Run ▶</button>
+            <button class="btn submit" id="chSubmit">Submit</button>
+            <button class="btn" id="chReset">Reset code</button>
+            <button class="btn" id="chHint">Show hint</button>
+            <span class="kbd">Ctrl + Enter runs</span>
+          </div>
+          <div class="hint" id="chHintBox"></div>
+        </div>
+        <div>
+          <div class="tests" id="chTests"></div>
+          <div class="diag" id="chDiag"></div>
+          <div class="verdict" id="chVerdict"></div>
+          <div class="conlbl"><span class="lbl">Your console output</span><div class="out" id="chCon" style="border-radius:10px;border-top:1px solid var(--line);max-height:160px"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ======================= LOGIC DRILLS ======================= -->
+<div class="view" id="v-logic">
+  <section>
+    <h2 class="head">Ten logic drills</h2>
+    <p class="intro">Read the code. <b>Say the output out loud</b> before you reveal it. Then press <b>Run it</b> — the answer is proved by running the code, not by taking anyone's word for it. Every one of these is a trap that has cost someone an interview.</p>
+    <div id="logicWrap"></div>
+  </section>
+</div>
+
+</div>
+<script>
+/* =====================================================================
+   JSRunner — runs learner JavaScript in a Web Worker.
+
+   Why a worker: a beginner's first while-loop is often infinite. In the
+   page itself that freezes the tab (and the projector). In a worker we
+   simply terminate it after a timeout and explain what happened.
+
+   Shared by the deck (live slides) and the lab (challenges + tools).
+   ===================================================================== */
+var JSRunner = (function () {
+  'use strict';
+
+  var WORKER_SRC = [
+    "'use strict';",
+    "var OUT = [];",
+    "function ser(v, d) {",
+    "  d = d || 0; var t = typeof v;",
+    "  if (v === null) return { t:'null', s:'null' };",
+    "  if (t === 'undefined') return { t:'undefined', s:'undefined' };",
+    "  if (t === 'string') return { t:'string', s:v };",
+    "  if (t === 'number') return { t:'number', s: Object.is(v, -0) ? '-0' : String(v) };",
+    "  if (t === 'boolean') return { t:'boolean', s:String(v) };",
+    "  if (t === 'bigint') return { t:'bigint', s:String(v) + 'n' };",
+    "  if (t === 'symbol') return { t:'symbol', s:v.toString() };",
+    "  if (t === 'function') return { t:'function', s:'ƒ ' + (v.name || 'anonymous') + '()' };",
+    "  if (v instanceof Error) return { t:'error', s:v.name + ': ' + v.message };",
+    "  if (v instanceof Date) return { t:'object', s: isNaN(v) ? 'Invalid Date' : v.toISOString() };",
+    "  if (v instanceof RegExp) return { t:'object', s:String(v) };",
+    "  if (v instanceof Set) return { t:'object', s:'Set(' + v.size + ') {' + Array.from(v).map(function (x) { return rep(x, d + 1); }).join(', ') + '}' };",
+    "  if (v instanceof Map) return { t:'object', s:'Map(' + v.size + ') {' + Array.from(v).map(function (e) { return rep(e[0], d + 1) + ' => ' + rep(e[1], d + 1); }).join(', ') + '}' };",
+    "  if (Array.isArray(v)) return { t:'array', s:inner(v, d) };",
+    "  return { t:'object', s:inner(v, d) };",
+    "}",
+    "function rep(x, d) { return typeof x === 'string' ? \"'\" + x + \"'\" : ser(x, d).s; }",
+    "function inner(v, d) {",
+    "  if (d > 4) return Array.isArray(v) ? '[Array]' : '{…}';",
+    "  if (Array.isArray(v)) return '[' + v.map(function (x) { return rep(x, d + 1); }).join(', ') + ']';",
+    "  var ks = Object.keys(v);",
+    "  if (!ks.length) return '{}';",
+    "  return '{' + ks.map(function (k) { return k + ': ' + rep(v[k], d + 1); }).join(', ') + '}';",
+    "}",
+    "function canon(v) {",
+    "  if (typeof v === 'string') return 's:' + JSON.stringify(v);",
+    "  if (typeof v === 'number') return Number.isNaN(v) ? 'n:NaN' : 'n:' + String(v);",
+    "  if (v === null) return 'null';",
+    "  if (v === undefined) return 'undef';",
+    "  if (typeof v === 'boolean') return 'b:' + v;",
+    "  if (Array.isArray(v)) return 'a:[' + v.map(canon).join(',') + ']';",
+    "  if (typeof v === 'object') return 'o:{' + Object.keys(v).sort().map(function (k) { return k + '=' + canon(v[k]); }).join(',') + '}';",
+    "  return typeof v + ':' + String(v);",
+    "}",
+    "function revive(v) {",
+    "  if (Array.isArray(v)) return v.map(revive);",
+    "  if (v && typeof v === 'object') {",
+    "    if (typeof v.__fn === 'string') return (0, eval)('(' + v.__fn + ')');",
+    "    var o = {}; Object.keys(v).forEach(function (k) { o[k] = revive(v[k]); }); return o;",
+    "  }",
+    "  return v;",
+    "}",
+    "var CAP = 300, capped = false;",
+    "function push(kind, args) {",
+    "  if (capped) return;",
+    "  OUT.push({ k:kind, parts:[].map.call(args, function (a) { return ser(a, 0); }) });",
+    "  if (OUT.length >= CAP) { capped = true; postMessage({ partial:true, out:OUT }); }",
+    "}",
+    "console.log   = function () { push('log', arguments); };",
+    "console.info  = function () { push('log', arguments); };",
+    "console.warn  = function () { push('warn', arguments); };",
+    "console.error = function () { push('error', arguments); };",
+    "console.table = function () { push('log', arguments); };",
+    "self.alert  = function (m) { OUT.push({ k:'alert', parts:[ser(String(m))] }); };",
+    "self.prompt = function () { OUT.push({ k:'warn', parts:[ser('prompt() is not available here - pass values into your function as parameters instead.')] }); return null; };",
+    "function err(e) {",
+    "  var name = (e && e.name) || 'Error', msg = (e && e.message) || String(e), note = '';",
+    "  if (/\\b(document|window) is not defined/.test(msg)) note = 'This runner has no web page attached - the DOM comes in a later module. Use console.log for now.';",
+    "  return { name:name, message:msg, note:note };",
+    "}",
+    "self.onmessage = function (e) {",
+    "  var m = e.data;",
+    "  if (m.cap) CAP = m.cap;",
+    "  if (m.mode === 'run') {",
+    "    try {",
+    "      var r = (0, eval)(m.code);",
+    "      postMessage({ ok:true, out:OUT, result:ser(r, 0), truncated:capped });",
+    "    } catch (x) { postMessage({ ok:false, out:OUT, error:err(x), truncated:capped }); }",
+    "    return;",
+    "  }",
+    "  if (m.mode === 'test') {",
+    "    var fn;",
+    "    try {",
+    "      fn = (0, eval)(m.code + '\\n;\\n(typeof ' + m.fname + \" === 'function' ? \" + m.fname + ' : undefined)');",
+    "    } catch (x) { postMessage({ ok:false, out:OUT, error:err(x) }); return; }",
+    "    if (typeof fn !== 'function') {",
+    "      postMessage({ ok:false, out:OUT, error:{ name:'NotFound', message:'No function called ' + m.fname + ' was found.', note:'Check the spelling - the name must match exactly, including capital letters.' } });",
+    "      return;",
+    "    }",
+    "    var results = m.cases.map(function (c) {",
+    "      var before = OUT.length, args, snap;",
+    "      try { args = revive(c.args); }",
+    "      catch (x) { return { pass:false, threw:{ name:'HarnessError', message:'A test argument could not be built: ' + x.message } }; }",
+    "      snap = args.map(canon);",
+    "      try {",
+    "        var got = fn.apply(null, args);",
+    "        var mutated = [];",
+    "        args.forEach(function (a, i) { if (canon(a) !== snap[i]) mutated.push(i); });",
+    "        if (c.throws) return { pass:false, got: ser(got, 0), printed: OUT.length > before, gotUndef: got === undefined, mutated: mutated, wantedThrow: c.throws };",
+    "        var same = canon(got) === canon(c.expect);",
+    "        var clean = !c.pure || mutated.length === 0;",
+    "        return { pass: same && clean, got: ser(got, 0), printed: OUT.length > before, gotUndef: got === undefined, mutated: mutated, rightButMutated: same && !clean };",
+    "      } catch (x) {",
+    "        var e = err(x);",
+    "        if (c.throws) return { pass: e.name === c.throws, threw: e, printed: OUT.length > before, wantedThrow: c.throws };",
+    "        return { pass:false, threw: e, printed: OUT.length > before };",
+    "      }",
+    "    });",
+    "    postMessage({ ok:true, out:OUT, results:results });",
+    "  }",
+    "};"
+  ].join('\n');
+
+  var url = null;
+  function workerURL() {
+    if (!url) url = URL.createObjectURL(new Blob([WORKER_SRC], { type: 'text/javascript' }));
+    return url;
+  }
+
+  function exec(msg, ms) {
+    return new Promise(function (resolve) {
+      var w, done = false;
+      try { w = new Worker(workerURL()); }
+      catch (e) {
+        resolve({ ok:false, fatal:true, error:{ name:'RunnerError', message:'This browser blocked the code runner.', note:'Open the file in Chrome or Edge.' } });
+        return;
+      }
+      var partial = null;
+      var t = setTimeout(function () {
+        if (done) return; done = true; w.terminate();
+        resolve({ ok:false, timeout:true, ms:ms, out:partial || [], truncated:!!partial });
+      }, ms);
+      w.onmessage = function (e) {
+        if (done) return;
+        if (e.data && e.data.partial) { partial = e.data.out; return; }
+        done = true; clearTimeout(t); w.terminate(); resolve(e.data);
+      };
+      w.onerror = function (e) {
+        if (done) return; done = true; clearTimeout(t); w.terminate();
+        if (e && e.preventDefault) e.preventDefault();
+        resolve({ ok:false, error:{ name:'Error', message:(e && e.message) || 'The code could not run.' } });
+      };
+      w.postMessage(msg);
+    });
+  }
+
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  /* one value as the console would draw it */
+  function val(v, quoteStrings) {
+    if (!v) return '';
+    var s = (v.t === 'string' && quoteStrings) ? "'" + v.s + "'" : v.s;
+    return '<span class="v-' + v.t + '">' + esc(s) + '</span>';
+  }
+
+  /* render a run result into an output element */
+  function render(el, r, opts) {
+    opts = opts || {};
+    var h = '';
+    (r.out || []).forEach(function (line) {
+      var cls = line.k === 'error' ? 'oe' : line.k === 'warn' ? 'ow' : line.k === 'alert' ? 'oa' : 'ol';
+      var body = line.parts.map(function (p) { return val(p, false); }).join(' ');
+      if (line.k === 'alert') body = '<span class="tagalert">alert</span> ' + body;
+      h += '<div class="' + cls + '">' + (body || '&nbsp;') + '</div>';
+    });
+    if (r.truncated) h += '<div class="ow">… output stopped after ' + (r.out || []).length + ' lines</div>';
+    if (r.timeout) {
+      h += '<div class="ot"><b>Stopped after ' + (r.ms / 1000) + ' seconds.</b> The code never finished — this almost always means an infinite loop. Check that the loop condition eventually becomes false.</div>';
+    } else if (r.error) {
+      h += '<div class="oe"><b>Uncaught ' + esc(r.error.name) + ':</b> ' + esc(r.error.message) +
+           (r.error.note ? '<span class="onote">' + esc(r.error.note) + '</span>' : '') + '</div>';
+    } else if (opts.showResult && r.result && !(r.result.t === 'undefined' && (r.out || []).length)) {
+      h += '<div class="or"><span class="arrow">←</span> ' + val(r.result, true) + '</div>';
+    }
+    if (!h) h = '<div class="oempty">No output. Use console.log(…) to print something.</div>';
+    el.innerHTML = h;
+  }
+
+  /* single-pass syntax highlighter — tokens are consumed once, never re-scanned */
+  var KW = /^(const|let|var|function|return|if|else|for|while|do|switch|case|break|continue|default|new|typeof|instanceof|in|of|class|this|try|catch|finally|throw|async|await)$/;
+  var LIT = /^(true|false|null|undefined|NaN|Infinity)$/;
+  function highlight(src) {
+    var re = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(`(?:\\[\s\S]|[^`\\])*`|'(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*")|(\b\d+(?:\.\d+)?n?\b)|([A-Za-z_$][\w$]*)|([\s\S])/g;
+    var out = '', m;
+    while ((m = re.exec(src)) !== null) {
+      if (m[1]) out += '<span class="c">' + esc(m[1]) + '</span>';
+      else if (m[2]) out += '<span class="s">' + esc(m[2]) + '</span>';
+      else if (m[3]) out += '<span class="n">' + m[3] + '</span>';
+      else if (m[4]) {
+        var w = m[4], next = src.charAt(re.lastIndex);
+        if (KW.test(w)) out += '<span class="k">' + w + '</span>';
+        else if (LIT.test(w)) out += '<span class="n">' + w + '</span>';
+        else if (next === '(') out += '<span class="f">' + w + '</span>';
+        else out += w;
+      }
+      else out += esc(m[5]);
+    }
+    return out;
+  }
+
+  /* strip comments and strings, for static rules like "no .reverse()" */
+  function codeOnly(src) {
+    var re = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(`(?:\\[\s\S]|[^`\\])*`|'(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*")|([\s\S])/g;
+    var out = '', m;
+    while ((m = re.exec(src)) !== null) {
+      if (m[1]) out += ' ';
+      else if (m[2]) out += m[2].charAt(0) === '`' ? '``' : '""';
+      else out += m[3];
+    }
+    return out;
+  }
+
+  return {
+    run: function (code, ms, cap) { return exec({ mode:'run', code:code, cap:cap || 300 }, ms || 1500); },
+    test: function (code, fname, cases, ms) { return exec({ mode:'test', code:code, fname:fname, cases:cases }, ms || 2500); },
+    render: render,
+    val: val,
+    highlight: highlight,
+    codeOnly: codeOnly,
+    esc: esc
+  };
+})();
+
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = JSRunner.esc;
+
+  /* ---------------- tabs ---------------- */
+  var navBtns = Array.prototype.slice.call(document.querySelectorAll('#nav button'));
+  navBtns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      navBtns.forEach(function (x) { x.classList.toggle('on', x === b); });
+      ['tools', 'ch', 'logic'].forEach(function (v) { $('v-' + v).classList.toggle('on', v === b.dataset.v); });
+      window.scrollTo(0, 0);
+    });
+  });
+
+  /* shared editor keys: Tab indents, Ctrl+Enter runs */
+  window.wireEditor = function (ta, onRun) {
+    ta.addEventListener('keydown', function (e) {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        var s = ta.selectionStart, en = ta.selectionEnd;
+        ta.value = ta.value.slice(0, s) + '  ' + ta.value.slice(en);
+        ta.selectionStart = ta.selectionEnd = s + 2;
+        ta.dispatchEvent(new Event('input'));
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); onRun(); }
+    });
+  };
+
+  /* one value, written the way the console writes it */
+  function show(v, d) {
+    d = d || 0;
+    if (v === undefined) return 'undefined';
+    if (v === null) return 'null';
+    if (typeof v === 'string') return d ? "'" + v + "'" : '"' + v + '"';
+    if (typeof v === 'number') return Object.is(v, -0) ? '-0' : String(v);
+    if (typeof v === 'function') return 'ƒ';
+    if (Array.isArray(v)) return '[' + v.map(function (x) { return show(x, d + 1); }).join(', ') + ']';
+    if (typeof v === 'object') {
+      var ks = Object.keys(v);
+      return ks.length ? '{' + ks.map(function (k) { return k + ': ' + show(v[k], d + 1); }).join(', ') + '}' : '{}';
+    }
+    return String(v);
+  }
+  window.__show = show;
+
+  /* ============================================================
+     TOOL 1 — SCRATCHPAD
+     ============================================================ */
+  var SURPRISES = [
+    '[10, 1, 3].sort()',
+    '["1", "2", "3"].map(parseInt)',
+    '[1, 2, 3].map(n => { n * 2 })',
+    '[].every(n => n > 100)',
+    '[NaN].indexOf(NaN)',
+    '[NaN].includes(NaN)',
+    'typeof []',
+    'Object.keys({ b: 1, 2: 1, a: 1 })',
+    '[..."hello"]',
+    '[1, [2, [3, [4]]]].flat()',
+    'const g = new Array(3).fill([]);\ng[0].push("x");\ng',
+    '({ ...{ a: 1, b: 2 }, a: 9 })',
+    'JSON.stringify({ a: undefined, b: () => 1, c: NaN })',
+    '[3, 1, 2].reverse() === [3, 1, 2]'
+  ];
+  $('spPresets').innerHTML = SURPRISES.map(function (s, i) {
+    return '<button type="button" data-i="' + i + '">' + esc(s.split('\n').join(' ')) + '</button>';
+  }).join('');
+  function spRun() {
+    $('spOut').innerHTML = '<div class="ohint">running…</div>';
+    JSRunner.run($('spCode').value, 1500, 300).then(function (r) {
+      JSRunner.render($('spOut'), r, { showResult: true });
+    });
+  }
+  $('spPresets').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    $('spCode').value = SURPRISES[+b.dataset.i];
+    spRun();
+  });
+  $('spRun').addEventListener('click', spRun);
+  $('spClear').addEventListener('click', function () {
+    $('spCode').value = ''; $('spOut').innerHTML = '<div class="ohint">Press Run to see the output</div>'; $('spCode').focus();
+  });
+  wireEditor($('spCode'), spRun);
+
+  /* ============================================================
+     TOOL 2 — METHOD EXPLORER
+     Every verdict is measured: the method really runs on a copy of the
+     array, and "changed" means the array is different afterwards.
+     ============================================================ */
+  var M = [
+    { g:'Add and remove', n:'push',       c:'arr.push(50)',              f:function (a) { return a.push(50); },
+      why:'<code>push</code> gives back the <b>new length</b>, not the array. Writing <code>arr = arr.push(x)</code> replaces your array with a number.' },
+    { g:'Add and remove', n:'pop',        c:'arr.pop()',                 f:function (a) { return a.pop(); },
+      why:'<code>pop</code> removes the last item and hands it to you. The array is one shorter afterwards.' },
+    { g:'Add and remove', n:'shift',      c:'arr.shift()',               f:function (a) { return a.shift(); },
+      why:'<code>shift</code> removes the <b>first</b> item, and every other item moves up one place.' },
+    { g:'Add and remove', n:'unshift',    c:'arr.unshift(5)',            f:function (a) { return a.unshift(5); },
+      why:'<code>unshift</code> adds at the start and, like <code>push</code>, returns the new length.' },
+    { g:'Add and remove', n:'splice',     c:'arr.splice(1, 2)',          f:function (a) { return a.splice(1, 2); },
+      why:'<code>splice</code> cuts two items out of the original, starting at index 1, and returns what it cut.' },
+    { g:'Add and remove', n:'splice +',   c:'arr.splice(1, 0, 99)',      f:function (a) { return a.splice(1, 0, 99); },
+      why:'Cutting nothing and inserting 99. It returns an <b>empty</b> array — because nothing was removed.' },
+    { g:'Copy and combine', n:'slice',    c:'arr.slice(1, 3)',           f:function (a) { return a.slice(1, 3); },
+      why:'<code>slice</code> copies indexes 1 and 2. The end index is <b>not</b> included.' },
+    { g:'Copy and combine', n:'concat',   c:'arr.concat([60, 70])',      f:function (a) { return a.concat([60, 70]); },
+      why:'<code>concat</code> builds a new, longer array.' },
+    { g:'Copy and combine', n:'toSpliced',c:'arr.toSpliced(1, 2)',       f:function (a) { return a.toSpliced(1, 2); },
+      why:'<code>toSpliced</code> is <code>splice</code> without the damage: the result has the cut, the original does not.' },
+    { g:'Copy and combine', n:'with',     c:'arr.with(0, 99)',           f:function (a) { return a.with(0, 99); },
+      why:'<code>with</code> returns a copy with one position replaced — the safe version of <code>arr[0] = 99</code>.' },
+    { g:'Copy and combine', n:'join',     c:'arr.join(" - ")',           f:function (a) { return a.join(' - '); },
+      why:'<code>join</code> turns the whole array into <b>one string</b>.' },
+    { g:'Copy and combine', n:'fill',     c:'arr.fill(0, 1, 3)',         f:function (a) { return a.fill(0, 1, 3); },
+      why:'<code>fill</code> overwrites indexes 1 and 2 <b>in the original</b> — and returns that same array.' },
+    { g:'Order', n:'sort',                c:'arr.sort()',                f:function (a) { return a.sort(); },
+      why:'With no comparator, <code>sort</code> compares as <b>text</b>. Put 100 and 9 in the array to watch it go wrong. It sorts the original and returns that same array.' },
+    { g:'Order', n:'sort (a − b)',        c:'arr.sort((a, b) => a - b)', f:function (a) { return a.sort(function (x, y) { return x - y; }); },
+      why:'A comparator makes the order numeric — but the original is still sorted in place.' },
+    { g:'Order', n:'toSorted',            c:'arr.toSorted((a, b) => a - b)', f:function (a) { return a.toSorted(function (x, y) { return x - y; }); },
+      why:'<code>toSorted</code> gives back a sorted <b>copy</b> and leaves the original exactly as it was.' },
+    { g:'Order', n:'reverse',             c:'arr.reverse()',             f:function (a) { return a.reverse(); },
+      why:'<code>reverse</code> flips the original in place.' },
+    { g:'Order', n:'toReversed',          c:'arr.toReversed()',          f:function (a) { return a.toReversed(); },
+      why:'<code>toReversed</code> is the copying version.' },
+    { g:'Search', n:'indexOf',            c:'arr.indexOf(30)',           f:function (a) { return a.indexOf(30); },
+      why:'The position of 30 — or <code>-1</code> if it is not there.' },
+    { g:'Search', n:'includes',           c:'arr.includes(30)',          f:function (a) { return a.includes(30); },
+      why:'Only ever <code>true</code> or <code>false</code>.' },
+    { g:'Search', n:'find',               c:'arr.find(n => n > 25)',     f:function (a) { return a.find(function (n) { return n > 25; }); },
+      why:'The first item that passes — the item itself, or <code>undefined</code> if none does.' },
+    { g:'Search', n:'findIndex',          c:'arr.findIndex(n => n > 25)',f:function (a) { return a.findIndex(function (n) { return n > 25; }); },
+      why:'Where the first passing item is, or <code>-1</code>.' },
+    { g:'Search', n:'some',               c:'arr.some(n => n > 35)',     f:function (a) { return a.some(function (n) { return n > 35; }); },
+      why:'Is at least one item over 35? It stops looking the moment it finds one.' },
+    { g:'Search', n:'every',              c:'arr.every(n => n > 5)',     f:function (a) { return a.every(function (n) { return n > 5; }); },
+      why:'Is every item over 5? Try an empty array: <code>every</code> says <code>true</code>.' },
+    { g:'Search', n:'at',                 c:'arr.at(-1)',                f:function (a) { return a.at(-1); },
+      why:'The last item. Negative numbers count back from the end.' },
+    { g:'Transform', n:'map',             c:'arr.map(n => n * 2)',       f:function (a) { return a.map(function (n) { return n * 2; }); },
+      why:'A new array, the same length, every item doubled.' },
+    { g:'Transform', n:'filter',          c:'arr.filter(n => n > 15)',   f:function (a) { return a.filter(function (n) { return n > 15; }); },
+      why:'A new array holding only the items that passed.' },
+    { g:'Transform', n:'reduce',          c:'arr.reduce((sum, n) => sum + n, 0)', f:function (a) { return a.reduce(function (s, n) { return s + n; }, 0); },
+      why:'One value built from all of them — here, the total.' },
+    { g:'Transform', n:'forEach',         c:'arr.forEach(n => n * 2)',   f:function (a) { return a.forEach(function (n) { return n * 2; }); },
+      why:'<code>forEach</code> always returns <code>undefined</code>. It is for <i>doing</i> something with each item, not for building anything.' },
+    { g:'Transform', n:'flatMap',         c:'arr.flatMap(n => [n, n])',  f:function (a) { return a.flatMap(function (n) { return [n, n]; }); },
+      why:'Each item becomes two, and the result is flattened into a single list.' }
+  ];
+
+  var groups = [];
+  M.forEach(function (m) { if (groups.indexOf(m.g) === -1) groups.push(m.g); });
+  $('mxGrid').innerHTML = groups.map(function (g) {
+    return '<div class="mxg"><span class="mxgl">' + g + '</span><div class="mxchips">' +
+      M.map(function (m, i) { return m.g === g ? '<button type="button" data-m="' + i + '">' + esc(m.n) + '</button>' : ''; }).join('') +
+      '</div></div>';
+  }).join('');
+
+  var mxSel = -1, mxGuesses = { right: 0, total: 0 };
+
+  function mxParse() {
+    var raw = $('mxInput').value, arr;
+    try { arr = JSON.parse(raw); } catch (e) { return { err: 'That is not a valid array. Write it like [40, 10, 30, 20].' }; }
+    if (!Array.isArray(arr)) return { err: 'That is valid, but it is not an array — wrap it in square brackets.' };
+    if (arr.length > 12) return { err: 'Keep it to 12 numbers or fewer, so the result stays readable.' };
+    if (!arr.every(function (n) { return typeof n === 'number' && isFinite(n); })) return { err: 'Use numbers only — the example calls like n => n * 2 expect numbers.' };
+    return { arr: arr };
+  }
+
+  function mxAsk(i) {
+    mxSel = i;
+    var m = M[i];
+    Array.prototype.forEach.call(document.querySelectorAll('#mxGrid button'), function (b) {
+      b.classList.toggle('sel', +b.dataset.m === i);
+    });
+    $('mxRes').innerHTML =
+      '<div class="mxcall"><code>' + esc(m.c) + '</code></div>' +
+      '<div class="mxq">Will this change <code>arr</code> itself?</div>' +
+      '<div class="row">' +
+      '<button class="btn" type="button" data-guess="yes">It changes arr</button>' +
+      '<button class="btn" type="button" data-guess="no">It leaves arr alone</button>' +
+      '<button class="btn ghost" type="button" data-guess="skip">Just show me</button></div>';
+  }
+
+  function mxRun(guess) {
+    var p = mxParse();
+    if (p.err) { $('mxErr').textContent = p.err; return; }
+    $('mxErr').textContent = '';
+    var m = M[mxSel];
+    var arr = p.arr.slice(), before = JSON.stringify(arr), ret, threw = null;
+    try { ret = m.f(arr); } catch (e) { threw = e; }
+    var after = JSON.stringify(arr);
+    var changed = before !== after;
+    var sameRef = ret === arr;
+
+    var verdict = '';
+    if (guess !== 'skip') {
+      var right = (guess === 'yes') === changed;
+      mxGuesses.total++; if (right) mxGuesses.right++;
+      $('mxScore').textContent = 'guesses: ' + mxGuesses.right + ' right of ' + mxGuesses.total;
+      verdict = '<div class="mxguess ' + (right ? 'ok' : 'bad') + '">' + (right ? '✓ You called it.' : '✕ Not this time.') + '</div>';
+    }
+    var chip = document.querySelector('#mxGrid button[data-m="' + mxSel + '"]');
+    if (chip) { chip.classList.remove('mut', 'safe'); chip.classList.add(changed ? 'mut' : 'safe'); }
+
+    var retTxt = threw ? threw.name + ': ' + threw.message :
+      (sameRef ? show(ret) + '  ← the same array, not a copy' : show(ret));
+    var retType = threw ? 'error' : (ret === undefined ? 'undefined' : Array.isArray(ret) ? (sameRef ? 'the original array' : 'a new array') : typeof ret);
+
+    $('mxRes').innerHTML =
+      '<div class="mxcall"><code>' + esc(m.c) + '</code>' +
+      '<span class="mxbadge ' + (changed ? 'mut' : 'safe') + '">' + (changed ? 'changes the original' : 'leaves the original alone') + '</span></div>' +
+      verdict +
+      '<div class="mxrows">' +
+      '<div class="mxrow"><span class="k">arr before</span><code>' + esc(show(JSON.parse(before))) + '</code></div>' +
+      '<div class="mxrow ' + (changed ? 'hot' : '') + '"><span class="k">arr after</span><code>' + esc(show(arr)) + '</code></div>' +
+      '<div class="mxrow ret"><span class="k">returned</span><code>' + esc(retTxt) + '</code><span class="t">' + esc(retType) + '</span></div>' +
+      '</div>' +
+      '<div class="mxwhy">' + m.why + '</div>';
+  }
+
+  $('mxGrid').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    mxAsk(+b.dataset.m);
+  });
+  $('mxRes').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-guess]'); if (!b || mxSel < 0) return;
+    mxRun(b.dataset.guess);
+  });
+  $('mxReset').addEventListener('click', function () {
+    $('mxInput').value = '[40, 10, 30, 20]'; $('mxErr').textContent = '';
+    mxGuesses = { right: 0, total: 0 }; $('mxScore').textContent = 'guesses: 0 right of 0';
+    Array.prototype.forEach.call(document.querySelectorAll('#mxGrid button'), function (b) { b.classList.remove('mut', 'safe', 'sel'); });
+    mxSel = -1; $('mxRes').innerHTML = '<div class="mxhint">Pick a method above to see what it does.</div>';
+  });
+  $('mxInput').addEventListener('input', function () {
+    var p = mxParse(); $('mxErr').textContent = p.err || '';
+  });
+
+  /* ============================================================
+     TOOL 3 — REDUCE, STEP BY STEP
+     The code on screen IS the code that runs: each reducer is built
+     from the same string that is displayed.
+     ============================================================ */
+  var RS = [
+    { label:'Sum', data:'[6, 4.5, 7.5, 4]', init:'0',
+      fn:'(sum, n) => sum + n',
+      intro:'Adding up four packages. The accumulator <b>sum</b> starts at the starting value, 0.' },
+    { label:'Highest', data:'[3, 9, 4, 7]', init:'-Infinity',
+      fn:'(best, n) => (n > best ? n : best)',
+      intro:'Keeping the best seen so far. <code>-Infinity</code> is a start that any real number beats.' },
+    { label:'Count by city', data:'[\n  { city: "Pune" },\n  { city: "Indore" },\n  { city: "Pune" },\n]', init:'{}',
+      fn:'(acc, job) => {\n  acc[job.city] = (acc[job.city] || 0) + 1;\n  return acc;\n}',
+      intro:'The accumulator is an <b>object</b>. Each call adds one to the right city — creating the key the first time it appears.' },
+    { label:'Group by city', data:'[\n  { name: "Asha", city: "Pune" },\n  { name: "Ravi", city: "Indore" },\n  { name: "Neha", city: "Pune" },\n]', init:'{}',
+      fn:'(acc, p) => {\n  (acc[p.city] ??= []).push(p.name);\n  return acc;\n}',
+      intro:'Same shape as counting — but each city holds a <b>list</b>, and names are pushed into it.' },
+    { label:'Index by id', data:'[\n  { id: 7, name: "Asha" },\n  { id: 9, name: "Ravi" },\n]', init:'{}',
+      fn:'(acc, u) => {\n  acc[u.id] = u.name;\n  return acc;\n}',
+      intro:'Building a lookup table: afterwards, <code>byId[9]</code> answers instantly.' },
+    { label:'No starting value', data:'[1, 2, 3, 4]', init:null,
+      fn:'(a, b) => a + b',
+      intro:'<b>No starting value.</b> Watch where it begins: the first item becomes the accumulator, and the first call is for the <b>second</b> item.' },
+    { label:'Forgot return', data:'[1, 2, 3]', init:'0',
+      fn:'(sum, n) => { sum + n; }',
+      intro:'<b>Braces, no return.</b> The function works out <code>sum + n</code> — and throws it away. Watch what gets carried forward.' }
+  ];
+
+  var rs = { p: 0, steps: [], k: 0, result: undefined, err: null };
+
+  function rsCodeLines(pr) {
+    var head = 'const data = ' + pr.data + ';';
+    var call = 'data.reduce(' + pr.fn.split('\n').join('\n') + (pr.init !== null ? ', ' + pr.init : '') + ')';
+    return (head + '\n\n' + call).split('\n');
+  }
+
+  function rsBuild() {
+    var pr = RS[rs.p];
+    var data = (0, eval)('(' + pr.data + ')');
+    var fn = (0, eval)('(' + pr.fn + ')');
+    var steps = [];
+    var wrapped = function (acc, item, i) {
+      var inTxt = show(acc), itemTxt = show(item);
+      var out = fn(acc, item, i);
+      steps.push({ i: i, item: itemTxt, accIn: inTxt, out: show(out) });
+      return out;
+    };
+    var result;
+    try {
+      result = pr.init !== null ? data.reduce(wrapped, (0, eval)('(' + pr.init + ')')) : data.reduce(wrapped);
+      rs.err = null;
+    } catch (e) { rs.err = e.name + ': ' + e.message; }
+    rs.steps = steps; rs.k = 0; rs.result = result;
+    rs.start = pr.init !== null ? pr.init : show(data[0]) + '  (the first item)';
+  }
+
+  function rsRender() {
+    var pr = RS[rs.p], lines = rsCodeLines(pr);
+    var bodyStart = lines.findIndex(function (l) { return /^data\.reduce\(/.test(l); }), bodyEnd = lines.length - 1;
+    $('rsCode').innerHTML = lines.map(function (l, n) {
+      var cur = rs.k > 0 && rs.k <= rs.steps.length && n >= bodyStart && n <= bodyEnd;
+      return '<div class="ln' + (cur ? ' cur' : '') + '"><span class="no">' + (n + 1) + '</span><span>' + JSRunner.highlight(l) + '</span></div>';
+    }).join('');
+
+    var h = '<tr><th>call</th><th>index</th><th>item</th><th>acc going in</th><th>returned → next acc</th></tr>';
+    for (var s = 0; s < rs.k && s < rs.steps.length; s++) {
+      var st = rs.steps[s];
+      h += '<tr' + (s === rs.k - 1 ? ' class="now"' : '') + '><td>' + (s + 1) + '</td><td>' + st.i + '</td><td>' + esc(st.item) +
+        '</td><td>' + esc(st.accIn) + '</td><td class="' + (st.out === 'undefined' ? 'cf' : 'ct') + '">' + esc(st.out) + '</td></tr>';
+    }
+    $('rsTable').innerHTML = h;
+    $('rsCount').textContent = rs.k + ' / ' + rs.steps.length + ' calls';
+
+    var note;
+    if (rs.k === 0) {
+      note = pr.intro + '<br><span class="rsstart">Accumulator before the first call: <b>' + esc(rs.start) + '</b></span>';
+    } else {
+      var st2 = rs.steps[rs.k - 1];
+      note = 'Call ' + rs.k + ': the accumulator comes in as <b>' + esc(st2.accIn) + '</b>, the item at index ' + st2.i + ' is <b>' + esc(st2.item) +
+        '</b>, and the function returns <b>' + esc(st2.out) + '</b> — which becomes the accumulator for the next call.';
+      if (st2.out === 'undefined') note += ' <span class="rswarn">Nothing was returned, so <code>undefined</code> is carried forward.</span>';
+    }
+    $('rsNote').innerHTML = note;
+
+    var done = rs.k >= rs.steps.length;
+    $('rsStep').disabled = done;
+    $('rsFinal').innerHTML = done
+      ? (rs.err ? '<span class="bad">' + esc(rs.err) + '</span>'
+                : 'Result: <b>' + esc(show(rs.result)) + '</b>' + (rs.result === undefined ? ' <span class="rswarn">— every call returned nothing, so the answer is lost.</span>' : ''))
+      : '';
+  }
+
+  $('rsPick').innerHTML = RS.map(function (p, i) { return '<button type="button" data-p="' + i + '"' + (i === 0 ? ' class="on"' : '') + '>' + esc(p.label) + '</button>'; }).join('');
+  $('rsPick').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    rs.p = +b.dataset.p;
+    Array.prototype.forEach.call($('rsPick').children, function (x) { x.classList.toggle('on', x === b); });
+    rsBuild(); rsRender();
+  });
+  $('rsStep').addEventListener('click', function () { if (rs.k < rs.steps.length) { rs.k++; rsRender(); } });
+  $('rsAll').addEventListener('click', function () { rs.k = rs.steps.length; rsRender(); });
+  $('rsReset').addEventListener('click', function () { rs.k = 0; rsRender(); });
+  rsBuild(); rsRender();
+
+  /* ============================================================
+     TOOL 4 — COPY OR REFERENCE?
+     ============================================================ */
+  var HOW = [
+    { l:'copy = user',                 c:'const copy = user;',                          f:function (u) { return u; } },
+    { l:'copy = { ...user }',          c:'const copy = { ...user };',                   f:function (u) { return { ...u }; } },
+    { l:'copy = structuredClone(user)',c:'const copy = structuredClone(user);',         f:function (u) { return structuredClone(u); } },
+    { l:'copy = JSON.parse(JSON.stringify(user))', c:'const copy = JSON.parse(JSON.stringify(user));', f:function (u) { return JSON.parse(JSON.stringify(u)); } }
+  ];
+  var WHAT = [
+    { l:'copy.name = "Ravi"',          c:'copy.name = "Ravi";',          f:function (c) { c.name = 'Ravi'; } },
+    { l:'copy.address.city = "Pune"',  c:'copy.address.city = "Pune";',  f:function (c) { c.address.city = 'Pune'; } },
+    { l:'copy.skills.push("React")',   c:'copy.skills.push("React");',   f:function (c) { c.skills.push('React'); } }
+  ];
+  var cp = { how: 1, what: 1, shown: false, score: { r: 0, t: 0 } };
+  function freshUser() { return { name: 'Asha', skills: ['JS'], address: { city: 'Indore' } }; }
+
+  function cpOpts() {
+    $('cpHow').innerHTML = HOW.map(function (h, i) { return '<button type="button" data-h="' + i + '"' + (i === cp.how ? ' class="on"' : '') + '><code>' + esc(h.l) + '</code></button>'; }).join('');
+    $('cpWhat').innerHTML = WHAT.map(function (w, i) { return '<button type="button" data-w="' + i + '"' + (i === cp.what ? ' class="on"' : '') + '><code>' + esc(w.l) + '</code></button>'; }).join('');
+  }
+
+  function cpCode() {
+    return 'const user = {\n  name: "Asha",\n  skills: ["JS"],\n  address: { city: "Indore" },\n};\n' +
+      HOW[cp.how].c + '\n' + WHAT[cp.what].c + '\n\nconsole.log(user);';
+  }
+
+  function cpEval() {
+    var user = freshUser(), before = JSON.stringify(user);
+    var copy = HOW[cp.how].f(user);
+    var share = { outer: copy === user, address: copy.address === user.address, skills: copy.skills === user.skills };
+    WHAT[cp.what].f(copy);
+    return { user: user, copy: copy, changed: JSON.stringify(user) !== before, share: share };
+  }
+
+  function cpWhy(r) {
+    var w = ['name', 'address', 'skills'][cp.what];
+    if (cp.how === 0) return 'There is only <b>one</b> object. <code>copy</code> is a second name for it, so every change — at any depth — shows up through <code>user</code> too.';
+    if (cp.how === 1) return w === 'name'
+      ? 'Spread made a <b>new outer object</b>, so <code>name</code> on the copy belongs to the copy alone. <code>user.name</code> is untouched.'
+      : 'Spread copies <b>one level</b>. The <code>' + w + '</code> inside the copy is the <b>same object</b> as the one inside <code>user</code> — change it through one name, and the other sees it.';
+    if (cp.how === 2) return '<code>structuredClone</code> copies <b>every level</b>. Nothing is shared, so nothing leaks back into <code>user</code>.';
+    return 'The JSON round trip also copies every level for plain data like this — but it would silently drop functions and <code>undefined</code>, and turn Dates into strings.';
+  }
+
+  function cpDiagram(share) {
+    /* names → outer objects → the two nested objects; a shared box gets two arrows */
+    var W = 560, H = 214, s = '';
+    function box(x, y, w, h, label, sub, cls) {
+      return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="8" class="' + cls + '"/>' +
+        '<text x="' + (x + 10) + '" y="' + (y + 18) + '" class="bl">' + label + '</text>' +
+        (sub ? '<text x="' + (x + 10) + '" y="' + (y + 36) + '" class="bs">' + sub + '</text>' : '');
+    }
+    function arrow(x1, y1, x2, y2, cls) {
+      return '<path d="M' + x1 + ' ' + y1 + ' C ' + (x1 + 40) + ' ' + y1 + ', ' + (x2 - 40) + ' ' + y2 + ', ' + x2 + ' ' + y2 + '" class="ar ' + cls + '" marker-end="url(#cpah)"/>';
+    }
+    s += '<defs><marker id="cpah" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" class="ah"/></marker></defs>';
+    s += '<text x="8" y="52" class="nm u">user</text><text x="8" y="168" class="nm c">copy</text>';
+    var outerU = { x: 90, y: 28 }, outerC = share.outer ? outerU : { x: 90, y: 144 };
+    s += box(outerU.x, outerU.y, 150, 44, share.outer ? 'one object' : 'user\'s object', 'name: …', 'ob');
+    if (!share.outer) s += box(outerC.x, outerC.y, 150, 44, 'copy\'s object', 'name: …', 'ob');
+    s += arrow(48, 47, outerU.x - 2, outerU.y + 22, 'u');
+    s += arrow(48, 163, outerC.x - 2, outerC.y + 22, 'c');
+    var nx = 360;
+    var addrU = { x: nx, y: 8 }, skU = { x: nx, y: 60 };
+    var addrC = share.address ? addrU : { x: nx, y: 120 }, skC = share.skills ? skU : { x: nx, y: 170 };
+    s += box(addrU.x, addrU.y, 180, 40, 'address', '', share.address ? 'sh' : 'nb');
+    s += box(skU.x, skU.y, 180, 40, 'skills', '', share.skills ? 'sh' : 'nb');
+    if (!share.address) s += box(addrC.x, addrC.y, 180, 40, 'address (copy)', '', 'nb');
+    if (!share.skills) s += box(skC.x, skC.y, 180, 40, 'skills (copy)', '', 'nb');
+    s += arrow(outerU.x + 150, outerU.y + 14, addrU.x - 2, addrU.y + 20, 'u');
+    s += arrow(outerU.x + 150, outerU.y + 30, skU.x - 2, skU.y + 20, 'u');
+    if (!share.outer) {
+      s += arrow(outerC.x + 150, outerC.y + 14, addrC.x - 2, addrC.y + 20, 'c');
+      s += arrow(outerC.x + 150, outerC.y + 30, skC.x - 2, skC.y + 20, 'c');
+    }
+    var shared = [share.outer && 'the whole object', !share.outer && share.address && 'address', !share.outer && share.skills && 'skills'].filter(Boolean);
+    s += '<text x="8" y="' + (H - 4) + '" class="cap">' + (shared.length ? 'shared: ' + shared.join(' and ') + ' — amber boxes have two arrows in' : 'nothing is shared — every box belongs to one name') + '</text>';
+    return '<svg class="cpsvg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Which objects user and copy share">' + s + '</svg>';
+  }
+
+  function cpRender() {
+    cpOpts();
+    $('cpCode').innerHTML = JSRunner.highlight(cpCode());
+    Array.prototype.forEach.call(document.querySelectorAll('#cpGuess button'), function (b) { b.disabled = cp.shown; });
+    if (!cp.shown) {
+      $('cpOut').innerHTML = '<div class="cphint">Make your prediction on the left — then the result appears here.</div>';
+      $('cpDiagram').innerHTML = ''; $('cpWhy').innerHTML = '';
+      return;
+    }
+    var r = cpEval();
+    $('cpOut').innerHTML =
+      '<div class="cprow ' + (r.changed ? 'hot' : 'cool') + '"><span class="k">user</span><code>' + esc(show(r.user)) + '</code><span class="t">' + (r.changed ? 'changed' : 'untouched') + '</span></div>' +
+      '<div class="cprow"><span class="k">copy</span><code>' + esc(show(r.copy)) + '</code></div>' +
+      (cp.verdict ? '<div class="mxguess ' + (cp.verdict === 'ok' ? 'ok' : 'bad') + '">' + (cp.verdict === 'ok' ? '✓ You called it.' : '✕ Not this time.') + ' <span class="cpscore">' + cp.score.r + ' of ' + cp.score.t + '</span></div>' : '');
+    $('cpDiagram').innerHTML = cpDiagram(r.share);
+    $('cpWhy').innerHTML = cpWhy(r);
+  }
+
+  $('cpHow').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; cp.how = +b.dataset.h; cp.shown = false; cp.verdict = null; cpRender(); });
+  $('cpWhat').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; cp.what = +b.dataset.w; cp.shown = false; cp.verdict = null; cpRender(); });
+  $('cpGuess').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b || cp.shown) return;
+    var r = cpEval();
+    var right = (b.dataset.g === 'yes') === r.changed;
+    cp.score.t++; if (right) cp.score.r++;
+    cp.verdict = right ? 'ok' : 'bad'; cp.shown = true;
+    cpRender();
+  });
+  cpRender();
+
+  window.__TOOLS6 = { M: M, RS: RS, HOW: HOW, WHAT: WHAT, rs: rs, cp: cp, cpEval: cpEval };
+})();
+
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = JSRunner.esc;
+
+  /* the two habits carried over from module 05 */
+  var GLOBAL_RULES = [
+    { l:'No var — uses let or const', f:function (code) { return !/\bvar\b/.test(code); } },
+    { l:'Uses === and !== (no loose == or !=)', f:function (code) { return !/(^|[^=!<>])==(?!=)/.test(code) && !/!=(?!=)/.test(code); } }
+  ];
+
+  /* Every case in this module is PURE: the function must also leave its
+     inputs exactly as it found them. A right answer that damages the
+     caller's data fails, and the diagnosis says so. */
+  function V(args, expect) { return { args:args, expect:expect, pure:true }; }
+  function H(args, expect) { return { args:args, expect:expect, pure:true, hidden:true }; }
+  function T(args, errName, hidden) { return { args:args, throws:errName, pure:true, hidden:!!hidden }; }
+  function F(src) { return { __fn: src }; }
+
+  var CART = [{ id:1, item:'Tea', price:20, qty:2 }, { id:2, item:'Poha', price:35, qty:1 }];
+  var JOBS3 = [{ role:'Frontend Dev', remote:true }, { role:'Tester', remote:false }, { role:'MERN Intern', remote:true }];
+
+  var CH = [
+    { id:'A1', fname:'lastItem', lvl:'m', title:'The last item',
+      sig:'lastItem(arr) → any',
+      scen:'The "recently viewed" strip shows the newest product — and after it loads, the product disappears from the viewing history.',
+      brief:'Return the <b>last item</b> of the array. For an empty array, return <b><code>undefined</code></b>. <b>Do not change the array</b> — the caller still needs it.',
+      start:'function lastItem(arr) {\n  // your code here\n}\n',
+      guided:['The last index is always arr.length - 1.',
+              'Read that position — or use arr.at(-1), which counts from the end.',
+              'Do NOT use pop(): it returns the last item but also removes it',
+              '  from the caller\'s array. That is the bug in the scenario.',
+              'An empty array has no last item — both ways give undefined by themselves.'],
+      stretch:'Write <code>lastN(arr, n)</code> that returns the last <code>n</code> items as a new array, using <code>slice</code> with a negative start. What should <code>lastN([1, 2], 5)</code> return?',
+      hint:'return arr[arr.length - 1];   or   return arr.at(-1);   Both read without removing anything.',
+      rules:[],
+      tests:[V([[3, 8, 5]], 5), V([['Pune', 'Indore']], 'Indore'), V([[42]], 42),
+             H([[]], undefined), H([[1, 2, 3, 4, 5, 6]], 6), H([[{ id:1 }, { id:2 }]], { id:2 })],
+      diag:function (args, got, r) {
+        if (r.rightButMutated) return 'Right value — but your function <b>removed it from the caller\'s array</b>. <code>pop()</code> returns the last item <i>and takes it away</i>. Read it instead: <code>arr[arr.length - 1]</code> or <code>arr.at(-1)</code>.';
+      } },
+
+    { id:'A2', fname:'cartTotal', lvl:'m', title:'Cart total',
+      sig:'cartTotal(cart) → number',
+      scen:'The checkout page crashes the moment a customer empties their cart.',
+      brief:'Each line has a <code>price</code> and a <code>qty</code>. Return the total: the sum of <b>price × qty</b> for every line. An <b>empty cart totals 0</b>.',
+      start:'function cartTotal(cart) {\n  // your code here\n}\n',
+      guided:['Use reduce. The accumulator is the running total.',
+              'For each line, add line.price * line.qty to the total.',
+              'Give reduce a starting value of 0.',
+              '  Without it, an empty cart throws — that is the crash in the scenario.',
+              'Return what reduce gives back.'],
+      stretch:'Add an optional <code>discount</code> percentage: <code>cartTotal(cart, 10)</code> takes 10% off, rounded to the nearest rupee. The existing tests must still pass.',
+      hint:'return cart.reduce((sum, line) => sum + line.price * line.qty, 0);',
+      rules:[{ l:'Uses reduce', f:function (code) { return /\.reduce\s*\(/.test(code); } }],
+      tests:[V([CART], 75), V([[{ id:9, item:'Thali', price:120, qty:3 }]], 360),
+             H([[]], 0), H([[{ id:1, item:'Pen', price:10, qty:0 }, { id:2, item:'Book', price:250, qty:1 }]], 250),
+             H([[{ id:1, item:'A', price:99, qty:2 }, { id:2, item:'B', price:1, qty:5 }, { id:3, item:'C', price:40, qty:1 }]], 243)],
+      diag:function (args, got, r) {
+        if (r.threw && /empty array with no initial value/.test(r.threw.message)) return 'An empty cart has nothing to start from. Give <code>reduce</code> a starting value: <code>reduce((sum, line) =&gt; …, 0)</code>.';
+        if (got && got.s === 'NaN') return '<b>NaN</b> means something that is not a number crept into the sum — a misspelt field (<code>line.Price</code>?), or a missing starting value so the first "total" was a whole object.';
+        if (got && args[0].length && got.t === 'number') {
+          var prices = args[0].reduce(function (s, l) { return s + l.price; }, 0);
+          if (+got.s === prices) return 'You added the prices but forgot the <b>quantity</b>: each line is <code>price * qty</code>.';
+        }
+        if (got && got.t === 'string') return 'You returned text. Check for a price stored or joined as a string.';
+      } },
+
+    { id:'A3', fname:'remoteRoles', lvl:'m', title:'Remote roles',
+      sig:'remoteRoles(jobs) → string[]',
+      scen:'The "Work from home" filter shows every job, and the cards display [object Object].',
+      brief:'Return the <b>role names</b> of the jobs where <code>remote</code> is <code>true</code>, in their original order. No remote jobs gives an <b>empty array</b>.',
+      start:'function remoteRoles(jobs) {\n  // your code here\n}\n',
+      guided:['First filter: keep only the jobs where job.remote is true.',
+              'Then map: turn each job that is left into just its role.',
+              'Chain them:  jobs.filter(...).map(...)',
+              'Return the result — an array of strings.'],
+      stretch:'Return the roles sorted A to Z <b>without changing the input</b>, and treat a job with no <code>remote</code> field at all as not remote.',
+      hint:'return jobs.filter(job => job.remote).map(job => job.role);',
+      rules:[{ l:'Uses filter and map', f:function (code) { return /\.filter\s*\(/.test(code) && /\.map\s*\(/.test(code); } }],
+      tests:[V([JOBS3], ['Frontend Dev', 'MERN Intern']),
+             H([[]], []), H([[{ role:'Analyst', remote:false }]], []),
+             H([[{ role:'A', remote:true }, { role:'B', remote:true }]], ['A', 'B'])],
+      diag:function (args, got) {
+        if (got && got.t === 'array' && /\{role:/.test(got.s)) return 'You kept the right jobs but returned <b>whole objects</b>. Add <code>.map(job =&gt; job.role)</code> to keep just the names.';
+        if (got && got.t === 'array' && args[0].some(function (j) { return !j.remote; }) && args[0].every(function (j) { return got.s.indexOf("'" + j.role + "'") !== -1; }))
+          return 'Every role came back, including the office ones. <b>Filter first</b> — keep only <code>job.remote === true</code>.';
+      } },
+
+    { id:'A4', fname:'countBy', lvl:'m', title:'Count by field',
+      sig:'countBy(items, key) → object',
+      scen:'The dashboard needs "jobs per city", "students per batch" and "tickets per status" — one function for all three.',
+      brief:'Return an object that counts how many items have each value of the field named <code>key</code>. <code>countBy(jobs, "city")</code> might give <code>{ Pune: 2, Indore: 1 }</code>. No items gives <code>{}</code>.',
+      start:'function countBy(items, key) {\n  // your code here\n}\n',
+      guided:['Start reduce with an empty object {} as the accumulator.',
+              'For each item, the value to count is item[key]',
+              '  — brackets, because key is a variable holding the field name.',
+              'Set acc[value] to (acc[value] || 0) + 1.',
+              'Return acc from the callback, and the finished object at the end.'],
+      stretch:'Let <code>key</code> also be a function: <code>countBy(words, w =&gt; w.length)</code> counts words by their length.',
+      hint:'return items.reduce((acc, item) => { const k = item[key]; acc[k] = (acc[k] || 0) + 1; return acc; }, {});',
+      rules:[],
+      tests:[V([[{ city:'Pune' }, { city:'Indore' }, { city:'Pune' }], 'city'], { Pune:2, Indore:1 }),
+             V([[{ lang:'JS' }, { lang:'JS' }, { lang:'Python' }], 'lang'], { JS:2, Python:1 }),
+             H([[], 'city'], {}),
+             H([[{ status:'open' }, { status:'closed' }, { status:'open' }, { status:'open' }], 'status'], { open:3, closed:1 })],
+      diag:function (args, got) {
+        if (got && /\bkey:|undefined:/.test(got.s)) return 'Your keys came out as <code>key</code> or <code>undefined</code>. <code>item.key</code> reads a field literally called "key" — use brackets: <code>item[key]</code>.';
+        if (got && /NaN/.test(got.s)) return 'A count of <b>NaN</b>: the first time a value appears, <code>acc[k]</code> is <code>undefined</code>, and <code>undefined + 1</code> is NaN. Use <code>(acc[k] || 0) + 1</code>.';
+        if (got && got.t === 'array') return 'Return an <b>object</b> of counts, not an array.';
+      } },
+
+    { id:'A5', fname:'indexById', lvl:'m', title:'Index by id',
+      sig:'indexById(users) → object',
+      scen:'The orders page runs users.find(...) for every one of 5,000 orders, and it takes seconds to open.',
+      brief:'Return an object where each user is stored <b>under their <code>id</code></b>, so <code>byId[9]</code> gives user 9 instantly. Store the <b>whole user object</b>. No users gives <code>{}</code>.',
+      start:'function indexById(users) {\n  // your code here\n}\n',
+      guided:['Start with an empty object.',
+              'For each user, store the whole user under its id:  acc[user.id] = user',
+              'Return the accumulator each time, and the object at the end.',
+              '  (Object.fromEntries(users.map(u => [u.id, u])) also works.)'],
+      stretch:'If two users share an id, keep the <b>first</b> one and <code>console.warn</code> about the duplicate — in real data, a duplicate id means a bug upstream.',
+      hint:'return users.reduce((acc, u) => { acc[u.id] = u; return acc; }, {});',
+      rules:[],
+      tests:[V([[{ id:7, name:'Asha' }, { id:9, name:'Ravi' }]], { 7:{ id:7, name:'Asha' }, 9:{ id:9, name:'Ravi' } }),
+             H([[]], {}), H([[{ id:'u1', name:'Neha', city:'Pune' }]], { u1:{ id:'u1', name:'Neha', city:'Pune' } }),
+             H([[{ id:3, n:1 }, { id:1, n:2 }, { id:2, n:3 }]], { 1:{ id:1, n:2 }, 2:{ id:2, n:3 }, 3:{ id:3, n:1 } })],
+      diag:function (args, got) {
+        if (got && got.t === 'array') return 'Return an <b>object</b> keyed by id — not an array. The whole point is that <code>byId[9]</code> needs no searching.';
+        if (got && /: '[^']*'/.test(got.s) && !/\{id:/.test(got.s)) return 'Store the <b>whole user</b> under each id, not just the name.';
+      } },
+
+    { id:'A6', fname:'sortByPay', lvl:'a', title:'Sort by package',
+      sig:'sortByPay(jobs) → job[]',
+      scen:'Sorting the job list for the "Highest paying" tab also reorders the jobs on the home page.',
+      brief:'Return a <b>new array</b> of the jobs, highest <code>lpa</code> first. Jobs with the same package keep their original order. <b>The array you were given must not change.</b>',
+      start:'function sortByPay(jobs) {\n  // your code here\n}\n',
+      guided:['Copy first — [...jobs] — or use toSorted, so the caller\'s array is untouched.',
+              '  sort() rearranges the original: that is the home-page bug.',
+              'Sort with a comparator:  (a, b) => b.lpa - a.lpa  puts the highest first.',
+              'Without a comparator, sort compares as TEXT, and "12" comes before "4.5".',
+              'Return the sorted copy.'],
+      stretch:'Break ties by <code>company</code> A to Z, so equal packages always come out in the same order.',
+      hint:'return jobs.toSorted((a, b) => b.lpa - a.lpa);   or   return [...jobs].sort((a, b) => b.lpa - a.lpa);',
+      rules:[],
+      tests:[V([[{ c:'A', lpa:4.5 }, { c:'B', lpa:12 }, { c:'C', lpa:6 }]], [{ c:'B', lpa:12 }, { c:'C', lpa:6 }, { c:'A', lpa:4.5 }]),
+             H([[]], []),
+             H([[{ c:'X', lpa:5 }, { c:'Y', lpa:5 }, { c:'Z', lpa:9 }]], [{ c:'Z', lpa:9 }, { c:'X', lpa:5 }, { c:'Y', lpa:5 }]),
+             H([[{ c:'P', lpa:9 }, { c:'Q', lpa:100 }, { c:'R', lpa:10 }]], [{ c:'Q', lpa:100 }, { c:'R', lpa:10 }, { c:'P', lpa:9 }])],
+      diag:function (args, got, r) {
+        if (r.rightButMutated) return 'Right order — but you sorted the <b>caller\'s array in place</b>. <code>sort()</code> changes the original, which is exactly the home-page bug. Use <code>toSorted</code>, or copy first: <code>[...jobs].sort(…)</code>.';
+        if (got && got.t === 'array' && args[0].length > 1) {
+          var asc = args[0].slice().sort(function (a, b) { return a.lpa - b.lpa; }).map(function (j) { return j.c; }).join('');
+          var order = (got.s.match(/c: '(\w)'/g) || []).map(function (m) { return m.slice(-2, -1); }).join('');
+          if (order === asc) return 'That is <b>lowest first</b>. For highest first, the comparator is <code>b.lpa - a.lpa</code>.';
+          var txt = args[0].slice().sort(function (a, b) { return String(b.lpa) < String(a.lpa) ? -1 : 1; }).map(function (j) { return j.c; }).join('');
+          if (order === txt) return 'It sorted the packages as <b>text</b>, so "9" beat "100". Give <code>sort</code> a comparator.';
+        }
+      } },
+
+    { id:'A7', fname:'groupBy', lvl:'a', title:'Group by field',
+      sig:'groupBy(items, key) → object of arrays',
+      scen:'The batch page lists students under a heading for each city.',
+      brief:'Return an object with one property per value of <code>key</code>, each holding an <b>array of the items</b> with that value, in their original order. Build it yourself — <code>Object.groupBy</code> is not allowed here.',
+      start:'function groupBy(items, key) {\n  // your code here\n}\n',
+      guided:['Start reduce with {}.',
+              'For each item, its group name is item[key].',
+              'If that group does not exist yet, create it as an empty array.',
+              'Push the item into its group, then return the accumulator.'],
+      stretch:'Return a <code>Map</code> instead of an object — and write one comment explaining when a <code>Map</code> is the better choice.',
+      hint:'const k = item[key];  if (!acc[k]) acc[k] = [];  acc[k].push(item);  return acc;',
+      rules:[{ l:'Builds the groups itself (no Object.groupBy)', f:function (code) { return !/Object\.groupBy|Map\.groupBy/.test(code); } }],
+      tests:[V([[{ name:'Asha', city:'Pune' }, { name:'Ravi', city:'Indore' }, { name:'Neha', city:'Pune' }], 'city'],
+               { Pune:[{ name:'Asha', city:'Pune' }, { name:'Neha', city:'Pune' }], Indore:[{ name:'Ravi', city:'Indore' }] }),
+             H([[], 'city'], {}),
+             H([[{ t:'bug', id:1 }, { t:'bug', id:2 }, { t:'task', id:3 }, { t:'bug', id:4 }], 't'],
+               { bug:[{ t:'bug', id:1 }, { t:'bug', id:2 }, { t:'bug', id:4 }], task:[{ t:'task', id:3 }] })],
+      diag:function (args, got) {
+        if (got && got.t === 'object' && /: \{/.test(got.s) && !/: \[/.test(got.s)) return 'Each group should be an <b>array</b>. You are overwriting the group with the latest item — create an array the first time, then <code>push</code> into it.';
+        if (got && /: \d/.test(got.s) && !/: \[/.test(got.s)) return 'That is <b>counting</b>. Grouping keeps the items themselves in a list.';
+        if (got && /\bkey:/.test(got.s)) return 'Use brackets: <code>item[key]</code>. <code>item.key</code> reads a field literally called "key".';
+      } },
+
+    { id:'A8', fname:'updateQty', lvl:'a', title:'Update a cart line',
+      sig:'updateQty(cart, id, qty) → cart[]',
+      scen:'Changing a quantity updates the cart total, but the item list on screen never changes — React never noticed.',
+      brief:'Return a <b>new cart</b> where the line with this <code>id</code> has the new <code>qty</code>. A <code>qty</code> of <b>0 or less removes the line</b>. Other lines stay as they are, an unknown id changes nothing — and <b>the cart you were given must not change</b>.',
+      start:'function updateQty(cart, id, qty) {\n  // your code here\n}\n',
+      guided:['Never change the cart you were given — build a new array.',
+              'If qty is 0 or less, return the cart WITHOUT that line: filter.',
+              'Otherwise map: the matching line becomes { ...line, qty },',
+              '  and every other line is returned as it is.',
+              'Return the new array.'],
+      stretch:'Let <code>qty</code> also be a function of the old quantity: <code>updateQty(cart, 2, q =&gt; q + 1)</code> — the same trick React\'s <code>setState</code> uses.',
+      hint:'if (qty <= 0) return cart.filter(l => l.id !== id);   return cart.map(l => l.id === id ? { ...l, qty } : l);',
+      rules:[],
+      tests:[V([CART, 2, 3], [{ id:1, item:'Tea', price:20, qty:2 }, { id:2, item:'Poha', price:35, qty:3 }]),
+             V([CART, 1, 0], [{ id:2, item:'Poha', price:35, qty:1 }]),
+             H([CART, 99, 5], CART),
+             H([CART, 2, -1], [{ id:1, item:'Tea', price:20, qty:2 }]),
+             H([[], 1, 4], [])],
+      diag:function (args, got, r) {
+        if (r.rightButMutated) return 'Right cart — but you changed the <b>original line objects</b> (<code>line.qty = …</code>). React compares old and new; if they are the same objects, the screen never updates. Copy the line: <code>{ ...line, qty }</code>.';
+        if (args[2] <= 0 && got && /qty: -?\d/.test(got.s) && got.s.indexOf('id: ' + args[1] + ',') !== -1) return 'A quantity of <b>0 or less removes the line</b> entirely — use <code>filter</code> for that case.';
+      } },
+
+    { id:'A9', fname:'pick', lvl:'m', title:'Pick fields',
+      sig:'pick(obj, keys) → object',
+      scen:'The profile API is about to send the password hash to the browser, because it sends the whole user record.',
+      brief:'Return a <b>new object</b> containing only the listed <code>keys</code> that the object actually has. A listed key the object does not have is <b>left out</b>. A value of <code>0</code>, <code>""</code> or <code>null</code> is still a real value — <b>keep it</b>.',
+      start:'function pick(obj, keys) {\n  // your code here\n}\n',
+      guided:['Start with an empty result object.',
+              'Loop over keys. Copy a key only if obj really has it:',
+              '  Object.hasOwn(obj, key)  — or  key in obj',
+              'Do NOT test with if (obj[key]) — 0 and null are real values and must stay.',
+              'Return the new object; the original stays as it was.'],
+      stretch:'Write the opposite, <code>omit(obj, keys)</code>, using <code>Object.entries</code>, <code>filter</code> and <code>Object.fromEntries</code>.',
+      hint:'return Object.fromEntries(keys.filter(k => Object.hasOwn(obj, k)).map(k => [k, obj[k]]));',
+      rules:[],
+      tests:[V([{ id:7, name:'Asha', password:'x9#', city:'Pune' }, ['id', 'name']], { id:7, name:'Asha' }),
+             H([{ a:1 }, ['a', 'z']], { a:1 }),
+             H([{ a:1 }, []], {}),
+             H([{ score:0, note:'', ref:null, x:5 }, ['score', 'note', 'ref']], { score:0, note:'', ref:null })],
+      diag:function (args, got) {
+        if (got && /undefined/.test(got.s)) return 'A key that is not in the object should be <b>left out</b> — not set to <code>undefined</code>. Check that the key exists before copying it.';
+        if (got && args[0] && Object.prototype.hasOwnProperty.call(args[0], 'score') && !/score/.test(got.s)) return '<code>0</code>, <code>""</code> and <code>null</code> are real values. Test whether the <b>key exists</b> (<code>Object.hasOwn</code>), not whether the value is truthy.';
+        if (got && /password/.test(got.s)) return 'Only the listed keys come back — the password must not.';
+      } },
+
+    { id:'A10', fname:'uniqueSkills', lvl:'a', title:'Every skill, once',
+      sig:'uniqueSkills(jobs) → string[]',
+      scen:'The skills filter shows "React" nine times — once for every job that asks for it.',
+      brief:'Each job has a <code>skills</code> array. Return <b>every skill that appears, once each</b>, sorted <b>A to Z</b>. No jobs, or no skills, gives an empty array.',
+      start:'function uniqueSkills(jobs) {\n  // your code here\n}\n',
+      guided:['Collect every skill into one flat list:  jobs.flatMap(job => job.skills)',
+              'Remove duplicates with a Set:  [...new Set(list)]',
+              'Sort A to Z, returning a new array.',
+              'Return it.'],
+      stretch:'Return the skills ordered by <b>how many jobs ask for them</b>, most wanted first, ties A to Z.',
+      hint:'return [...new Set(jobs.flatMap(job => job.skills))].sort();',
+      rules:[],
+      tests:[V([[{ skills:['React', 'CSS'] }, { skills:['Node', 'React'] }]], ['CSS', 'Node', 'React']),
+             H([[]], []), H([[{ skills:[] }, { skills:[] }]], []),
+             H([[{ skills:['Mongo', 'Node'] }, { skills:['Node'] }, { skills:['Express', 'Mongo', 'React'] }]], ['Express', 'Mongo', 'Node', 'React'])],
+      diag:function (args, got) {
+        if (got && /^\[\[/.test(got.s)) return '<code>map</code> gives you an <b>array of arrays</b>. Use <code>flatMap</code> — or <code>.flat()</code> — for one flat list.';
+        if (got && got.t === 'array') {
+          var items = got.s.match(/'[^']*'/g) || [];
+          if (items.length !== new Set(items).size) return 'Some skills appear more than once. A <code>Set</code> keeps only one of each.';
+          var sorted = items.slice().sort();
+          if (items.join() !== sorted.join()) return 'Every skill is there once — now <b>sort</b> them A to Z.';
+        }
+      } },
+
+    { id:'A11', fname:'myMap', lvl:'a', title:'Write your own map',
+      sig:'myMap(arr, fn) → array',
+      scen:'Interview round two: "Implement Array.prototype.map without using map."',
+      brief:'Return a <b>new array</b> holding <code>fn(item, index, arr)</code> for every item — exactly what <code>map</code> does. You may <b>not</b> use <code>.map</code>, and <b>arr must not change</b>.',
+      start:'function myMap(arr, fn) {\n  // your code here\n}\n',
+      guided:['Make an empty result array.',
+              'Loop over every index of arr.',
+              'Call fn with THREE arguments — the item, its index, and arr —',
+              '  and push what it returns onto the result.',
+              'Return the result array. Never change arr.'],
+      stretch:'Add it to every array as <code>Array.prototype.myMap = function (fn) { … }</code> using <code>this</code> — and explain in a comment why an arrow function would not work there.',
+      hint:'const out = [];  for (let i = 0; i < arr.length; i++) out.push(fn(arr[i], i, arr));  return out;',
+      rules:[{ l:'Does not use .map', f:function (code) { return !/\.map\s*\(/.test(code); } }],
+      tests:[V([[1, 2, 3], F('n => n * 2')], [2, 4, 6]),
+             V([['a', 'b'], F('s => s.toUpperCase()')], ['A', 'B']),
+             H([[], F('n => n + 1')], []),
+             H([[5, 6, 7], F('(n, i) => n + i')], [5, 7, 9]),
+             H([[1, 2], F('(n, i, all) => all.length')], [2, 2])],
+      diag:function (args, got, r) {
+        if (r.mutated && r.mutated.length) return 'You changed <code>arr</code>. <code>map</code> always builds a <b>new</b> array and leaves the original alone.';
+        if (got && args[1] && /\(n, i\)/.test(args[1].__fn)) return 'Pass the <b>index</b> as the second argument: <code>fn(arr[i], i, arr)</code>.';
+        if (got && args[1] && /all/.test(args[1].__fn)) return 'Pass the <b>whole array</b> as the third argument: <code>fn(arr[i], i, arr)</code>.';
+      } },
+
+    { id:'A12', fname:'myReduce', lvl:'b', title:'Write your own reduce',
+      sig:'myReduce(arr, fn, initial) → any',
+      scen:'The follow-up question: "Now reduce. And what happens with an empty array?"',
+      brief:'Behave exactly like <code>arr.reduce(fn, initial)</code>. With a starting value, the callback runs for every item. <b>Without one</b>, the first item is the start and the callback begins at index 1. An empty array with no start must <b>throw a <code>TypeError</code></b>. No <code>.reduce</code> allowed.',
+      start:'function myReduce(arr, fn, initial) {\n  // your code here\n}\n',
+      guided:['Was a starting value passed? Check arguments.length >= 3',
+              '  — not initial === undefined: undefined can be a real starting value.',
+              'If yes: acc = initial and start at index 0.',
+              'If no: an empty arr throws new TypeError(...);',
+              '  otherwise acc = arr[0] and start at index 1.',
+              'Loop to the end:  acc = fn(acc, arr[i], i, arr).  Then return acc.'],
+      stretch:'Write <code>myReduceRight</code>: the same walk, from the last item to the first.',
+      hint:'let i = 0, acc = initial;  if (arguments.length < 3) { if (arr.length === 0) throw new TypeError("empty"); acc = arr[0]; i = 1; }  for (; i < arr.length; i++) acc = fn(acc, arr[i], i, arr);  return acc;',
+      rules:[{ l:'Does not use .reduce', f:function (code) { return !/\.reduce\s*\(/.test(code); } }],
+      tests:[V([[1, 2, 3, 4], F('(s, n) => s + n'), 0], 10),
+             V([[1, 2, 3, 4], F('(s, n) => s + n')], 10),
+             H([['a', 'b', 'c'], F('(s, x) => s + x'), ''], 'abc'),
+             H([[], F('(s, n) => s + n'), 100], 100),
+             T([[], F('(s, n) => s + n')], 'TypeError', true),
+             H([[7], F('() => { throw new Error("the callback should not run"); }')], 7),
+             H([[3, 9, 4], F('(acc, n, i) => acc + i')], 6),
+             H([[5], F('(acc, n) => [acc, n]'), undefined], [undefined, 5])],
+      diag:function (args, got, r) {
+        if (r.wantedThrow && !r.threw) return 'An empty array with no starting value has nothing to return — <code>throw new TypeError(...)</code>, the way the real <code>reduce</code> does.';
+        if (r.threw && /should not run/.test(r.threw.message)) return 'With <b>one item and no starting value</b>, the answer is that item — the callback never runs.';
+        if (args.length === 3 && args[2] === undefined) return 'Someone passed <code>undefined</code> <b>on purpose</b> as the starting value. Check <code>arguments.length</code>, not <code>initial === undefined</code>.';
+        if (args[1] && /acc \+ i/.test(args[1].__fn)) return 'Without a starting value the loop begins at <b>index 1</b>, and the index is the <b>third</b> argument: <code>fn(acc, arr[i], i, arr)</code>.';
+        if (r.threw && /empty array/i.test(r.threw.message) && args[0].length) return 'You threw on an array that is not empty.';
+      } }
+  ];
+
+  /* ---------- formatting a value the way the tests show it ---------- */
+  function fmt(v, top) {
+    if (v && typeof v === 'object' && typeof v.__fn === 'string') return v.__fn;
+    if (typeof v === 'string') return top === false ? "'" + v + "'" : JSON.stringify(v);
+    if (v === null) return 'null';
+    if (v === undefined) return 'undefined';
+    if (typeof v === 'number') return Number.isNaN(v) ? 'NaN' : (Object.is(v, -0) ? '-0' : String(v));
+    if (Array.isArray(v)) return '[' + v.map(function (x) { return fmt(x, false); }).join(', ') + ']';
+    if (typeof v === 'object') {
+      var ks = Object.keys(v);
+      return ks.length ? '{' + ks.map(function (k) { return k + ': ' + fmt(v[k], false); }).join(', ') + '}' : '{}';
+    }
+    return String(v);
+  }
+  function fmtGot(g) { if (!g) return '—'; return g.t === 'string' ? JSON.stringify(g.s) : g.s; }
+  function wantText(t) { return t.throws ? 'throws ' + t.throws : fmt(t.expect, true); }
+  function typeName(v) {
+    if (v === null) return 'null';
+    if (Array.isArray(v)) return 'array';
+    return typeof v;
+  }
+  function callText(c, fname) {
+    return fname + '(' + c.args.map(function (a) { return fmt(a, true); }).join(', ') + ')';
+  }
+
+  /* ---------- state ---------- */
+  var solved = {}, submits = {}, codeStore = {}, idx = 0, lane = 'standard', started = false;
+
+  function guidedStarter(c) {
+    var n = 0;
+    var body = c.guided.map(function (t) {
+      if (/^\s/.test(t)) return '  //      ' + t.trim();
+      n++; return '  // ' + n + '. ' + t;
+    });
+    var sigLine = c.start.split('\n')[0];
+    return sigLine + '\n' + body.join('\n') + '\n\n}\n';
+  }
+  function starterFor(c) { return lane === 'guided' ? guidedStarter(c) : c.start; }
+  function untouched(c, code) { return code === c.start || code === guidedStarter(c); }
+
+  var list = $('chList');
+  list.innerHTML = CH.map(function (c) { return '<button type="button">' + c.id + '</button>'; }).join('');
+
+  function updateScore() {
+    $('score').innerHTML = 'solved <b>' + Object.keys(solved).length + '</b> / ' + CH.length;
+    Array.prototype.forEach.call(list.children, function (b, i) {
+      b.classList.toggle('solved', !!solved[CH[i].id]);
+      b.classList.toggle('on', i === idx);
+    });
+  }
+
+  function idleTests(c) {
+    var vis = c.tests.filter(function (t) { return !t.hidden; }).length;
+    var h = '<div class="th">Tests<span class="sc">' + vis + ' sample · ' + (c.tests.length - vis) + ' hidden</span></div>';
+    c.tests.forEach(function (t, i) {
+      h += '<div class="tr idle"><span class="mk">·</span><div>' +
+        (t.hidden ? '<span class="call">hidden test ' + (i + 1) + '</span><span class="hid">runs on Submit</span>'
+                  : '<span class="call">' + esc(callText(t, c.fname)) + '</span><div class="det">expected <b>' + esc(wantText(t)) + '</b></div>') +
+        '</div></div>';
+    });
+    var rules = GLOBAL_RULES.concat(c.rules);
+    h += '<div class="th">Code rules<span class="sc">' + (rules.length + 1) + '</span></div>';
+    h += '<div class="tr idle"><span class="mk">·</span><div class="call" style="font-family:inherit">Leaves every input exactly as it was</div></div>';
+    rules.forEach(function (r) { h += '<div class="tr idle"><span class="mk">·</span><div class="call" style="font-family:inherit">' + esc(r.l) + '</div></div>'; });
+    $('chTests').innerHTML = h;
+  }
+
+  function load(i) {
+    if (started && CH[idx]) codeStore[CH[idx].id] = $('chCode').value;
+    started = true;
+    idx = i;
+    var c = CH[i];
+    $('chTitle').textContent = c.id + ' · ' + c.title;
+    var lv = $('chLvl');
+    lv.className = 'lvl ' + (c.lvl === 'b' ? 'i' : c.lvl);
+    lv.textContent = c.lvl === 'm' ? 'MODERATE' : (c.lvl === 'a' ? 'ADVANCED' : 'BOSS');
+    $('chScenario').innerHTML = '<span class="l">Real scenario</span>' + c.scen;
+    $('chBrief').innerHTML = c.brief;
+    $('chSig').innerHTML = '<b>' + esc(c.fname) + '</b>' + esc(c.sig.slice(c.fname.length));
+    $('chEx').innerHTML = c.tests.filter(function (t) { return !t.hidden; }).map(function (t) {
+      return '<span>' + esc(callText(t, c.fname)) + '  →  <b>' + esc(wantText(t)) + '</b></span>';
+    }).join('');
+    $('chCode').value = codeStore[c.id] !== undefined ? codeStore[c.id] : starterFor(c);
+    $('chVerdict').textContent = ''; $('chVerdict').className = 'verdict';
+    $('chDiag').className = 'diag'; $('chDiag').innerHTML = '';
+    $('chHintBox').className = 'hint'; $('chHintBox').textContent = c.hint;
+    $('chCon').innerHTML = '<div class="ohint">anything your code prints shows up here</div>';
+    idleTests(c);
+    renderLane();
+    updateScore();
+  }
+
+  function renderLane() {
+    var c = CH[idx];
+    Array.prototype.forEach.call(document.querySelectorAll('#chLanes button'), function (b) { b.classList.toggle('on', b.dataset.l === lane); });
+    $('chLaneNote').textContent = {
+      guided: 'Every step is written into the starter for you. Same tests, same rules — only the help changes.',
+      standard: 'The brief, the sample cases and the tests. This is the level to aim for.',
+      stretch: 'Pass the tests first, then take the extension below. Hints are switched off.'
+    }[lane];
+    var sb = $('chStretch');
+    if (lane === 'stretch') { sb.innerHTML = '<span class="l">Extension · after Submit passes</span>' + c.stretch; sb.classList.add('show'); }
+    else sb.classList.remove('show');
+    $('chHint').style.display = lane === 'stretch' ? 'none' : '';
+    if (lane === 'stretch') $('chHintBox').className = 'hint';
+  }
+
+  $('chLanes').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    var c = CH[idx], fresh = untouched(c, $('chCode').value);
+    lane = b.dataset.l;
+    if (fresh) $('chCode').value = starterFor(c);
+    renderLane();
+  });
+
+  /* ---------- running tests ---------- */
+  function diagnose(c, t, r) {
+    var special = c.diag ? c.diag(t.args, r.got, r) : null;
+    if (special) return special;
+    if (r.rightButMutated || (r.mutated && r.mutated.length)) return '<b>Your function changed the data it was given.</b> Every function in this module must leave its inputs as they were — build and return something new instead.';
+    if (r.threw && !r.wantedThrow) return '<b>Test crashed</b> with <code>' + esc(r.threw.name + ': ' + r.threw.message) + '</code>' + (r.threw.note ? ' — ' + esc(r.threw.note) : '');
+    if (r.wantedThrow && r.threw) return 'It threw <code>' + esc(r.threw.name) + '</code>, but this case expects a <code>' + esc(r.wantedThrow) + '</code>.';
+    if (r.printed && r.gotUndef && t.expect !== undefined) return '<b>You printed the answer but did not return it.</b> The grader only reads what the function <b>returns</b>. Change <code>console.log(x)</code> to <code>return x</code>.';
+    if (r.gotUndef && t.expect !== undefined && !r.wantedThrow) return '<b>Your function returned nothing</b> (<code>undefined</code>). Is there a <code>return</code> on every path — and, in an arrow function with braces, a <code>return</code> inside them?';
+    if (!r.wantedThrow) {
+      var want = typeName(t.expect), gotT = r.got ? r.got.t : '';
+      if (gotT && want !== gotT && gotT !== 'error')
+        return 'You returned ' + (gotT === 'array' || gotT === 'object' ? 'an ' : 'a ') + '<b>' + gotT + '</b> where the test expects ' + (want === 'array' || want === 'object' || want === 'undefined' ? 'an ' : 'a ') + '<b>' + want + '</b>.';
+    }
+    return null;
+  }
+
+  function run(isSubmit) {
+    var c = CH[idx], code = $('chCode').value;
+    var cases = c.tests.filter(function (t) { return isSubmit || !t.hidden; });
+    $('chVerdict').className = 'verdict'; $('chVerdict').textContent = isSubmit ? 'Submitting…' : 'Running sample cases…';
+    return JSRunner.test(code, c.fname, cases.map(function (t) {
+      return { args: t.args, expect: t.expect, pure: t.pure, throws: t.throws };
+    }), 2500).then(function (res) {
+      if (isSubmit) submits[c.id] = (submits[c.id] || 0) + 1;
+      var reveal = (submits[c.id] || 0) >= 2;
+      var h = '', pass = 0, diags = [];
+
+      JSRunner.render($('chCon'), { out: res.out || [], truncated: res.truncated }, {});
+      if (!(res.out || []).length) $('chCon').innerHTML = '<div class="ohint">your code printed nothing</div>';
+
+      if (res.timeout) {
+        h = '<div class="th">Tests<span class="sc">stopped</span></div><div class="tr fail"><span class="mk">✕</span><div><span class="call">Your code did not finish in 2.5 seconds.</span><div class="det">That is almost always an infinite loop — check that the loop condition can become false, and that the counter actually changes.</div></div></div>';
+        $('chTests').innerHTML = h;
+        verdict(false, 0, c.tests.length, isSubmit, 'timeout');
+        return res;
+      }
+      if (!res.ok) {
+        h = '<div class="th">Tests<span class="sc">could not run</span></div><div class="tr fail"><span class="mk">✕</span><div><span class="call">' + esc(res.error.name + ': ' + res.error.message) + '</span>' +
+            (res.error.note ? '<div class="det">' + esc(res.error.note) + '</div>' : '') + '</div></div>';
+        $('chTests').innerHTML = h;
+        verdict(false, 0, c.tests.length, isSubmit, 'error');
+        return res;
+      }
+
+      var shownCount = 0;
+      h += '<div class="th">' + (isSubmit ? 'All tests' : 'Sample cases') + '<span class="sc" id="chTally"></span></div>';
+      c.tests.forEach(function (t, i) {
+        var k = cases.indexOf(t);
+        if (k === -1) {
+          h += '<div class="tr idle"><span class="mk">·</span><div><span class="call">hidden test ' + (i + 1) + '</span><span class="hid">runs on Submit</span></div></div>';
+          return;
+        }
+        var r = res.results[k]; shownCount++;
+        if (r.pass) pass++;
+        else { var d = diagnose(c, t, r); if (d && diags.indexOf(d) === -1) diags.push(d); }
+        var showCall = !t.hidden || reveal;
+        var gotTxt = r.threw ? 'throws ' + r.threw.name + (r.threw.name === t.throws ? '' : ': ' + r.threw.message) : fmtGot(r.got);
+        if (!r.pass && (r.rightButMutated || (r.mutated && r.mutated.length))) gotTxt += ' — and the input was changed';
+        h += '<div class="tr ' + (r.pass ? 'pass' : 'fail') + '"><span class="mk">' + (r.pass ? '✓' : '✕') + '</span><div>' +
+          (showCall ? '<span class="call">' + esc(callText(t, c.fname)) + '</span>' : '<span class="call">hidden test ' + (i + 1) + '</span>') +
+          (t.hidden ? '<span class="hid">' + (showCall ? 'hidden · revealed' : 'hidden') + '</span>' : '') +
+          (showCall
+            ? '<div class="det">expected <b>' + esc(wantText(t)) + '</b> · got <b>' + esc(gotTxt) + '</b></div>'
+            : '<div class="det">' + (r.pass ? 'passed' : 'inputs stay hidden until your second submission') + '</div>') +
+          '</div></div>';
+      });
+
+      var rules = GLOBAL_RULES.concat(c.rules), stripped = JSRunner.codeOnly(code), rulePass = 0;
+      if (isSubmit) {
+        h += '<div class="th">Code rules</div>';
+        /* shown for completeness — a mutation already failed its test above */
+        var pure = res.results.every(function (r) { return !(r.mutated && r.mutated.length); });
+        h += '<div class="tr ' + (pure ? 'pass' : 'fail') + '"><span class="mk">' + (pure ? '✓' : '✕') + '</span><div class="call" style="font-family:inherit">Leaves every input exactly as it was</div></div>';
+        rules.forEach(function (rl) {
+          var ok = rl.f(stripped);
+          if (ok) rulePass++;
+          h += '<div class="tr ' + (ok ? 'pass' : 'fail') + '"><span class="mk">' + (ok ? '✓' : '✕') + '</span><div class="call" style="font-family:inherit">' + esc(rl.l) + '</div></div>';
+        });
+      }
+      $('chTests').innerHTML = h;
+      var tally = $('chTally'); if (tally) tally.textContent = pass + ' / ' + shownCount + ' passed';
+
+      var dg = $('chDiag');
+      if (diags.length) {
+        dg.innerHTML = '<span class="l">What went wrong</span><ul>' + diags.slice(0, 4).map(function (d) { return '<li>' + d + '</li>'; }).join('') + '</ul>';
+        dg.className = 'diag show';
+      } else { dg.className = 'diag'; dg.innerHTML = ''; }
+
+      var allTests = pass === cases.length, allRules = rulePass === rules.length;
+      if (isSubmit && allTests && allRules) solved[c.id] = true;
+      verdict(isSubmit ? (allTests && allRules) : allTests, pass, cases.length, isSubmit, isSubmit && allTests && !allRules ? 'rules' : '');
+      if (isSubmit && !(allTests && allRules) && submits[c.id] >= 2 && lane !== 'stretch') $('chHintBox').className = 'hint show';
+      updateScore();
+      return res;
+    });
+  }
+
+  function verdict(ok, pass, total, isSubmit, why) {
+    var v = $('chVerdict');
+    if (why === 'timeout') { v.className = 'verdict no'; v.textContent = 'Stopped — infinite loop?'; return; }
+    if (why === 'error') { v.className = 'verdict no'; v.textContent = 'Your code has an error — read the message above.'; return; }
+    if (why === 'rules') { v.className = 'verdict no'; v.textContent = 'Every test passes — but a code rule does not. Fix it and submit again.'; return; }
+    if (!isSubmit) {
+      v.className = 'verdict ' + (ok ? 'ok' : 'no');
+      v.textContent = ok ? '✓ Sample cases pass. Now Submit — the hidden tests are where the edge cases live.' : pass + ' of ' + total + ' sample cases pass.';
+      return;
+    }
+    v.className = 'verdict ' + (ok ? 'ok' : 'no');
+    v.textContent = ok ? '✓ Accepted — every test and every rule passes.' : 'Wrong answer — ' + pass + ' of ' + total + ' tests pass.';
+  }
+
+  list.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    load(Array.prototype.indexOf.call(list.children, b));
+    window.scrollTo(0, document.getElementById('v-ch').offsetTop - 10);
+  });
+  $('chRun').addEventListener('click', function () { run(false); });
+  $('chSubmit').addEventListener('click', function () { run(true); });
+  $('chReset').addEventListener('click', function () { $('chCode').value = starterFor(CH[idx]); codeStore[CH[idx].id] = $('chCode').value; idleTests(CH[idx]); $('chDiag').className = 'diag'; $('chVerdict').textContent = ''; });
+  $('chHint').addEventListener('click', function () { $('chHintBox').classList.toggle('show'); });
+  wireEditor($('chCode'), function () { run(false); });
+
+  load(0);
+  window.__CH = CH;
+  window.__CHAPI = { load: load, run: run, setLane: function (l) { lane = l; }, guidedStarter: guidedStarter, GLOBAL_RULES: GLOBAL_RULES };
+})();
+
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+
+  var LOGIC = [
+    { code:'const a = [1, 2, 3];\nconst b = a;\nb.push(4);\nconsole.log(a.length);',
+      ask:'Only b was pushed to. What is a.length?',
+      a:'<p><b><code>4</code>.</b> <code>const b = a</code> does not copy anything — it gives the <b>same array</b> a second name. Push through either name and both see it.</p><p>To copy, write <code>const b = [...a]</code>.</p>' },
+
+    { code:'console.log(["1", "2", "3"].map(parseInt));',
+      ask:'Three strings, turned into numbers. What comes out?',
+      a:'<p><b><code>[1, NaN, NaN]</code>.</b> <code>map</code> calls its function with <b>(item, index, array)</b>, and <code>parseInt</code> takes a second argument: the <b>radix</b>, the number base. So it runs <code>parseInt("2", 1)</code> and <code>parseInt("3", 2)</code> — neither makes sense, so both give NaN.</p><p>Write <code>.map(Number)</code>, or <code>.map(s =&gt; parseInt(s, 10))</code>.</p>' },
+
+    { code:'console.log([].every(n => n > 100));\nconsole.log([].some(n => n > 100));',
+      ask:'An empty array, and the same test twice. What are the two answers?',
+      a:'<p><b><code>true</code>, then <code>false</code>.</b> "Every one of zero items is over 100" is true — there is no item to disprove it. "At least one is" is false — there is no item to prove it.</p><p>This is how an empty order can pass an "all items in stock" check. Test <code>list.length</code> first when empty should mean no.</p>' },
+
+    { code:'const nums = [3, 1, 2];\nconst sorted = nums.sort();\nconsole.log(nums);\nconsole.log(sorted === nums);',
+      ask:'Did sorting make a new array?',
+      a:'<p><b><code>[1, 2, 3]</code>, then <code>true</code>.</b> <code>sort</code> rearranges the original and returns <b>that same array</b>. There is only one array here, with two names.</p><p>For a sorted copy, use <code>nums.toSorted()</code> or <code>[...nums].sort()</code>.</p>' },
+
+    { code:'console.log([1, 2, 3].map(n => { n * 2 }));',
+      ask:'The doubling is right there. Why might this not double anything?',
+      a:'<p><b><code>[undefined, undefined, undefined]</code>.</b> Braces after an arrow make a function <b>body</b>, and a body only gives back what it <code>return</code>s. <code>n * 2</code> is worked out and thrown away.</p><p>Either drop the braces — <code>n =&gt; n * 2</code> — or write <code>n =&gt; { return n * 2; }</code>.</p>' },
+
+    { code:'const grid = new Array(3).fill([]);\ngrid[0].push("x");\nconsole.log(grid);',
+      ask:'Only the first row was pushed to. What does the grid look like?',
+      a:'<p><b><code>[[\'x\'], [\'x\'], [\'x\']]</code>.</b> <code>fill([])</code> makes <b>one</b> empty array and puts that same array in all three slots.</p><p><code>Array.from({ length: 3 }, () =&gt; [])</code> calls the function three times, so each row is its own array.</p>' },
+
+    { code:'console.log(Object.keys({ b: 1, 2: 1, a: 1, 1: 1 }));',
+      ask:'In what order do the keys come back?',
+      a:'<p><b><code>[\'1\', \'2\', \'b\', \'a\']</code>.</b> Keys that look like whole numbers are listed first, in ascending order. Then the rest, in the order they were added. And every key comes back as a <b>string</b>.</p><p>Never rely on object key order for something a user sees — use an array.</p>' },
+
+    { code:'const user = { name: "Asha", address: { city: "Indore" } };\nconst copy = { ...user };\ncopy.address.city = "Pune";\nconsole.log(user.address.city);',
+      ask:'Only the copy was changed. Where does the user live now?',
+      a:'<p><b><code>Pune</code>.</b> Spread copies <b>one level</b>. <code>copy.address</code> is the very same object as <code>user.address</code>, so changing it through one changes it for both.</p><p>Copy every level you change — <code>{ ...user, address: { ...user.address, city: "Pune" } }</code> — or use <code>structuredClone(user)</code>.</p>' },
+
+    { code:'const { a = 1, b = 2 } = { a: null, b: undefined };\nconsole.log(a, b);',
+      ask:'Both have defaults. Which defaults are used?',
+      a:'<p><b><code>null 2</code>.</b> A default steps in only for <code>undefined</code>. <code>null</code> is a real value that someone set on purpose, so <code>a</code> stays <code>null</code>.</p><p>If null should fall back too, write <code>const a = obj.a ?? 1</code>.</p>' },
+
+    { code:'const arr = [2, 4, 6, 7];\nfor (const n of arr) {\n  if (n % 2 === 0) arr.splice(arr.indexOf(n), 1);\n}\nconsole.log(arr);',
+      ask:'Remove every even number. Does it work?',
+      a:'<p><b><code>[4, 7]</code> — the 4 survives.</b> Removing 2 slides every later item one place left, so 4 moves into the slot the loop has already visited, and the loop never sees it.</p><p><b>Never add or remove items in the array you are looping over.</b> Build a new one: <code>arr.filter(n =&gt; n % 2 !== 0)</code>.</p>' }
+  ];
+
+  $('logicWrap').innerHTML = LOGIC.map(function (d, i) {
+    return '<div class="panel drill" style="margin-bottom:14px">' +
+      '<span class="lbl">Drill ' + (i + 1) + '</span>' +
+      '<pre>' + JSRunner.highlight(d.code) + '</pre>' +
+      '<p style="font-size:15.5px;color:var(--ink);font-weight:600;margin:12px 0">' + d.ask + '</p>' +
+      '<div class="row"><button class="btn sm" type="button" data-rev="' + i + '">Reveal the answer</button>' +
+      '<button class="btn sm" type="button" data-run="' + i + '">Run it ▶</button></div>' +
+      '<div class="note q" id="la' + i + '" style="display:none;margin-top:12px">' + d.a + '</div>' +
+      '<div class="out runproof" id="lr' + i + '" style="display:none;border-radius:10px;border-top:1px solid var(--line)"></div>' +
+      '</div>';
+  }).join('');
+
+  $('logicWrap').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.rev !== undefined) {
+      var box = $('la' + b.dataset.rev), open = box.style.display !== 'none';
+      box.style.display = open ? 'none' : 'block';
+      b.textContent = open ? 'Reveal the answer' : 'Hide the answer';
+    }
+    if (b.dataset.run !== undefined) {
+      var i = +b.dataset.run, out = $('lr' + i);
+      out.style.display = 'block';
+      out.innerHTML = '<div class="ohint">running…</div>';
+      JSRunner.run(LOGIC[i].code, 1500, 50).then(function (r) { JSRunner.render(out, r, {}); });
+    }
+  });
+
+  window.__LOGIC = LOGIC;
+})();
+
+</script>
+</body>
+</html>
