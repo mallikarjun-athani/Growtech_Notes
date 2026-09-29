@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arrays and Objects</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#F5F7F8; --card:#FFFFFF; --sunk:#EDF2F3;
+    --ink:#12181C; --ink-2:#3D4A52; --ink-3:#6B7C86;
+    --line:#DCE3E6; --line-soft:#E9EEF0;
+    --accent:#0E6E68; --accent-soft:#DCEEEC;
+    --amber:#A85A11; --amber-soft:#F7E9D8;
+    --blue:#1F5FA8;  --blue-s:#E0EAF7;
+    --plum:#7A3E86;  --plum-s:#F1E5F4;
+    --red:#B03A2E;   --red-s:#FBE6E3;
+    --green:#1E7A4C; --green-s:#DDF0E5;
+    --code-bg:#101820; --code-ink:#D7E3E6;
+    --shadow:0 1px 2px rgba(18,24,28,.06), 0 8px 24px rgba(18,24,28,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#0D1418; --card:#141D22; --sunk:#101A1F;
+      --ink:#E8EFF1; --ink-2:#AEBEC5; --ink-3:#7E9099;
+      --line:#26343B; --line-soft:#1D282E;
+      --accent:#5CC8BE; --accent-soft:#12312F;
+      --amber:#E0A15C; --amber-soft:#2E2213;
+      --blue:#79B4EE;  --blue-s:#14263A;
+      --plum:#CE9ED9;  --plum-s:#2C1D31;
+      --red:#E88070;   --red-s:#331714;
+      --green:#5FC98C; --green-s:#0F2C1D;
+      --code-bg:#070C0F; --code-ink:#D7E3E6;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0D1418; --card:#141D22; --sunk:#101A1F;
+    --ink:#E8EFF1; --ink-2:#AEBEC5; --ink-3:#7E9099;
+    --line:#26343B; --line-soft:#1D282E;
+    --accent:#5CC8BE; --accent-soft:#12312F;
+    --amber:#E0A15C; --amber-soft:#2E2213;
+    --blue:#79B4EE;  --blue-s:#14263A;
+    --plum:#CE9ED9;  --plum-s:#2C1D31;
+    --red:#E88070;   --red-s:#331714;
+    --green:#5FC98C; --green-s:#0F2C1D;
+    --code-bg:#070C0F; --code-ink:#D7E3E6;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--paper); color:var(--ink); margin:0;
+    font-family:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:"Archivo","IBM Plex Sans",system-ui,sans-serif;text-wrap:balance;margin:0;letter-spacing:-.02em}
+  p{margin:0}
+  svg{max-width:100%;height:auto;display:block}
+  code,.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+
+  .deck{max-width:1180px;margin:0 auto;padding:0 20px 96px}
+  .slide{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--shadow);padding:clamp(24px,3.2vw,48px);margin:24px 0;
+    min-height:clamp(420px,74vh,730px);display:flex;flex-direction:column;gap:20px;
+  }
+  .slide.hidden{display:none}
+
+  .eyebrow{
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
+  .slide h2{font-size:clamp(25px,3.3vw,40px);font-weight:800;line-height:1.12}
+  .sub{color:var(--ink-2);font-size:clamp(15px,1.35vw,18px);max-width:66ch}
+  .sub b{color:var(--ink);font-weight:600}
+  .grow{flex:1}
+
+  .title-slide{justify-content:center;gap:24px;position:relative;overflow:hidden}
+  .title-slide h1{font-size:clamp(36px,6vw,74px);font-weight:800;line-height:1.03}
+  .title-slide h1 .thin{display:block;font-weight:600;color:var(--ink-3);font-size:.36em;margin-bottom:.55em}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{font-family:"IBM Plex Mono",monospace;font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);color:var(--ink-2);background:var(--paper)}
+  .chip b{color:var(--accent);font-weight:600}
+
+  .grid{display:grid;gap:15px}
+  .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  @media (max-width:860px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+  .card{border:1px solid var(--line);border-radius:10px;padding:17px;background:var(--paper);display:flex;flex-direction:column;gap:7px}
+  .card h3{font-size:16.5px;font-weight:700}
+  .card p{color:var(--ink-2);font-size:14.5px}
+  .card .tag{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+  .card.b{background:var(--blue-s);border-color:var(--blue)} .card.b .tag{color:var(--blue)}
+  .card.g{background:var(--green-s);border-color:var(--green)} .card.g .tag{color:var(--green)}
+  .card.p{background:var(--plum-s);border-color:var(--plum)} .card.p .tag{color:var(--plum)}
+  .card.a{background:var(--amber-soft);border-color:var(--amber)} .card.a .tag{color:var(--amber)}
+  .card.r{background:var(--red-s);border-color:var(--red)} .card.r .tag{color:var(--red)}
+
+  ul.clean{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:11px}
+  /* Block, not flex: a flex <li> makes the <b> and the text around it
+     separate columns, which breaks the sentence apart. */
+  ul.clean li{display:block;position:relative;padding-left:18px;font-size:clamp(14.5px,1.35vw,17px);color:var(--ink-2);line-height:1.45}
+  ul.clean li b{color:var(--ink);font-weight:600}
+  ul.clean li::before{content:"";position:absolute;left:0;top:.55em;width:7px;height:7px;border-radius:2px;background:var(--accent);transform:rotate(45deg)}
+
+  pre{margin:0;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:16px 18px;overflow-x:auto;font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.68;border:1px solid var(--line)}
+  pre .c{color:#7E9099;font-style:italic}
+  pre .t{color:#7FD1C7}
+  pre .a{color:#9FC6E8}
+  pre .s{color:#E0A15C}
+  pre .hl{background:rgba(224,161,92,.16);display:inline-block;width:100%}
+  .fname{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);letter-spacing:.05em;margin-bottom:7px;display:block}
+
+  .callout{border-left:3px solid var(--amber);background:var(--amber-soft);padding:13px 17px;border-radius:0 8px 8px 0;color:var(--ink-2);font-size:15px}
+  .callout b{color:var(--ink)}
+  .callout.q{border-left-color:var(--plum);background:var(--plum-s)}
+  .callout.g{border-left-color:var(--green);background:var(--green-s)}
+
+  .scroll-x{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:14.5px}
+  th{text-align:left;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);padding:0 12px 9px 0;border-bottom:1px solid var(--line);font-weight:600;white-space:nowrap}
+  td{padding:9px 12px 9px 0;border-bottom:1px solid var(--line-soft);color:var(--ink-2);vertical-align:top}
+  td:first-child{color:var(--ink);font-weight:600;white-space:nowrap}
+  td code,th code{color:var(--accent)}
+
+  .navbar{
+    position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);
+    border-top:1px solid var(--line);display:flex;align-items:center;gap:13px;
+    padding:10px max(20px, calc(50vw - 590px));box-shadow:0 -6px 18px -12px rgba(0,0,0,.4);
+  }
+  .navbar button{font-family:"IBM Plex Mono",monospace;font-size:12.5px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:7px 13px;cursor:pointer}
+  .navbar button:hover{border-color:var(--accent);color:var(--accent)}
+  .navbar button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .counter{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+  .bar{flex:1;height:3px;background:var(--line-soft);border-radius:2px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s ease}
+  .navbar .hint{font-size:12px;color:var(--ink-3)}
+  @media (max-width:700px){.navbar .hint{display:none}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+  @media print{
+    .navbar{display:none}
+    .slide{page-break-after:always;box-shadow:none;min-height:0}
+    .slide.hidden{display:flex}
+  }
+
+  /* ---- additions for CSS properties / box model ---- */
+  .swatchrow{display:flex;gap:9px;flex-wrap:wrap}
+  .sw{flex:1;min-width:92px;border-radius:9px;border:1px solid var(--line);overflow:hidden;background:var(--card)}
+  .sw .fill{height:52px}
+  .sw .nm{font-family:"IBM Plex Mono",monospace;font-size:10.5px;padding:7px 9px;color:var(--ink-2);line-height:1.35}
+  .sw .nm b{display:block;color:var(--ink);font-size:11.5px}
+
+  .demo{border:1px dashed var(--accent);border-radius:10px;padding:16px 18px;background:var(--card);position:relative}
+  .demo::before{content:"LIVE ON THIS SLIDE";position:absolute;top:-9px;left:16px;background:var(--accent);color:var(--card);
+    font-family:"IBM Plex Mono",monospace;font-size:9px;letter-spacing:.13em;padding:2px 9px;border-radius:5px;font-weight:600}
+
+  .scale li{display:flex;align-items:baseline;gap:14px;padding:5px 0;border-bottom:1px solid var(--line-soft)}
+  .scale li .v{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);width:88px;flex:none}
+  .scale li .t{color:var(--ink);font-weight:700;line-height:1.1}
+  ul.scale{list-style:none;margin:0;padding:0}
+
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:5px 16px;font-size:14.5px;align-items:baseline}
+  .kv dt{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--accent);font-weight:600;white-space:nowrap}
+  .kv dd{margin:0;color:var(--ink-2)}
+
+  .clock{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+  @media (max-width:860px){.clock{grid-template-columns:repeat(2,1fr)}}
+  .cl{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)}
+  .cl .h{font-family:"IBM Plex Mono",monospace;font-size:12px;padding:8px 11px;background:var(--sunk);color:var(--ink);border-bottom:1px solid var(--line);font-weight:600}
+  .cl .b{padding:11px;display:grid;place-items:center}
+  .cl .cap{font-size:12.5px;color:var(--ink-2);padding:0 11px 11px;text-align:center}
+
+  .big-num{font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:clamp(26px,3.6vw,46px);color:var(--accent);line-height:1}
+  .eq{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:"IBM Plex Mono",monospace;font-size:clamp(14px,1.6vw,20px);font-weight:600}
+  .eq .op{color:var(--ink-3)}
+  .eq .pill{padding:6px 12px;border-radius:8px;border:2px solid}
+  .eq .pc{background:var(--blue-s);border-color:var(--blue);color:var(--blue)}
+  .eq .pp{background:var(--green-s);border-color:var(--green);color:var(--green)}
+  .eq .pb{background:var(--sunk);border-color:var(--ink-2);color:var(--ink)}
+  .eq .pt{background:var(--amber-soft);border-color:var(--amber);color:var(--amber)}
+
+
+  /* ---- module 05: live JavaScript on the slide ---- */
+  pre.js .k{color:#7FD1C7;font-weight:600}
+  pre.js .s{color:#E8B57A}
+  pre.js .n{color:#8FC0F0}
+  pre.js .f{color:#D6A8E0}
+  pre.js .c{color:#7E9099;font-style:italic}
+
+  .live{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--code-bg);display:flex;flex-direction:column}
+  .live .lbar{display:flex;align-items:center;gap:6px;padding:6px 8px 6px 14px;background:#16222A;border-bottom:1px solid #22313A}
+  .live .lname{flex:1;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#7E9099}
+  .live button{font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:6px;cursor:pointer;
+    border:1px solid #2B3B45;background:#1C2A33;color:#D7E3E6}
+  .live button:hover{border-color:#5CC8BE;color:#5CC8BE}
+  .live button.run{background:#0E6E68;border-color:#0E6E68;color:#fff}
+  .live button.run:hover{background:#12857E;color:#fff}
+  .live button:focus-visible{outline:2px solid #5CC8BE;outline-offset:2px}
+  .live pre{margin:0;border:0;border-radius:0;background:transparent;font-size:13.5px;line-height:1.7}
+  .live textarea{margin:0;border:0;border-radius:0;background:#0B1418;color:#D7E3E6;font-family:"IBM Plex Mono",monospace;
+    font-size:13.5px;line-height:1.7;padding:16px 18px;resize:vertical;min-height:120px;outline:none;tab-size:2}
+  .live textarea:focus{box-shadow:inset 0 0 0 2px #0E6E68}
+  .out{background:#081014;border-top:1px solid #22313A;font-family:"IBM Plex Mono",monospace;font-size:13.5px;line-height:1.6;
+    padding:10px 16px;min-height:42px;color:#D7E3E6}
+  .out .ol,.out .or{padding:2px 0;border-bottom:1px solid #111E24;white-space:pre-wrap;word-break:break-word}
+  .out .or{color:#8FA3AD}
+  .out .or .arrow{color:#566B75}
+  .out .ow{padding:3px 8px;margin:2px -8px;background:#2B2210;color:#F0C27A;border-radius:4px}
+  .out .oe{padding:5px 9px;margin:3px -8px;background:#2C1512;color:#F4A193;border-radius:4px;white-space:pre-wrap}
+  .out .oe b{color:#FF8E7C}
+  .out .onote{display:block;color:#D9B0A8;font-size:12px;margin-top:3px}
+  .out .ot{padding:7px 10px;margin:3px -8px;background:#2B2210;color:#F0C27A;border-radius:4px}
+  .out .oa{padding:3px 8px;margin:2px -8px;background:#12263A;color:#AFD3F5;border-radius:4px}
+  .out .tagalert{font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:#1F5FA8;color:#fff;padding:1px 6px;border-radius:3px}
+  .out .oempty,.out .ohint{color:#566B75;font-style:italic}
+  .v-string{color:#E7ECEE} .v-number,.v-bigint{color:#7FB8F0} .v-boolean{color:#D9A8E3}
+  .v-null,.v-undefined{color:#8FA3AD} .v-function{color:#7FD1C7} .v-error{color:#F4A193}
+  .v-array,.v-object{color:#E7ECEE} .v-symbol{color:#F0C27A}
+
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+  .pair > *{min-width:0}
+  @media (max-width:980px){.pair{grid-template-columns:1fr}}
+  .falsy{display:flex;flex-wrap:wrap;gap:8px}
+  .falsy span{font-family:"IBM Plex Mono",monospace;font-size:15px;font-weight:700;padding:8px 14px;border-radius:9px;
+    background:var(--red-s);border:2px solid var(--red);color:var(--red)}
+  .truthy span{background:var(--green-s);border-color:var(--green);color:var(--green)}
+  .eqtab td{font-family:"IBM Plex Mono",monospace;font-size:13.5px}
+  .eqtab td.t{color:var(--green);font-weight:700} .eqtab td.f{color:var(--red);font-weight:700}
+  /* ---- module 06 ---- */
+  .mchips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 2px}
+  .mchips code{font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600;padding:4px 10px;border-radius:7px;
+    background:var(--card);border:1.5px solid currentColor}
+  .card.r .mchips code{color:var(--red)}
+  .card.g .mchips code{color:var(--green)}
+  .card h3 + .mchips{margin-top:6px}
+
+  /* A long block with its output underneath runs off a 900px projector.
+     "wide" puts the output beside the code instead, using the width the
+     slide already has. */
+  .live pre,.live textarea{line-height:1.55}
+  .live.wide{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);grid-template-rows:auto 1fr}
+  .live.wide .lbar{grid-column:1 / -1}
+  .live.wide > pre,.live.wide > textarea{grid-column:1;grid-row:2}
+  .live.wide .out{grid-column:2;grid-row:2;border-top:0;border-left:1px solid #22313A;align-self:stretch}
+  @media (max-width:980px){
+    .live.wide{display:flex}
+    .live.wide .out{border-left:0;border-top:1px solid #22313A}
+  }
+
+  .flowrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-family:"IBM Plex Mono",monospace;font-size:13px}
+  .flowrow .fb{padding:6px 11px;border-radius:8px;border:1.5px solid var(--line);background:var(--sunk);color:var(--ink)}
+  .flowrow .fb.b{border-color:var(--blue);background:var(--blue-s)}
+  .flowrow .fb.p{border-color:var(--plum);background:var(--plum-s)}
+  .flowrow .fb.g{border-color:var(--green);background:var(--green-s)}
+  .flowrow .fa{color:var(--ink-3);font-size:12px;font-weight:600}
+
+  /* the code column needs the width more than the bullets do: at 1:1 a
+     line past 58 characters scrolls sideways — invisible on a projector */
+  .pair{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
+  @media (max-width:980px){.pair{grid-template-columns:1fr}}
+  /* ---- three-depth tier layers ---- */
+  .tier{display:none;border-radius:0 10px 10px 0;padding:14px 18px;font-size:15px;line-height:1.55;margin-top:2px}
+  .tier .tl{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.14em;
+    text-transform:uppercase;font-weight:700;margin-bottom:6px}
+  .tier b{font-weight:700}
+  .tier code{font-family:"IBM Plex Mono",monospace;font-size:.9em}
+  .tier-plain{background:var(--green-s);border-left:4px solid var(--green);color:var(--ink-2)}
+  .tier-plain .tl{color:var(--green)} .tier-plain b{color:var(--ink)} .tier-plain code{color:var(--green)}
+  .tier-deep{background:var(--plum-s);border-left:4px solid var(--plum);color:var(--ink-2)}
+  .tier-deep .tl{color:var(--plum)} .tier-deep b{color:var(--ink)} .tier-deep code{color:var(--plum)}
+  body.show-plain .tier-plain{display:block}
+  body.show-deep  .tier-deep{display:block}
+  .navbar button.tbtn{font-size:12px;padding:7px 11px}
+  .navbar button.tbtn.on{background:var(--accent);border-color:var(--accent);color:var(--card)}
+  .navbar button#tPlain.on{background:var(--green);border-color:var(--green)}
+  .navbar button#tDeep.on{background:var(--plum);border-color:var(--plum)}
+  @media print{ .tier{display:block!important} }
+</style>
+</head>
+<body>
+
+<main class="deck" id="deck">
+<!-- 1 -->
+<section class="slide title-slide">
+  <div class="eyebrow">Module 06</div>
+  <h1><span class="thin">Arrays and objects</span>Shaping real data</h1>
+  <p class="sub">Every screen you will build takes a <b>list of records</b> and turns it into something a person can read — a job board, a cart, a dashboard. This module is about that one skill: <b>picking, reshaping and summarising data</b>, the way it is done in real code.</p>
+  <div class="chips">
+    <span class="chip"><b>01</b>&nbsp; Arrays — the list</span>
+    <span class="chip"><b>02</b>&nbsp; map · filter · reduce</span>
+    <span class="chip"><b>03</b>&nbsp; Objects — the record</span>
+    <span class="chip"><b>04</b>&nbsp; Real data, shaped</span>
+  </div>
+  <div class="grow"></div>
+  <div class="callout g"><b>Every code block runs.</b> Press <b>Run</b>, or <b>Edit</b> first and change it. The best way through this module is to break things on purpose and read what comes back.</div>
+</section>
+
+<!-- 2 -->
+<section class="slide">
+  <div class="eyebrow">Why this module</div>
+  <h2>Real data is an array of objects</h2>
+  <p class="sub">This is what an API sends back. Not one value — <b>a list, where every item is a record with named fields</b>. Every screen asks the same three questions of it.</p>
+  <div class="scroll-x">
+    <svg viewBox="0 0 940 300" role="img" aria-label="An array of job records flows into three operations: filter keeps some, map reshapes each, reduce summarises all">
+      <rect x="16" y="16" width="360" height="268" rx="10" fill="var(--code-bg)" stroke="var(--line)" stroke-width="1.5"/>
+      <text x="32" y="42" font-family="IBM Plex Mono, monospace" font-size="12" fill="#7E9099">// GET /api/jobs</text>
+      <text x="32" y="66" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="#D7E3E6">[</text>
+      <text x="44" y="90" font-family="IBM Plex Mono, monospace" font-size="12" fill="#D7E3E6">{ id: <tspan fill="#8FC0F0">101</tspan>, company: <tspan fill="#E8B57A">"Nimbus Labs"</tspan>,</text>
+      <text x="56" y="108" font-family="IBM Plex Mono, monospace" font-size="12" fill="#D7E3E6">city: <tspan fill="#E8B57A">"Pune"</tspan>, lpa: <tspan fill="#8FC0F0">6</tspan>, remote: <tspan fill="#D6A8E0">true</tspan> },</text>
+      <text x="44" y="136" font-family="IBM Plex Mono, monospace" font-size="12" fill="#D7E3E6">{ id: <tspan fill="#8FC0F0">102</tspan>, company: <tspan fill="#E8B57A">"Kestrel Tech"</tspan>,</text>
+      <text x="56" y="154" font-family="IBM Plex Mono, monospace" font-size="12" fill="#D7E3E6">city: <tspan fill="#E8B57A">"Indore"</tspan>, lpa: <tspan fill="#8FC0F0">4.5</tspan>, remote: <tspan fill="#D6A8E0">false</tspan> },</text>
+      <text x="44" y="182" font-family="IBM Plex Mono, monospace" font-size="12" fill="#D7E3E6">{ id: <tspan fill="#8FC0F0">103</tspan>, company: <tspan fill="#E8B57A">"Orbit Systems"</tspan>,</text>
+      <text x="56" y="200" font-family="IBM Plex Mono, monospace" font-size="12" fill="#D7E3E6">city: <tspan fill="#E8B57A">"Pune"</tspan>, lpa: <tspan fill="#8FC0F0">7.5</tspan>, remote: <tspan fill="#D6A8E0">false</tspan> },</text>
+      <text x="44" y="228" font-family="IBM Plex Mono, monospace" font-size="12" fill="#7E9099">  … one object per job</text>
+      <text x="32" y="256" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="#D7E3E6">]</text>
+
+      <path d="M384 150 L430 60"  stroke="var(--ink-3)" stroke-width="1.6" fill="none"/>
+      <path d="M384 150 L430 150" stroke="var(--ink-3)" stroke-width="1.6" fill="none"/>
+      <path d="M384 150 L430 240" stroke="var(--ink-3)" stroke-width="1.6" fill="none"/>
+
+      <rect x="434" y="26" width="490" height="68" rx="10" fill="var(--blue-s)" stroke="var(--blue)" stroke-width="2"/>
+      <text x="452" y="52" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="700" fill="var(--blue)">filter</text>
+      <text x="530" y="52" font-family="IBM Plex Sans, sans-serif" font-size="13.5" font-weight="600" fill="var(--ink)">Which ones do I want?</text>
+      <text x="452" y="76" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink-2)">"Show remote jobs only"  →  fewer items, same shape</text>
+
+      <rect x="434" y="116" width="490" height="68" rx="10" fill="var(--plum-s)" stroke="var(--plum)" stroke-width="2"/>
+      <text x="452" y="142" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="700" fill="var(--plum)">map</text>
+      <text x="530" y="142" font-family="IBM Plex Sans, sans-serif" font-size="13.5" font-weight="600" fill="var(--ink)">What should each one look like?</text>
+      <text x="452" y="166" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink-2)">"Each card shows company · city"  →  same count, new shape</text>
+
+      <rect x="434" y="206" width="490" height="68" rx="10" fill="var(--amber-soft)" stroke="var(--amber)" stroke-width="2"/>
+      <text x="452" y="232" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="700" fill="var(--amber)">reduce</text>
+      <text x="530" y="232" font-family="IBM Plex Sans, sans-serif" font-size="13.5" font-weight="600" fill="var(--ink)">What do they add up to?</text>
+      <text x="452" y="256" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink-2)">"Average package: 5.5 LPA"  →  many in, one out</text>
+    </svg>
+  </div>
+  <div class="callout"><b>The MERN connection:</b> MongoDB returns arrays of objects. Express sends them as JSON. React turns each one into a card with <code>map</code>. The language changes between layers; the data shape does not.</div>
+</section>
+
+<!-- 3 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Arrays</div>
+  <h2>An array is an ordered list, counted from zero</h2>
+  <div class="pair">
+    <div>
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const cities = ["Indore", "Pune", "Bhopal", "Nagpur"];
+
+console.log(cities[0]);          // first
+console.log(cities.length);      // how many
+console.log(cities[cities.length - 1]);  // last, the old way
+console.log(cities.at(-1));      // last, the modern way
+console.log(cities[10]);         // past the end — no error!
+
+console.log(typeof cities);          // surprise
+console.log(Array.isArray(cities));  // the real test
+</pre><div class="out" aria-live="polite"></div></div>
+    </div>
+    <div>
+      <ul class="clean">
+        <li><b>Index 0 is the first item.</b> The last is always at <code>length - 1</code>.</li>
+        <li><b>Reading past the end gives <code>undefined</code></b>, not an error. That silence is where many bugs start — the code keeps running with nothing.</li>
+        <li><b><code>at(-1)</code></b> counts from the end. <code>at(-2)</code> is second-last. Square brackets cannot do that: <code>cities[-1]</code> is <code>undefined</code>.</li>
+        <li><b><code>typeof</code> says <code>"object"</code></b> for an array. Use <code>Array.isArray()</code> whenever you need to know.</li>
+      </ul>
+      <div class="callout q" style="margin-top:14px"><b>Ask the room:</b> <code>const list = [];</code> — is <code>if (list)</code> true or false? It is <b>true</b>. An empty array is still an object, and every object is truthy. Check <code>list.length === 0</code> instead.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Arrays</div>
+  <h2>The first question to ask of any method: does it change the original?</h2>
+  <div class="grid g2">
+    <div class="card r">
+      <span class="tag">Changes the original array</span>
+      <h3>Mutating methods</h3>
+      <div class="mchips">
+        <code>push</code><code>pop</code><code>shift</code><code>unshift</code><code>splice</code><code>sort</code><code>reverse</code><code>fill</code>
+      </div>
+      <p>The array you passed in is different afterwards. Anyone else holding it sees the change.</p>
+    </div>
+    <div class="card g">
+      <span class="tag">Returns something new</span>
+      <h3>Non-mutating methods</h3>
+      <div class="mchips">
+        <code>map</code><code>filter</code><code>reduce</code><code>slice</code><code>concat</code><code>flat</code><code>join</code><code>toSorted</code><code>toReversed</code><code>with</code>
+      </div>
+      <p>The original is untouched. You get a fresh array or value back.</p>
+    </div>
+  </div>
+<div class="live wide"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const scores = [70, 95, 82];
+const sorted = scores.sort((a, b) =&gt; a - b);
+
+console.log(sorted);             // [70, 82, 95] — fine
+console.log(scores);             // …but the original moved too
+console.log(sorted === scores);  // it is the SAME array
+
+const safe = [40, 10, 30];
+const copy = safe.toSorted((a, b) =&gt; a - b);
+console.log(safe, copy);         // original kept
+</pre><div class="out" aria-live="polite"></div></div>
+  <div class="callout"><b>Why this matters for placement:</b> React re-renders only when it sees a <b>new</b> array. Mutate the old one with <code>push</code> or <code>sort</code> and the screen silently does not update. The single most common React bug in a fresher's first month starts right here.</div>
+</section>
+
+<!-- 5 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Arrays</div>
+  <h2>Adding and removing at the ends</h2>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const queue = ["Asha", "Ravi"];
+
+console.log(queue.push("Neha"));     // add to end — returns?
+console.log(queue.unshift("Imran")); // add to start — returns?
+console.log(queue);
+
+console.log(queue.pop());   // remove from end — returns?
+console.log(queue.shift()); // remove from start — returns?
+console.log(queue);
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <div class="scroll-x">
+        <table>
+          <tr><th>Method</th><th>Does</th><th>Returns</th></tr>
+          <tr><td><code>push(x)</code></td><td>add at end</td><td>the <b>new length</b></td></tr>
+          <tr><td><code>pop()</code></td><td>remove from end</td><td>the removed item</td></tr>
+          <tr><td><code>unshift(x)</code></td><td>add at start</td><td>the <b>new length</b></td></tr>
+          <tr><td><code>shift()</code></td><td>remove from start</td><td>the removed item</td></tr>
+        </table>
+      </div>
+      <div class="callout q" style="margin-top:14px"><b>The trap:</b> <code>const list = cart.push(item);</code> — <code>list</code> is now a <b>number</b>, not an array. <code>push</code> returns the length. Code that then calls <code>list.map</code> crashes three lines later.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Arrays</div>
+  <h2>slice versus splice — the pair everyone mixes up</h2>
+  <div class="grid g2">
+    <div class="card g">
+      <span class="tag">slice(start, end) · copies</span>
+      <h3>A slice of cake — the cake is still there</h3>
+      <p>Returns the items from <code>start</code> up to <b>but not including</b> <code>end</code>. Negative numbers count from the end. <b>The original never changes.</b></p>
+    </div>
+    <div class="card r">
+      <span class="tag">splice(start, deleteCount, …items) · edits</span>
+      <h3>Splicing film — you cut the actual reel</h3>
+      <p>Removes <code>deleteCount</code> items from <code>start</code>, optionally inserts new ones there, and returns what it removed. <b>The original is changed.</b></p>
+    </div>
+  </div>
+<div class="live wide"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const menu = ["poha", "jalebi", "samosa", "kachori", "chai"];
+
+console.log(menu.slice(1, 3));   // copy items 1 and 2
+console.log(menu.slice(-2));     // the last two
+console.log(menu);               // untouched
+
+const removed = menu.splice(1, 2);        // cut two out
+console.log(removed, menu);
+
+menu.splice(1, 0, "bhutte ka kees");      // insert, remove nothing
+console.log(menu);
+</pre><div class="out" aria-live="polite"></div></div>
+</section>
+
+<!-- 7 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Arrays</div>
+  <h2>Finding things: includes, find, some, every</h2>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const jobs = [
+  { id: 101, company: "Nimbus Labs", lpa: 6, remote: true },
+  { id: 102, company: "Kestrel Tech", lpa: 4.5, remote: false },
+  { id: 103, company: "Orbit Systems", lpa: 7.5, remote: false },
+];
+
+console.log(jobs.find(j =&gt; j.id === 103));   // the item
+console.log(jobs.find(j =&gt; j.id === 999));   // none → undefined
+console.log(jobs.findIndex(j =&gt; j.lpa &gt; 5)); // its position
+console.log(jobs.some(j =&gt; j.remote));       // any at all?
+console.log(jobs.every(j =&gt; j.lpa &gt;= 4));    // all of them?
+
+console.log(["Pune", "Indore"].includes("Pune"));
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <div class="scroll-x">
+        <table>
+          <tr><th>Ask</th><th>Use</th><th>Nothing found</th></tr>
+          <tr><td>Is this value in it?</td><td><code>includes</code></td><td><code>false</code></td></tr>
+          <tr><td>Where is this value?</td><td><code>indexOf</code></td><td><code>-1</code></td></tr>
+          <tr><td>Give me the first match</td><td><code>find</code></td><td><code>undefined</code></td></tr>
+          <tr><td>Where is the first match?</td><td><code>findIndex</code></td><td><code>-1</code></td></tr>
+          <tr><td>Does any item pass?</td><td><code>some</code></td><td><code>false</code></td></tr>
+          <tr><td>Does every item pass?</td><td><code>every</code></td><td><code>true</code> on empty!</td></tr>
+        </table>
+      </div>
+      <div class="callout" style="margin-top:12px"><b>Always handle "not found".</b> <code>jobs.find(…).company</code> crashes the day the id is missing. Write <code>jobs.find(…)?.company</code>, or check the result first.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Arrays</div>
+  <h2>Sorting properly</h2>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">console.log([10, 1, 3, 25].sort());          // surprise
+console.log([10, 1, 3, 25].sort((a, b) =&gt; a - b));  // low → high
+console.log([10, 1, 3, 25].sort((a, b) =&gt; b - a));  // high → low
+
+const jobs = [
+  { company: "Orbit",   lpa: 7.5 },
+  { company: "Kestrel", lpa: 4.5 },
+  { company: "Nimbus",  lpa: 6   },
+];
+const byPay = jobs.toSorted((a, b) =&gt; b.lpa - a.lpa);
+console.log(byPay.map(j =&gt; j.company));
+
+const names = ["ravi", "Asha", "imran", "Zoya"];
+console.log(names.toSorted());      // capitals first?!
+console.log(names.toSorted((a, b) =&gt; a.localeCompare(b)));
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <ul class="clean">
+        <li><b>With no comparator, <code>sort</code> compares as text.</b> <code>"10"</code> comes before <code>"3"</code> because <code>"1"</code> comes before <code>"3"</code>. That is why numbers come out wrong.</li>
+        <li><b>The comparator returns a number:</b> negative puts <code>a</code> first, positive puts <code>b</code> first. <code>a - b</code> is ascending; <code>b - a</code> is descending.</li>
+        <li><b>For text, use <code>localeCompare</code></b> — plain sort puts every capital letter before every lowercase one.</li>
+        <li><b><code>sort</code> changes the original.</b> Use <code>toSorted</code>, or copy first: <code>[...jobs].sort(…)</code>.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="slide">
+  <div class="eyebrow">Part 1 · Arrays</div>
+  <h2>The utility belt: join, split, flat, Array.from</h2>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">console.log(["HTML", "CSS", "JS"].join(" · "));      // → text
+console.log("react,node,mongo".split(","));           // → array
+console.log("indore".split("").reverse().join(""));   // reversed
+
+console.log([1, [2, [3, [4]]]].flat());          // one level
+console.log([1, [2, [3, [4]]]].flat(Infinity));  // all the way
+
+const lists = [["HTML", "CSS"], ["React"], ["Node", "MongoDB"]];
+console.log(lists.flatMap(list =&gt; list));
+
+console.log(Array.from({ length: 5 }, (_, i) =&gt; i + 1));
+console.log(Array.from("hello"));
+console.log([...new Set(["Pune", "Indore", "Pune"])]); // unique
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <div class="scroll-x">
+        <table>
+          <tr><th>Method</th><th>Use it to</th></tr>
+          <tr><td><code>join(sep)</code></td><td>turn a list into one string</td></tr>
+          <tr><td><code>split(sep)</code></td><td>turn a string into a list (a string method)</td></tr>
+          <tr><td><code>flat(depth)</code></td><td>unwrap nested arrays</td></tr>
+          <tr><td><code>flatMap(fn)</code></td><td>map, then flatten one level</td></tr>
+          <tr><td><code>Array.from(x, fn)</code></td><td>build an array from anything list-like</td></tr>
+          <tr><td><code>[...new Set(arr)]</code></td><td>remove duplicates</td></tr>
+          <tr><td><code>concat(a, b)</code></td><td>join arrays into a new one</td></tr>
+        </table>
+      </div>
+      <div class="callout q" style="margin-top:12px"><b>The fill trap:</b> <code>new Array(3).fill([])</code> puts the <b>same</b> array in all three slots — push into one and all three change. <code>Array.from({ length: 3 }, () => [])</code> makes three separate ones.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · map, filter, reduce</div>
+  <h2>map — one in, one out, new shape</h2>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const jobs = [
+  { company: "Nimbus Labs",   city: "Pune",   lpa: 6 },
+  { company: "Kestrel Tech",  city: "Indore", lpa: 4.5 },
+  { company: "Orbit Systems", city: "Pune",   lpa: 7.5 },
+];
+
+const names = jobs.map(job =&gt; job.company);
+console.log(names);
+
+const labels = jobs.map(job =&gt; `${job.company} · ${job.city}`);
+console.log(labels);
+
+const cards = jobs.map((job, i) =&gt; ({
+  rank: i + 1,
+  title: job.company,
+}));
+console.log(cards);
+
+// the classic mistake — braces without return
+console.log(jobs.map(job =&gt; { job.company }));
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <ul class="clean">
+        <li><b><code>map</code> calls your function once per item</b> and collects whatever it <b>returns</b> into a new array.</li>
+        <li><b>Same length in, same length out.</b> If you want fewer items, that is <code>filter</code>'s job.</li>
+        <li><b>Arrow with braces needs <code>return</code>.</b> <code>job =&gt; { job.company }</code> returns nothing — you get an array of <code>undefined</code>.</li>
+        <li><b>Returning an object?</b> Wrap it in brackets: <code>job =&gt; ({ … })</code>. Without them, JavaScript reads the braces as a function body.</li>
+      </ul>
+      <div class="callout" style="margin-top:12px"><b>In React</b> this exact line renders a list: <code>jobs.map(job =&gt; &lt;JobCard key={job.id} … /&gt;)</code>. Master <code>map</code> now and that syntax will feel obvious.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · map, filter, reduce</div>
+  <h2>filter — keep the ones that pass</h2>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const jobs = [
+  { company: "Nimbus", city: "Pune", lpa: 6, remote: true },
+  { company: "Kestrel", city: "Indore", lpa: 4.5, remote: false },
+  { company: "Orbit", city: "Pune", lpa: 7.5, remote: false },
+  { company: "Saffron", city: "Indore", lpa: 4, remote: true },
+];
+
+const remote = jobs.filter(job =&gt; job.remote);
+console.log(remote.length, "remote jobs");
+
+const wellPaid = jobs.filter(job =&gt; job.lpa &gt;= 6);
+console.log(wellPaid.map(job =&gt; job.company));
+
+const puneOnsite = jobs.filter(
+  job =&gt; job.city === "Pune" &amp;&amp; !job.remote
+);
+console.log(puneOnsite.map(job =&gt; job.company));
+
+console.log(jobs.filter(job =&gt; job.city === "Delhi")); // none
+
+console.log([0, "", "Asha", null, 42, undefined].filter(Boolean));
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <ul class="clean">
+        <li><b>Your function answers yes or no</b> for each item. The yeses are kept, in their original order.</li>
+        <li><b>It always returns an array</b> — possibly empty. Never <code>undefined</code>, never a single item. For one item, use <code>find</code>.</li>
+        <li><b>Combine conditions with <code>&amp;&amp;</code> and <code>||</code></b> inside one filter rather than chaining three.</li>
+        <li><b><code>filter(Boolean)</code></b> is the idiom for "drop every empty value" — each item is passed to <code>Boolean</code>, and falsy ones fail.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 12 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · map, filter, reduce</div>
+  <h2>reduce — many in, one out</h2>
+  <div class="scroll-x">
+    <svg viewBox="0 0 940 206" role="img" aria-label="reduce walks the array carrying an accumulator: 0 plus 6 is 6, plus 4.5 is 10.5, plus 7.5 is 18, plus 4 is 22">
+      <text x="16" y="24" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="var(--ink-2)">[6, 4.5, 7.5, 4].reduce((sum, n) =&gt; sum + n, <tspan fill="var(--amber)" font-weight="700">0</tspan>)</text>
+
+      <rect x="16" y="48" width="100" height="58" rx="10" fill="var(--amber-soft)" stroke="var(--amber)" stroke-width="2"/>
+      <text x="66" y="72" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--amber)">START</text>
+      <text x="66" y="95" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="19" font-weight="700" fill="var(--ink)">0</text>
+
+      <g font-family="IBM Plex Mono, monospace">
+        <path d="M120 77 L176 77" stroke="var(--ink-3)" stroke-width="1.6"/><text x="148" y="68" text-anchor="middle" font-size="12" fill="var(--blue)">+ 6</text>
+        <rect x="180" y="48" width="100" height="58" rx="10" fill="var(--card)" stroke="var(--line)" stroke-width="1.8"/>
+        <text x="230" y="72" text-anchor="middle" font-size="10.5" fill="var(--ink-3)">sum</text>
+        <text x="230" y="95" text-anchor="middle" font-size="19" font-weight="700" fill="var(--ink)">6</text>
+
+        <path d="M284 77 L340 77" stroke="var(--ink-3)" stroke-width="1.6"/><text x="312" y="68" text-anchor="middle" font-size="12" fill="var(--blue)">+ 4.5</text>
+        <rect x="344" y="48" width="100" height="58" rx="10" fill="var(--card)" stroke="var(--line)" stroke-width="1.8"/>
+        <text x="394" y="72" text-anchor="middle" font-size="10.5" fill="var(--ink-3)">sum</text>
+        <text x="394" y="95" text-anchor="middle" font-size="19" font-weight="700" fill="var(--ink)">10.5</text>
+
+        <path d="M448 77 L504 77" stroke="var(--ink-3)" stroke-width="1.6"/><text x="476" y="68" text-anchor="middle" font-size="12" fill="var(--blue)">+ 7.5</text>
+        <rect x="508" y="48" width="100" height="58" rx="10" fill="var(--card)" stroke="var(--line)" stroke-width="1.8"/>
+        <text x="558" y="72" text-anchor="middle" font-size="10.5" fill="var(--ink-3)">sum</text>
+        <text x="558" y="95" text-anchor="middle" font-size="19" font-weight="700" fill="var(--ink)">18</text>
+
+        <path d="M612 77 L668 77" stroke="var(--ink-3)" stroke-width="1.6"/><text x="640" y="68" text-anchor="middle" font-size="12" fill="var(--blue)">+ 4</text>
+        <rect x="672" y="48" width="100" height="58" rx="10" fill="var(--green-s)" stroke="var(--green)" stroke-width="2"/>
+        <text x="722" y="72" text-anchor="middle" font-size="10.5" fill="var(--green)">RESULT</text>
+        <text x="722" y="95" text-anchor="middle" font-size="19" font-weight="700" fill="var(--green)">22</text>
+      </g>
+
+      <text x="16" y="146" font-family="IBM Plex Sans, sans-serif" font-size="13.5" font-weight="600" fill="var(--ink)">The accumulator is carried from step to step.</text>
+      <text x="16" y="168" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="var(--ink-2)">Whatever your function returns becomes the accumulator for the next item. After the last item, it is the answer.</text>
+      <text x="16" y="190" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="var(--ink-2)">The <tspan font-weight="700" fill="var(--amber)">0</tspan> is the starting value — and leaving it out is the classic mistake.</text>
+    </svg>
+  </div>
+<div class="live wide"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const packages = [6, 4.5, 7.5, 4];
+
+const total = packages.reduce((sum, n) =&gt; sum + n, 0);
+console.log("total", total, "· average", total / packages.length);
+
+const highest = packages.reduce(
+  (best, n) =&gt; (n &gt; best ? n : best),
+  -Infinity                 // a start that any number beats
+);
+console.log("highest", highest);
+
+const empty = [];
+console.log(empty.reduce((s, n) =&gt; s + n, 0));   // with a start
+console.log(empty.reduce((s, n) =&gt; s + n));      // without → crash
+</pre><div class="out" aria-live="polite"></div></div>
+</section>
+
+<!-- 13 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · map, filter, reduce</div>
+  <h2>reduce can build an object: counting and grouping</h2>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const jobs = [
+  { company: "Nimbus Labs",   city: "Pune"   },
+  { company: "Kestrel Tech",  city: "Indore" },
+  { company: "Orbit Systems", city: "Pune"   },
+  { company: "Saffron Soft",  city: "Indore" },
+  { company: "Vyom Data",     city: "Bhopal" },
+];
+
+// COUNT — how many jobs in each city?
+const perCity = jobs.reduce((acc, job) =&gt; {
+  acc[job.city] = (acc[job.city] || 0) + 1;
+  return acc;
+}, {});
+console.log(perCity);
+
+// GROUP — which companies are in each city?
+const byCity = jobs.reduce((acc, job) =&gt; {
+  (acc[job.city] ??= []).push(job.company);
+  return acc;
+}, {});
+console.log(byCity);
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <ul class="clean">
+        <li><b>Start with <code>{}</code></b> and the accumulator is an object you fill in as you go.</li>
+        <li><b>Bracket notation <code>acc[job.city]</code></b> uses the city's <i>value</i> as the key. <code>acc.city</code> would create one key literally called "city" — the most common mistake here.</li>
+        <li><b>Always <code>return acc</code>.</b> Forget it and the next step receives <code>undefined</code>.</li>
+        <li><b>One shape, two jobs:</b> start empty, work out the key, update the value, return the accumulator. Counting adds one; grouping pushes into a list.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 14 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · map, filter, reduce</div>
+  <h2>A lookup table joins two lists</h2>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const users = [
+  { id: 7, name: "Asha" },
+  { id: 9, name: "Ravi" },
+];
+const orders = [
+  { orderId: "A1", userId: 9, total: 450 },
+  { orderId: "A2", userId: 7, total: 120 },
+  { orderId: "A3", userId: 9, total: 300 },
+];
+
+// build the lookup ONCE: id → user
+const usersById = Object.fromEntries(users.map(u =&gt; [u.id, u]));
+console.log(usersById);
+
+// every order now finds its user in one step
+const rows = orders.map(o =&gt;
+  `${o.orderId}: ${usersById[o.userId].name} paid ₹${o.total}`);
+console.log(rows);
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <ul class="clean">
+        <li><b>Real data arrives in pieces.</b> An orders API gives you <code>userId: 9</code>, not a name. The screen needs the name.</li>
+        <li><b>Build an object keyed by id, once</b> — with <code>reduce</code>, or <code>Object.fromEntries(list.map(x =&gt; [x.id, x]))</code>. After that, <code>usersById[9]</code> is instant.</li>
+        <li><b>The slow way</b> is <code>users.find(u =&gt; u.id === o.userId)</code> inside the <code>map</code> — a fresh search for every single order.</li>
+      </ul>
+      <div class="callout" style="margin-top:12px"><b>This is a join.</b> SQL does it with <code>JOIN</code>; MongoDB does it with <code>$lookup</code> or <code>populate()</code>. When the data is already in JavaScript, a lookup table is how you do it yourself.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · map, filter, reduce</div>
+  <h2>Chaining — read it like a sentence</h2>
+  <div class="scroll-x">
+    <svg viewBox="0 0 940 128" role="img" aria-label="A pipeline: five jobs go into filter, three come out, sort reorders them, map turns them into three strings">
+      <g font-family="IBM Plex Mono, monospace">
+        <rect x="10" y="30" width="130" height="64" rx="10" fill="var(--sunk)" stroke="var(--line)" stroke-width="1.6"/>
+        <text x="75" y="57" text-anchor="middle" font-size="13" font-weight="700" fill="var(--ink)">jobs</text>
+        <text x="75" y="78" text-anchor="middle" font-size="11" fill="var(--ink-3)">5 objects</text>
+        <path d="M144 62 L184 62" stroke="var(--ink-3)" stroke-width="1.6"/>
+
+        <rect x="188" y="30" width="210" height="64" rx="10" fill="var(--blue-s)" stroke="var(--blue)" stroke-width="2"/>
+        <text x="293" y="57" text-anchor="middle" font-size="13" font-weight="700" fill="var(--blue)">.filter(lpa ≥ 5)</text>
+        <text x="293" y="78" text-anchor="middle" font-size="11" fill="var(--ink-3)">3 objects</text>
+        <path d="M402 62 L442 62" stroke="var(--ink-3)" stroke-width="1.6"/>
+
+        <rect x="446" y="30" width="200" height="64" rx="10" fill="var(--green-s)" stroke="var(--green)" stroke-width="2"/>
+        <text x="546" y="57" text-anchor="middle" font-size="13" font-weight="700" fill="var(--green)">.toSorted(by pay)</text>
+        <text x="546" y="78" text-anchor="middle" font-size="11" fill="var(--ink-3)">3 objects, reordered</text>
+        <path d="M650 62 L690 62" stroke="var(--ink-3)" stroke-width="1.6"/>
+
+        <rect x="694" y="30" width="234" height="64" rx="10" fill="var(--plum-s)" stroke="var(--plum)" stroke-width="2"/>
+        <text x="811" y="57" text-anchor="middle" font-size="13" font-weight="700" fill="var(--plum)">.map(to a label)</text>
+        <text x="811" y="78" text-anchor="middle" font-size="11" fill="var(--ink-3)">3 strings</text>
+      </g>
+      <text x="10" y="118" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink-2)">Each step hands a brand-new array to the next. Nothing along the way touches the original list.</text>
+    </svg>
+  </div>
+<div class="live wide"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const jobs = [
+  { company: "Nimbus Labs",   city: "Pune",   lpa: 6   },
+  { company: "Kestrel Tech",  city: "Indore", lpa: 4.5 },
+  { company: "Orbit Systems", city: "Pune",   lpa: 7.5 },
+  { company: "Saffron Soft",  city: "Indore", lpa: 4   },
+  { company: "Vyom Data",     city: "Bhopal", lpa: 5.5 },
+];
+
+const shortlist = jobs
+  .filter(job =&gt; job.lpa &gt;= 5)                // well paid only
+  .toSorted((a, b) =&gt; b.lpa - a.lpa)          // best first
+  .map(job =&gt; `${job.company} — ${job.lpa} LPA`); // labels
+
+console.log(shortlist);
+console.log(jobs.length, "in the original — all still there");
+</pre><div class="out" aria-live="polite"></div></div>
+  <div class="callout"><b>Style that reads well in a code review:</b> one method per line, each with a short comment on <i>why</i>. Anyone can see the whole transformation from top to bottom without running it.</div>
+</section>
+
+<!-- 16 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · map, filter, reduce</div>
+  <h2>forEach, for…of or map — which loop, when?</h2>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const cart = [{ item: "Tea", qty: 2 }, { item: "Poha", qty: 1 }];
+
+console.log("forEach returns:", cart.forEach(line =&gt; line.qty));
+console.log("map returns:", cart.map(l =&gt; l.item.toUpperCase()));
+
+const seen = [];
+[1, 2, 3, 4].forEach(n =&gt; {
+  if (n === 2) return;    // skips 2, does NOT stop the loop
+  seen.push(n);
+});
+console.log("forEach, return on 2:", seen);
+
+const kept = [];
+for (const n of [1, 2, 3, 4]) {
+  if (n === 3) break;           // really stops
+  kept.push(n);
+}
+console.log("for…of, break on 3:", kept);
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <div class="scroll-x">
+        <table>
+          <tr><th>You want to…</th><th>Use</th></tr>
+          <tr><td>make a new array from the old one</td><td><code>map</code></td></tr>
+          <tr><td>keep some items</td><td><code>filter</code></td></tr>
+          <tr><td>boil it down to one value</td><td><code>reduce</code></td></tr>
+          <tr><td>do something with each item, keep nothing</td><td><code>forEach</code></td></tr>
+          <tr><td>stop early, or <code>await</code> inside the loop</td><td><code>for…of</code></td></tr>
+          <tr><td>do the index arithmetic yourself</td><td>classic <code>for</code></td></tr>
+        </table>
+      </div>
+      <div class="callout q" style="margin-top:12px"><b>Code-review red flag:</b> calling <code>map</code> and ignoring what it returns, just to loop. It works, but it tells the reader you did not know about <code>forEach</code> — and it builds an array for nothing.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 17 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · map, filter, reduce</div>
+  <h2>Write your own map and filter — the interview question</h2>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">function myMap(arr, fn) {
+  const out = [];
+  for (let i = 0; i &lt; arr.length; i++) {
+    out.push(fn(arr[i], i, arr));   // item, index, the array
+  }
+  return out;                       // a NEW array
+}
+
+function myFilter(arr, test) {
+  const out = [];
+  for (let i = 0; i &lt; arr.length; i++) {
+    if (test(arr[i], i, arr)) out.push(arr[i]);
+  }
+  return out;
+}
+
+const nums = [5, 12, 8, 20];
+console.log(myMap(nums, n =&gt; n * 10));
+console.log(myMap(nums, (n, i) =&gt; `${i}:${n}`));
+console.log(myFilter(nums, n =&gt; n &gt; 9));
+console.log(nums);                  // untouched
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <p class="sub" style="font-size:16px;margin-bottom:12px">"Write your own <code>map</code>" is asked in fresher interviews because it proves you know what the method <b>does</b>, not just how to call it. Each one is a loop you already know.</p>
+      <ul class="clean">
+        <li><b>It returns a new array</b> and never touches the one it was given.</li>
+        <li><b>The callback gets three arguments</b> — the item, its index, and the whole array — which is why <code>(n, i) =&gt; …</code> works on the real one too.</li>
+        <li><b><code>filter</code> is the same loop</b>, pushing the item only when the test says yes.</li>
+      </ul>
+      <div class="callout" style="margin-top:12px"><b>Say these out loud while you type.</b> The interviewer is listening for "new array" and "index as the second argument" more than for the loop itself.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 18 -->
+<section class="slide">
+  <div class="eyebrow">Part 2 · map, filter, reduce</div>
+  <h2>Write your own reduce — the edge cases are the question</h2>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">function myReduce(arr, fn, initial) {
+  let i = 0;
+  let acc = initial;
+  if (arguments.length &lt; 3) {        // no starting value?
+    if (arr.length === 0) {
+      throw new TypeError("Reduce of empty array");
+    }
+    acc = arr[0];                    // first item is the start
+    i = 1;                           // …so begin at the second
+  }
+  for (; i &lt; arr.length; i++) {
+    acc = fn(acc, arr[i], i, arr);
+  }
+  return acc;
+}
+
+const add = (s, n) =&gt; s + n;
+console.log(myReduce([1, 2, 3, 4], add, 0));  // start 0
+console.log(myReduce([1, 2, 3, 4], add));     // no start
+console.log(myReduce([], add, 100));          // empty, start 100
+console.log(myReduce([], add));               // empty, no start
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <ul class="clean">
+        <li><b>With a starting value</b>, the callback runs once for every item.</li>
+        <li><b>Without one</b>, the first item <i>is</i> the start, and the callback begins at the second item — it runs one time fewer.</li>
+        <li><b>An empty array with a start</b> simply returns the start. <b>Without one</b>, there is nothing to return, so it throws a <code>TypeError</code>.</li>
+        <li><b>Why <code>arguments.length</code>, not <code>initial === undefined</code>?</b> Because someone might pass <code>undefined</code> on purpose as a real starting value.</li>
+      </ul>
+      <div class="callout q" style="margin-top:12px"><b>This is the follow-up that separates candidates:</b> "what happens with an empty array?" Most people have never thought about it. Now you have.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 19 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · Objects</div>
+  <h2>An object is a record: named fields, not positions</h2>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const job = { company: "Nimbus Labs", city: "Pune", lpa: 6 };
+
+console.log(job.company);   // dot — name written in code
+const field = "city";
+console.log(job[field]);    // brackets — name in a variable
+
+job.remote = true;             // add a field
+job.lpa = 6.5;                 // change one
+delete job.city;               // remove one
+console.log(job);
+
+console.log(job.salary);                     // missing
+console.log({ name: "Meera" }.address?.city); // safe, 2 deep
+
+const company = "Orbit", key = "lpa";
+console.log({ company, [key]: 7 });   // shorthand + computed
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <ul class="clean">
+        <li><b>Dot notation</b> when the field name is written in your code. <b>Brackets</b> when it comes from a variable or a loop, or contains a space or dash.</li>
+        <li><b>A missing field is <code>undefined</code></b>, not an error. Reading a field <i>of</i> that <code>undefined</code> is what crashes — <code>?.</code> stops the chain safely.</li>
+        <li><b>Shorthand</b> <code>{ company }</code> means <code>{ company: company }</code>. You will see it on almost every line of React and Express code.</li>
+        <li><b>Computed keys</b> <code>{ [key]: value }</code> use a variable as the field name — handy for forms, where the input's name decides which field to update.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 20 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · Objects</div>
+  <h2>Looping over an object: keys, values, entries</h2>
+  <p class="sub">Objects have no <code>map</code> or <code>filter</code>. The trick is to <b>turn the object into an array, use the array methods, then turn it back</b>.</p>
+  <div class="flowrow"><span class="fb">{ html: 2000, … }</span><span class="fa">Object.entries →</span><span class="fb b">[["html", 2000], …]</span><span class="fa">.map / .filter →</span><span class="fb p">[["html", 2200], …]</span><span class="fa">Object.fromEntries →</span><span class="fb g">{ html: 2200, … }</span></div>
+<div class="live wide"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const fees = { html: 2000, css: 2500, react: 6000, node: 5500 };
+
+console.log(Object.keys(fees));
+console.log(Object.values(fees));
+console.log(Object.entries(fees));
+console.log(Object.values(fees).reduce((a, b) =&gt; a + b, 0)); // sum
+
+// raise every fee by 10% — rounded, because in floating
+// point 6000 * 1.1 is 6600.000000000001
+const raised = Object.fromEntries(
+  Object.entries(fees).map(([name, fee]) =&gt;
+    [name, Math.round(fee * 1.1)])
+);
+console.log(raised);
+
+// keep only the fees over 3000
+const premium = Object.entries(fees)
+  .filter(([, fee]) =&gt; fee &gt; 3000);
+console.log(Object.fromEntries(premium));
+</pre><div class="out" aria-live="polite"></div></div>
+</section>
+
+<!-- 21 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · Objects</div>
+  <h2>Destructuring — unpack in one line</h2>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const job = { company: "Orbit Systems", city: "Pune", lpa: 7.5 };
+
+const { company, lpa } = job;           // pull fields out
+const { city: location } = job;         // rename
+const { remote = false } = job;         // default if missing
+const { company: name, ...rest } = job; // gather the rest
+console.log(company, lpa, location, remote, rest);
+
+const [first, , third] = ["Asha", "Ravi", "Neha"]; // skip one
+console.log(first, third);
+
+let a = 1, b = 2;
+[a, b] = [b, a];                        // swap
+console.log(a, b);
+
+// exactly how React props arrive:
+function card({ company, lpa = 0 }) {
+  return `${company}: ${lpa} LPA`;
+}
+console.log(card(job));
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <ul class="clean">
+        <li><b>Objects destructure by name</b>; arrays by position. An empty slot between commas skips one.</li>
+        <li><b><code>{ city: location }</code></b> reads <code>city</code> and stores it as <code>location</code>. The colon means "rename", not "type".</li>
+        <li><b>Defaults apply only to <code>undefined</code></b>. A field that is <code>null</code> keeps its <code>null</code>.</li>
+        <li><b>Destructuring <code>undefined</code> crashes</b>, the same as reading a field of it.</li>
+      </ul>
+      <div class="callout" style="margin-top:12px"><b>You will read this constantly:</b> <code>const { data } = await axios.get(url)</code>, <code>function Card({ title, price })</code>, <code>const [count, setCount] = useState(0)</code>. All three are destructuring.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 22 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · Objects</div>
+  <h2>Spread — copy, merge, combine</h2>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const frontend = ["HTML", "CSS"];
+const backend = ["Node", "Express"];
+const stack = [...frontend, "React", ...backend];
+console.log(stack);
+
+const defaults = { theme: "light", pageSize: 10, lang: "en" };
+const saved    = { theme: "dark", pageSize: 25 };
+const settings = { ...defaults, ...saved };   // later wins
+console.log(settings);
+
+const job = { company: "Nimbus", lpa: 6 };
+const updated = { ...job, lpa: 6.5 };    // copy, one change
+console.log(job, updated);
+
+function total(...prices) {              // rest: gather
+  return prices.reduce((sum, p) =&gt; sum + p, 0);
+}
+console.log(total(120, 80, 45));
+console.log(Math.max(...[4.5, 7.5, 6])); // spread: expand
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <ul class="clean">
+        <li><b>The same three dots do two opposite jobs.</b> In an array or object literal, or a function call, they <b>spread</b> things out. In a parameter list or destructuring, they <b>gather</b> the rest up.</li>
+        <li><b>When keys clash, the later one wins.</b> That makes <code>{ ...defaults, ...saved }</code> the standard way to apply user settings over defaults.</li>
+        <li><b><code>{ ...job, lpa: 6.5 }</code></b> is the everyday "copy with one change" — the building block of every state update in React.</li>
+      </ul>
+      <div class="callout q" style="margin-top:12px"><b>But:</b> spread copies <b>one level</b>. The next slide shows what happens to anything nested inside.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 23 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · Objects</div>
+  <h2>Copies are shallow — the nested trap</h2>
+  <div class="scroll-x">
+    <svg viewBox="0 0 940 196" role="img" aria-label="After a spread copy, the two outer objects are separate but both point at the same nested address object">
+      <text x="16" y="22" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="var(--ink-2)">const copy = { ...user };</text>
+      <rect x="16" y="40" width="250" height="110" rx="10" fill="var(--blue-s)" stroke="var(--blue)" stroke-width="2"/>
+      <text x="32" y="64" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="700" fill="var(--blue)">user</text>
+      <text x="32" y="90" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="var(--ink)">name: "Asha"</text>
+      <text x="32" y="116" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="var(--ink)">address: ●</text>
+
+      <rect x="340" y="40" width="250" height="110" rx="10" fill="var(--plum-s)" stroke="var(--plum)" stroke-width="2"/>
+      <text x="356" y="64" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="700" fill="var(--plum)">copy</text>
+      <text x="356" y="90" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="var(--ink)">name: "Asha"   <tspan fill="var(--green)">← its own</tspan></text>
+      <text x="356" y="116" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="var(--ink)">address: ●</text>
+
+      <rect x="664" y="62" width="260" height="66" rx="10" fill="var(--amber-soft)" stroke="var(--amber)" stroke-width="2"/>
+      <text x="680" y="88" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="700" fill="var(--amber)">ONE address object</text>
+      <text x="680" y="112" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="var(--ink)">{ city: "Indore" }</text>
+
+      <path d="M120 112 C 260 176, 560 176, 660 112" stroke="var(--blue)" stroke-width="2" fill="none"/>
+      <path d="M444 112 C 520 112, 600 104, 660 100" stroke="var(--plum)" stroke-width="2" fill="none"/>
+      <text x="300" y="186" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--red)" font-weight="600">both arrows land on the same box — change it through one, and the other sees it</text>
+    </svg>
+  </div>
+<div class="live wide"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const user = { name: "Asha", address: { city: "Indore" } };
+
+const shallow = { ...user };
+shallow.name = "Ravi";              // top level: independent
+shallow.address.city = "Pune";      // nested: SHARED
+console.log(user.name, user.address.city);
+
+const deep = structuredClone(user);
+deep.address.city = "Bhopal";
+console.log(user.address.city, deep.address.city);
+
+// the old trick — works, but loses anything that is not plain data
+const original = { when: new Date(0), fn() {} };
+const viaJson = JSON.parse(JSON.stringify(original));
+console.log(viaJson);
+</pre><div class="out" aria-live="polite"></div></div>
+</section>
+
+<!-- 24 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · Objects</div>
+  <h2>Immutable updates — how state changes in React</h2>
+  <p class="sub">The rule: <b>never change the array or object you were given — build a new one with the change in it.</b> Four patterns cover almost every case.</p>
+<div class="live wide"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const cart = [
+  { id: 1, item: "Tea", qty: 2 },
+  { id: 2, item: "Poha", qty: 1 },
+  { id: 3, item: "Chai", qty: 3 },
+];
+
+const added   = [...cart, { id: 4, item: "Samosa", qty: 2 }];
+const removed = cart.filter(l =&gt; l.id !== 2);
+const changed = cart.map(l =&gt; (l.id === 3 ? { ...l, qty: 5 } : l));
+const sorted  = cart.toSorted((a, b) =&gt; b.qty - a.qty);
+
+console.log(added.length, removed.map(l =&gt; l.item));
+console.log(changed[2], sorted[0].item);
+console.log("original:", cart.map(l =&gt; `${l.item}×${l.qty}`));
+
+// nested data: copy every level on the way to the change
+const profile = { name: "Asha", prefs: { theme: "light" } };
+const next = { ...profile,
+  prefs: { ...profile.prefs, theme: "dark" } };
+console.log(profile.prefs.theme, next.prefs.theme);
+</pre><div class="out" aria-live="polite"></div></div>
+</section>
+
+<!-- 25 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · Objects</div>
+  <h2>const, freeze, and what "unchangeable" really means</h2>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const job = { company: "Nimbus", lpa: 6 };
+// allowed: const guards the NAME, not what is inside
+job.lpa = 9;
+console.log(job);
+
+const locked = Object.freeze({ name: "Orbit", perks: ["gym"] });
+locked.name = "Changed";      // silently ignored
+locked.perks.push("meals");   // freeze is shallow — this works
+console.log(locked);
+console.log(Object.isFrozen(locked));        // true
+console.log(Object.isFrozen(locked.perks));  // false — shallow
+
+function strictWrite() {
+  "use strict";             // this function only
+  locked.name = "Changed";   // now it refuses loudly
+}
+try { strictWrite(); }
+catch (e) { console.log(e.name, "—", e.message); }
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <div class="scroll-x">
+        <table>
+          <tr><th>Tool</th><th>Stops</th><th>Does not stop</th></tr>
+          <tr><td><code>const</code></td><td>pointing the name at something else</td><td>changing what is inside</td></tr>
+          <tr><td><code>Object.freeze</code></td><td>adding, removing or changing top-level fields</td><td>changes one level down</td></tr>
+          <tr><td>structuredClone + freeze</td><td>nothing more — freeze is still shallow</td><td>use a deep-freeze helper if needed</td></tr>
+        </table>
+      </div>
+      <div class="callout q" style="margin-top:12px"><b>Silently ignored</b> is the dangerous part. Outside strict mode, writing to a frozen object does nothing and says nothing. Inside strict mode — which every ES module and every class is — it throws a <code>TypeError</code>, which is what you want.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 26 -->
+<section class="slide">
+  <div class="eyebrow">Part 3 · Objects</div>
+  <h2>JSON — how data travels between layers</h2>
+<div class="live wide"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const job = { id: 101, company: "Nimbus Labs", skills: ["React"] };
+
+const text = JSON.stringify(job);   // object → text, to send
+console.log(text, "—", typeof text);
+
+// indented, for people to read
+console.log(JSON.stringify({ id: 101, remote: true }, null, 2));
+
+const back = JSON.parse(text);      // text → object, on arrival
+console.log(back.skills[0], back === job);
+
+const lossy = { when: new Date(0), note: undefined, score: NaN };
+console.log(JSON.stringify(lossy));
+
+try {
+  JSON.parse("{ company: 'Nimbus' }");   // not valid JSON
+} catch (e) {
+  console.log(e.name, "—", e.message);
+}
+</pre><div class="out" aria-live="polite"></div></div>
+  <div class="grid g2">
+    <ul class="clean">
+      <li><b>JSON is text.</b> Every API call sends a string; <code>JSON.parse</code> turns it back into objects. <code>fetch</code>'s <code>res.json()</code> does exactly this.</li>
+      <li><b>JSON is stricter than JavaScript:</b> keys in double quotes, no single quotes, no trailing commas, no comments.</li>
+    </ul>
+    <ul class="clean">
+      <li><b>Only plain data survives.</b> Functions and <code>undefined</code> vanish, Dates become strings, <code>NaN</code> becomes <code>null</code>.</li>
+      <li><b>Wrap <code>JSON.parse</code> in <code>try/catch</code></b> when the text comes from outside — a broken response should show a message, not crash the page.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 27 -->
+<section class="slide">
+  <div class="eyebrow">Part 4 · Real data, shaped</div>
+  <h2>Five business questions, one dataset</h2>
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const jobs = [
+  { company: "Nimbus Labs",   city: "Pune",   lpa: 6,   remote: true,  skills: ["React", "CSS"] },
+  { company: "Kestrel Tech",  city: "Indore", lpa: 4.5, remote: false, skills: ["Node", "MongoDB"] },
+  { company: "Orbit Systems", city: "Pune",   lpa: 7.5, remote: false, skills: ["React", "Node"] },
+  { company: "Saffron Soft",  city: "Indore", lpa: 4,   remote: true,  skills: ["HTML", "CSS"] },
+  { company: "Vyom Data",     city: "Bhopal", lpa: 5.5, remote: false, skills: ["MongoDB", "Node"] },
+];
+
+console.log("How many are remote?", jobs.filter(j =&gt; j.remote).length);
+console.log("Average package?", (jobs.reduce((s, j) =&gt; s + j.lpa, 0) / jobs.length).toFixed(1));
+console.log("Top three by pay?", jobs.toSorted((a, b) =&gt; b.lpa - a.lpa).slice(0, 3).map(j =&gt; j.company));
+console.log("Every skill, once, A to Z?", [...new Set(jobs.flatMap(j =&gt; j.skills))].sort());
+console.log("How many need React?", jobs.filter(j =&gt; j.skills.includes("React")).length);
+</pre><div class="out" aria-live="polite"></div></div>
+  <div class="callout g"><b>Try this in the room:</b> have each aspirant add a sixth question and answer it in one line. "Which city pays best on average?" is a good stretch — it needs grouping <i>and</i> averaging.</div>
+</section>
+
+<!-- 28 -->
+<section class="slide">
+  <div class="eyebrow">Part 4 · Real data, shaped</div>
+  <h2>The performance question you will be asked</h2>
+  <div class="pair">
+<div class="live"><div class="lbar"><span class="lname">live · edit and run</span><button class="run" type="button">Run ▶</button><button class="edit" type="button">Edit</button><button class="reset" type="button">Reset</button></div><pre class="js">const n = 10000;
+const all = Array.from({ length: n }, (_, i) =&gt; "u" + i);
+const picked = Array.from({ length: n }, (_, i) =&gt; "u" + i * 2);
+
+// a search inside a loop: n × n checks
+let t = performance.now();
+const slow = all.filter(a =&gt; picked.includes(a));
+const slowMs = Math.round(performance.now() - t);
+
+// build a lookup once, then each check is one step
+t = performance.now();
+const lookup = new Set(picked);
+const fast = all.filter(a =&gt; lookup.has(a));
+const fastMs = Math.round(performance.now() - t);
+
+console.log("includes:", slow.length, "matches,", slowMs, "ms");
+console.log("Set:     ", fast.length, "matches,", fastMs, "ms");
+</pre><div class="out" aria-live="polite"></div></div>
+    <div>
+      <ul class="clean">
+        <li><b><code>includes</code>, <code>indexOf</code> and <code>find</code> walk the list</b> from the start. Inside another loop, that is a list times a list — up to ten thousand times ten thousand checks.</li>
+        <li><b>A <code>Set</code> or an object indexed by id</b> answers "is it there?" in one step, however large it grows.</li>
+        <li><b>A <code>Map</code></b> is the right tool when keys are not plain text, when you add and remove often, or when you need <code>.size</code> — object keys are always turned into strings.</li>
+      </ul>
+      <div class="callout q" style="margin-top:12px"><b>Say it in the interview:</b> "the first version is O(n²) because <code>includes</code> is linear inside a loop; building a <code>Set</code> first makes it O(n)." That one sentence is often the whole difference between a pass and a follow-up question.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 29 -->
+<section class="slide">
+  <div class="eyebrow">Wrap-up</div>
+  <h2>What to carry forward</h2>
+  <div class="grid g2">
+    <ul class="clean">
+      <li><b>Real data is an array of objects.</b> Filter to choose, map to reshape, reduce to summarise.</li>
+      <li><b>Ask of every method: does it change the original?</b> <code>sort</code>, <code>push</code>, <code>splice</code> do. <code>toSorted</code>, <code>map</code>, <code>slice</code> do not.</li>
+      <li><b>Give <code>reduce</code> a starting value</b> — every time, without exception.</li>
+      <li><b>Arrow functions with braces need <code>return</code></b>, and an object literal needs brackets around it.</li>
+    </ul>
+    <ul class="clean">
+      <li><b>Objects are transformed through arrays:</b> entries → map or filter → fromEntries.</li>
+      <li><b>Spread copies one level.</b> For nested data, copy each level you change, or use <code>structuredClone</code>.</li>
+      <li><b>Never mutate state</b> — add with spread, remove with filter, update with map.</li>
+      <li><b>A search inside a loop is O(n²).</b> Build a <code>Set</code> or an index first.</li>
+    </ul>
+  </div>
+  <div class="grow"></div>
+  <div class="callout g"><b>Next: the DOM.</b> Everything in this module has been printed to a console. Next, JavaScript reaches into the page — and the <code>map</code> you just learned becomes the way a list of data turns into a list of cards on screen.</div>
+</section>
+
+</main>
+
+<nav class="navbar">
+  <button id="prev" aria-label="Previous slide">← Prev</button>
+  <button id="next" aria-label="Next slide">Next →</button>
+  <span class="counter" id="counter">1 / 1</span>
+  <span class="bar"><i id="fill"></i></span>
+  <button id="mode" aria-label="Toggle slide or scroll view">Scroll view</button>
+  <button id="tPlain" class="tbtn" aria-label="Toggle the plain-English layer">1 · Ground floor</button>
+  <button id="tDeep" class="tbtn" aria-label="Toggle the interview-depth layer">2 · Deeper</button>
+  <span class="hint">Arrows to navigate · 1 and 2 for depth</span>
+</nav>
+
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter = document.getElementById('counter');
+  var fill = document.getElementById('fill');
+  var modeBtn = document.getElementById('mode');
+  var i = 0, one = true;
+
+  function render() {
+    if (one) {
+      slides.forEach(function (s, n) { s.classList.toggle('hidden', n !== i); });
+      window.scrollTo(0, 0);
+    } else {
+      slides.forEach(function (s) { s.classList.remove('hidden'); });
+    }
+    counter.textContent = (i + 1) + ' / ' + slides.length;
+    fill.style.width = ((i + 1) / slides.length * 100) + '%';
+  }
+  function go(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    if (!one) slides[i].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    render();
+  }
+  document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+  document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+  modeBtn.addEventListener('click', function () {
+    one = !one; modeBtn.textContent = one ? 'Scroll view' : 'Slide view'; render();
+  });
+  document.addEventListener('keydown', function (e) {
+    // while live-coding on a slide, keys belong to the editor, not the deck
+    var tg = e.target && e.target.tagName;
+    if (tg === 'TEXTAREA' || tg === 'INPUT' || tg === 'SELECT') return;
+    if (e.key === ' ' && (tg === 'BUTTON' || tg === 'SUMMARY')) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(i + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+    if (e.key === 'Home') { e.preventDefault(); go(0); }
+    if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+  });
+  render();
+})();
+</script>
+
+<script>
+/* =====================================================================
+   JSRunner — runs learner JavaScript in a Web Worker.
+
+   Why a worker: a beginner's first while-loop is often infinite. In the
+   page itself that freezes the tab (and the projector). In a worker we
+   simply terminate it after a timeout and explain what happened.
+
+   Shared by the deck (live slides) and the lab (challenges + tools).
+   ===================================================================== */
+var JSRunner = (function () {
+  'use strict';
+
+  var WORKER_SRC = [
+    "'use strict';",
+    "var OUT = [];",
+    "function ser(v, d) {",
+    "  d = d || 0; var t = typeof v;",
+    "  if (v === null) return { t:'null', s:'null' };",
+    "  if (t === 'undefined') return { t:'undefined', s:'undefined' };",
+    "  if (t === 'string') return { t:'string', s:v };",
+    "  if (t === 'number') return { t:'number', s: Object.is(v, -0) ? '-0' : String(v) };",
+    "  if (t === 'boolean') return { t:'boolean', s:String(v) };",
+    "  if (t === 'bigint') return { t:'bigint', s:String(v) + 'n' };",
+    "  if (t === 'symbol') return { t:'symbol', s:v.toString() };",
+    "  if (t === 'function') return { t:'function', s:'ƒ ' + (v.name || 'anonymous') + '()' };",
+    "  if (v instanceof Error) return { t:'error', s:v.name + ': ' + v.message };",
+    "  if (v instanceof Date) return { t:'object', s: isNaN(v) ? 'Invalid Date' : v.toISOString() };",
+    "  if (v instanceof RegExp) return { t:'object', s:String(v) };",
+    "  if (v instanceof Set) return { t:'object', s:'Set(' + v.size + ') {' + Array.from(v).map(function (x) { return rep(x, d + 1); }).join(', ') + '}' };",
+    "  if (v instanceof Map) return { t:'object', s:'Map(' + v.size + ') {' + Array.from(v).map(function (e) { return rep(e[0], d + 1) + ' => ' + rep(e[1], d + 1); }).join(', ') + '}' };",
+    "  if (Array.isArray(v)) return { t:'array', s:inner(v, d) };",
+    "  return { t:'object', s:inner(v, d) };",
+    "}",
+    "function rep(x, d) { return typeof x === 'string' ? \"'\" + x + \"'\" : ser(x, d).s; }",
+    "function inner(v, d) {",
+    "  if (d > 4) return Array.isArray(v) ? '[Array]' : '{…}';",
+    "  if (Array.isArray(v)) return '[' + v.map(function (x) { return rep(x, d + 1); }).join(', ') + ']';",
+    "  var ks = Object.keys(v);",
+    "  if (!ks.length) return '{}';",
+    "  return '{' + ks.map(function (k) { return k + ': ' + rep(v[k], d + 1); }).join(', ') + '}';",
+    "}",
+    "function canon(v) {",
+    "  if (typeof v === 'string') return 's:' + JSON.stringify(v);",
+    "  if (typeof v === 'number') return Number.isNaN(v) ? 'n:NaN' : 'n:' + String(v);",
+    "  if (v === null) return 'null';",
+    "  if (v === undefined) return 'undef';",
+    "  if (typeof v === 'boolean') return 'b:' + v;",
+    "  if (Array.isArray(v)) return 'a:[' + v.map(canon).join(',') + ']';",
+    "  if (typeof v === 'object') return 'o:{' + Object.keys(v).sort().map(function (k) { return k + '=' + canon(v[k]); }).join(',') + '}';",
+    "  return typeof v + ':' + String(v);",
+    "}",
+    "function revive(v) {",
+    "  if (Array.isArray(v)) return v.map(revive);",
+    "  if (v && typeof v === 'object') {",
+    "    if (typeof v.__fn === 'string') return (0, eval)('(' + v.__fn + ')');",
+    "    var o = {}; Object.keys(v).forEach(function (k) { o[k] = revive(v[k]); }); return o;",
+    "  }",
+    "  return v;",
+    "}",
+    "var CAP = 300, capped = false;",
+    "function push(kind, args) {",
+    "  if (capped) return;",
+    "  OUT.push({ k:kind, parts:[].map.call(args, function (a) { return ser(a, 0); }) });",
+    "  if (OUT.length >= CAP) { capped = true; postMessage({ partial:true, out:OUT }); }",
+    "}",
+    "console.log   = function () { push('log', arguments); };",
+    "console.info  = function () { push('log', arguments); };",
+    "console.warn  = function () { push('warn', arguments); };",
+    "console.error = function () { push('error', arguments); };",
+    "console.table = function () { push('log', arguments); };",
+    "self.alert  = function (m) { OUT.push({ k:'alert', parts:[ser(String(m))] }); };",
+    "self.prompt = function () { OUT.push({ k:'warn', parts:[ser('prompt() is not available here - pass values into your function as parameters instead.')] }); return null; };",
+    "function err(e) {",
+    "  var name = (e && e.name) || 'Error', msg = (e && e.message) || String(e), note = '';",
+    "  if (/\\b(document|window) is not defined/.test(msg)) note = 'This runner has no web page attached - the DOM comes in a later module. Use console.log for now.';",
+    "  return { name:name, message:msg, note:note };",
+    "}",
+    "self.onmessage = function (e) {",
+    "  var m = e.data;",
+    "  if (m.cap) CAP = m.cap;",
+    "  if (m.mode === 'run') {",
+    "    try {",
+    "      var r = (0, eval)(m.code);",
+    "      postMessage({ ok:true, out:OUT, result:ser(r, 0), truncated:capped });",
+    "    } catch (x) { postMessage({ ok:false, out:OUT, error:err(x), truncated:capped }); }",
+    "    return;",
+    "  }",
+    "  if (m.mode === 'test') {",
+    "    var fn;",
+    "    try {",
+    "      fn = (0, eval)(m.code + '\\n;\\n(typeof ' + m.fname + \" === 'function' ? \" + m.fname + ' : undefined)');",
+    "    } catch (x) { postMessage({ ok:false, out:OUT, error:err(x) }); return; }",
+    "    if (typeof fn !== 'function') {",
+    "      postMessage({ ok:false, out:OUT, error:{ name:'NotFound', message:'No function called ' + m.fname + ' was found.', note:'Check the spelling - the name must match exactly, including capital letters.' } });",
+    "      return;",
+    "    }",
+    "    var results = m.cases.map(function (c) {",
+    "      var before = OUT.length, args, snap;",
+    "      try { args = revive(c.args); }",
+    "      catch (x) { return { pass:false, threw:{ name:'HarnessError', message:'A test argument could not be built: ' + x.message } }; }",
+    "      snap = args.map(canon);",
+    "      try {",
+    "        var got = fn.apply(null, args);",
+    "        var mutated = [];",
+    "        args.forEach(function (a, i) { if (canon(a) !== snap[i]) mutated.push(i); });",
+    "        if (c.throws) return { pass:false, got: ser(got, 0), printed: OUT.length > before, gotUndef: got === undefined, mutated: mutated, wantedThrow: c.throws };",
+    "        var same = canon(got) === canon(c.expect);",
+    "        var clean = !c.pure || mutated.length === 0;",
+    "        return { pass: same && clean, got: ser(got, 0), printed: OUT.length > before, gotUndef: got === undefined, mutated: mutated, rightButMutated: same && !clean };",
+    "      } catch (x) {",
+    "        var e = err(x);",
+    "        if (c.throws) return { pass: e.name === c.throws, threw: e, printed: OUT.length > before, wantedThrow: c.throws };",
+    "        return { pass:false, threw: e, printed: OUT.length > before };",
+    "      }",
+    "    });",
+    "    postMessage({ ok:true, out:OUT, results:results });",
+    "  }",
+    "};"
+  ].join('\n');
+
+  var url = null;
+  function workerURL() {
+    if (!url) url = URL.createObjectURL(new Blob([WORKER_SRC], { type: 'text/javascript' }));
+    return url;
+  }
+
+  function exec(msg, ms) {
+    return new Promise(function (resolve) {
+      var w, done = false;
+      try { w = new Worker(workerURL()); }
+      catch (e) {
+        resolve({ ok:false, fatal:true, error:{ name:'RunnerError', message:'This browser blocked the code runner.', note:'Open the file in Chrome or Edge.' } });
+        return;
+      }
+      var partial = null;
+      var t = setTimeout(function () {
+        if (done) return; done = true; w.terminate();
+        resolve({ ok:false, timeout:true, ms:ms, out:partial || [], truncated:!!partial });
+      }, ms);
+      w.onmessage = function (e) {
+        if (done) return;
+        if (e.data && e.data.partial) { partial = e.data.out; return; }
+        done = true; clearTimeout(t); w.terminate(); resolve(e.data);
+      };
+      w.onerror = function (e) {
+        if (done) return; done = true; clearTimeout(t); w.terminate();
+        if (e && e.preventDefault) e.preventDefault();
+        resolve({ ok:false, error:{ name:'Error', message:(e && e.message) || 'The code could not run.' } });
+      };
+      w.postMessage(msg);
+    });
+  }
+
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  /* one value as the console would draw it */
+  function val(v, quoteStrings) {
+    if (!v) return '';
+    var s = (v.t === 'string' && quoteStrings) ? "'" + v.s + "'" : v.s;
+    return '<span class="v-' + v.t + '">' + esc(s) + '</span>';
+  }
+
+  /* render a run result into an output element */
+  function render(el, r, opts) {
+    opts = opts || {};
+    var h = '';
+    (r.out || []).forEach(function (line) {
+      var cls = line.k === 'error' ? 'oe' : line.k === 'warn' ? 'ow' : line.k === 'alert' ? 'oa' : 'ol';
+      var body = line.parts.map(function (p) { return val(p, false); }).join(' ');
+      if (line.k === 'alert') body = '<span class="tagalert">alert</span> ' + body;
+      h += '<div class="' + cls + '">' + (body || '&nbsp;') + '</div>';
+    });
+    if (r.truncated) h += '<div class="ow">… output stopped after ' + (r.out || []).length + ' lines</div>';
+    if (r.timeout) {
+      h += '<div class="ot"><b>Stopped after ' + (r.ms / 1000) + ' seconds.</b> The code never finished — this almost always means an infinite loop. Check that the loop condition eventually becomes false.</div>';
+    } else if (r.error) {
+      h += '<div class="oe"><b>Uncaught ' + esc(r.error.name) + ':</b> ' + esc(r.error.message) +
+           (r.error.note ? '<span class="onote">' + esc(r.error.note) + '</span>' : '') + '</div>';
+    } else if (opts.showResult && r.result && !(r.result.t === 'undefined' && (r.out || []).length)) {
+      h += '<div class="or"><span class="arrow">←</span> ' + val(r.result, true) + '</div>';
+    }
+    if (!h) h = '<div class="oempty">No output. Use console.log(…) to print something.</div>';
+    el.innerHTML = h;
+  }
+
+  /* single-pass syntax highlighter — tokens are consumed once, never re-scanned */
+  var KW = /^(const|let|var|function|return|if|else|for|while|do|switch|case|break|continue|default|new|typeof|instanceof|in|of|class|this|try|catch|finally|throw|async|await)$/;
+  var LIT = /^(true|false|null|undefined|NaN|Infinity)$/;
+  function highlight(src) {
+    var re = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(`(?:\\[\s\S]|[^`\\])*`|'(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*")|(\b\d+(?:\.\d+)?n?\b)|([A-Za-z_$][\w$]*)|([\s\S])/g;
+    var out = '', m;
+    while ((m = re.exec(src)) !== null) {
+      if (m[1]) out += '<span class="c">' + esc(m[1]) + '</span>';
+      else if (m[2]) out += '<span class="s">' + esc(m[2]) + '</span>';
+      else if (m[3]) out += '<span class="n">' + m[3] + '</span>';
+      else if (m[4]) {
+        var w = m[4], next = src.charAt(re.lastIndex);
+        if (KW.test(w)) out += '<span class="k">' + w + '</span>';
+        else if (LIT.test(w)) out += '<span class="n">' + w + '</span>';
+        else if (next === '(') out += '<span class="f">' + w + '</span>';
+        else out += w;
+      }
+      else out += esc(m[5]);
+    }
+    return out;
+  }
+
+  /* strip comments and strings, for static rules like "no .reverse()" */
+  function codeOnly(src) {
+    var re = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(`(?:\\[\s\S]|[^`\\])*`|'(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*")|([\s\S])/g;
+    var out = '', m;
+    while ((m = re.exec(src)) !== null) {
+      if (m[1]) out += ' ';
+      else if (m[2]) out += m[2].charAt(0) === '`' ? '``' : '""';
+      else out += m[3];
+    }
+    return out;
+  }
+
+  return {
+    run: function (code, ms, cap) { return exec({ mode:'run', code:code, cap:cap || 300 }, ms || 1500); },
+    test: function (code, fname, cases, ms) { return exec({ mode:'test', code:code, fname:fname, cases:cases }, ms || 2500); },
+    render: render,
+    val: val,
+    highlight: highlight,
+    codeOnly: codeOnly,
+    esc: esc
+  };
+})();
+
+/* ---- wire every live code block on the slides ---- */
+(function () {
+  function trimCode(s) { return s.replace(/^\s*\n/, '').replace(/\s+$/, ''); }
+
+  document.querySelectorAll('pre.js.static').forEach(function (pre) {
+    pre.innerHTML = JSRunner.highlight(trimCode(pre.textContent));
+  });
+
+  document.querySelectorAll('.live').forEach(function (b) {
+    var pre = b.querySelector('pre.js'), out = b.querySelector('.out');
+    var runBtn = b.querySelector('.run'), editBtn = b.querySelector('.edit'), resetBtn = b.querySelector('.reset');
+    var raw = trimCode(pre.textContent);
+    var ta = null;
+    pre.innerHTML = JSRunner.highlight(raw);
+    out.innerHTML = '<div class="ohint">Press Run to see the output</div>';
+
+    function current() { return ta ? ta.value : raw; }
+
+    runBtn.addEventListener('click', function () {
+      out.innerHTML = '<div class="ohint">running…</div>';
+      JSRunner.run(current(), 1500, 80).then(function (r) { JSRunner.render(out, r, { showResult:false }); });
+    });
+
+    editBtn.addEventListener('click', function () {
+      if (ta) { ta.focus(); return; }
+      ta = document.createElement('textarea');
+      ta.value = raw;
+      ta.spellcheck = false;
+      ta.setAttribute('aria-label', 'Edit this code');
+      ta.style.height = Math.max(pre.offsetHeight, 120) + 'px';
+      ta.addEventListener('keydown', function (e) {
+        if (e.key === 'Tab') {                       // indent instead of leaving the box
+          e.preventDefault();
+          var s = ta.selectionStart, en = ta.selectionEnd;
+          ta.value = ta.value.slice(0, s) + '  ' + ta.value.slice(en);
+          ta.selectionStart = ta.selectionEnd = s + 2;
+        }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); runBtn.click(); }
+      });
+      pre.replaceWith(ta);
+      ta.focus();
+      editBtn.textContent = 'Editing';
+    });
+
+    resetBtn.addEventListener('click', function () {
+      if (ta) { ta.replaceWith(pre); ta = null; }
+      editBtn.textContent = 'Edit';
+      out.innerHTML = '<div class="ohint">Press Run to see the output</div>';
+    });
+  });
+})();
+
+</script>
+<script>
+/* ============================================================================
+   THREE DEPTHS, ONE DECK.
+
+   Every content slide can carry two extra layers, both hidden by default so
+   the main flow is exactly as it was:
+
+     · GROUND FLOOR  — plain English, no jargon, for anyone meeting the idea
+                       for the first time. Opened when the room looks lost.
+     · INTERVIEW DEPTH — the version that scores marks in an interview, for
+                       anyone who already knew the slide's content.
+
+   The trainer toggles either layer with the navbar buttons or keys 1 and 2.
+   Learners reading ahead can open the deep layer themselves.
+   ========================================================================= */
+(function () {
+  var TIERS = {
+    2: { plain:'Think of a register at a college office. Each <b>row</b> is one student — that row is an <b>object</b>. The whole register is the <b>array</b>. Almost every app you will ever build is a register like this, shown to people in a nicer way.',
+         deep:'This is why interview "data manipulation" rounds look alike: they hand you an array of objects and ask for a filtered, grouped or summarised view. The fields that arrive from a real API are rarely the ones a screen needs, so a shaping layer — often called a <b>selector</b> or <b>view model</b> — sits between the response and the UI.' },
+
+    3: { plain:'An array is a numbered row of boxes. The numbering starts at <b>zero</b> because the number means "how many steps from the start" — the first box is zero steps away.',
+         deep:'Arrays are objects whose keys happen to be <code>"0"</code>, <code>"1"</code>, <code>"2"</code> and whose <code>length</code> updates automatically. So <code>arr[10] = "x"</code> on a three-item array makes <code>length</code> 11 and leaves <b>holes</b> — empty slots that <code>forEach</code> and <code>map</code> skip but a classic <code>for</code> loop visits as <code>undefined</code>. Avoid creating them.' },
+
+    4: { plain:'Mutating is <b>writing on the original page</b>. Non-mutating is <b>photocopying it and writing on the copy</b>. If someone else was reading that page, only the first one changes what they see.',
+         deep:'<code>toSorted</code>, <code>toReversed</code>, <code>toSpliced</code> and <code>with</code> were added in ES2023 precisely so you never need the <code>[...arr].sort()</code> copy dance. React compares state with <code>Object.is</code> — the same array reference means "nothing changed", so a mutated array is never re-rendered. Redux and Zustand rely on the same rule.' },
+
+    5: { plain:'A queue at a ticket counter: people join at the <b>back</b> (<code>push</code>) and are served from the <b>front</b> (<code>shift</code>). A stack of plates: you add and take from the <b>top</b> (<code>push</code> and <code>pop</code>).',
+         deep:'<code>push</code> and <code>pop</code> are O(1). <code>shift</code> and <code>unshift</code> are O(n) in the standard model: every remaining item is renumbered. Engines sometimes optimise this, so measure real code — but in an interview O(n) is the answer, and for a large queue you keep a "head" index instead of calling <code>shift</code> on every step.' },
+
+    6: { plain:'<b>slice</b> takes a photo of part of the list. <b>splice</b> performs surgery on it. If you only remember one thing: <b>slice is safe</b>, splice changes things.',
+         deep:'Both accept negative indexes. <code>splice</code> with only a start removes everything from there to the end. When you need the splice result without the mutation, <code>toSpliced(start, count, ...items)</code> returns a new array. And the <code>end</code> of <code>slice</code> is exclusive, so <code>slice(i, i + n)</code> always gives exactly <code>n</code> items — the basis of every pagination function.' },
+
+    7: { plain:'<code>find</code> is "bring me the first one that matches". <code>some</code> is "is there at least one?". <code>every</code> is "are all of them?". Each stops the moment it knows the answer.',
+         deep:'<code>every</code> on an empty array is <code>true</code> — "all zero of them pass" is vacuously true — which can wrongly approve an empty order. <code>includes</code> uses SameValueZero, so it finds <code>NaN</code>; <code>indexOf</code> uses <code>===</code> and does not. ES2023 added <code>findLast</code> and <code>findLastIndex</code> to search from the end.' },
+
+    8: { plain:'Sorting needs a rule for "which of these two comes first?". The comparator is that rule. <b><code>a - b</code> is small-to-big; <code>b - a</code> is big-to-small.</b>',
+         deep:'Since ES2019 the sort is guaranteed <b>stable</b>: items that compare equal keep their original order, so you can sort by city and then by pay and trust the result. <code>localeCompare</code> takes options — <code>{ sensitivity: "base", numeric: true }</code> sorts <code>"file10"</code> after <code>"file9"</code>. A comparator must be consistent; returning a random number gives a biased shuffle, not a fair one.' },
+
+    9: { plain:'<code>join</code> glues a list into one piece of text. <code>split</code> cuts text into a list. They are opposites, and together they solve half of all "string" questions in coding tests.',
+         deep:'<code>Array.from(x, mapFn)</code> accepts anything with a <code>length</code> or anything iterable — a string, a Set, a Map, a NodeList from the DOM. <code>flatMap</code> is also a filter-and-map in one pass: return <code>[]</code> to drop an item and <code>[x]</code> to keep it. Splitting a string with <code>split("")</code> breaks emoji apart; <code>Array.from(str)</code> keeps them whole.' },
+
+    10: { plain:'<code>map</code> is a photocopier that can also edit: it copies every page, but lets you change what is written on each copy. <b>You always get the same number of pages back.</b>',
+         deep:'The callback receives <code>(item, index, array)</code> — which is why <code>["1","2","3"].map(parseInt)</code> gives <code>[1, NaN, NaN]</code>: <code>parseInt</code> reads the index as a <b>radix</b>. Pass a small arrow, <code>s =&gt; parseInt(s, 10)</code>, or use <code>Number</code>. And keep <code>map</code> free of side effects — a map that also writes to a database is a bug report waiting to be filed.' },
+
+    11: { plain:'<code>filter</code> is a security guard with a checklist. Every item walks past; the ones that tick the box get in. <b>The ones inside are the same items</b> — not copies, not changed.',
+         deep:'The result holds the <b>same object references</b> as the input, so changing a filtered item changes the original. Filter first and map second: <code>filter</code> then <code>map</code> transforms fewer items. For "the first match" <code>find</code> beats <code>filter(...)[0]</code>, because it stops early instead of walking the whole list.' },
+
+    12: { plain:'<code>reduce</code> is a cashier adding up a bill. The <b>running total</b> starts at zero; each item adds its price; the last number on the screen is the answer.',
+         deep:'Signature: <code>reduce((acc, item, index, array) =&gt; newAcc, initial)</code>. Without <code>initial</code>, the first item becomes the accumulator and the callback starts at index 1 — which breaks silently when the first item is an object and you meant to sum a field. Floating-point sums drift (<code>0.1 + 0.2</code>); for money, add whole paise and divide at the end.' },
+
+    13: { plain:'Counting with <code>reduce</code> is like a tally sheet: for each vote, find the candidate\'s line — or start a new one — and add a mark. <b>The sheet you are filling in is the accumulator.</b>',
+         deep:'ES2024 added <code>Object.groupBy(items, fn)</code> and <code>Map.groupBy</code> for the grouping case. <code>Object.groupBy</code> returns an object with a <b>null prototype</b>, so it has no <code>hasOwnProperty</code> method — use <code>Object.hasOwn</code>. The <code>??=</code> in the grouping line means "create the array only if it does not exist yet".' },
+
+    14: { plain:'A lookup table is the contacts list on your phone. You do not scroll through every call you ever made to find Ravi\'s number — you <b>look him up by name, straight away</b>.',
+         deep:'Keeping data as lookup tables keyed by id is called <b>normalising</b> it. Redux Toolkit\'s <code>createEntityAdapter</code> stores <code>{ ids, entities }</code> for exactly this reason: updates touch one entry, and lookups never search. A <code>Map</code> works too and keeps numeric ids as numbers — object keys always become strings, so <code>usersById["9"]</code> and <code>usersById[9]</code> are the same entry.' },
+
+    15: { plain:'A chain is an assembly line. Each station does one job and passes the result along. <b>Read it top to bottom as a sentence:</b> keep the well-paid ones, put the best first, turn them into labels.',
+         deep:'Every step allocates a new array. For a few thousand items that cost is invisible and readability wins; for hundreds of thousands, one <code>reduce</code> or a single loop can be noticeably faster. Put <code>filter</code> before <code>map</code> and <code>sort</code> so later steps work on fewer items. Profile before you optimise — most chains are never the bottleneck.' },
+
+    16: { plain:'If you want <b>a new list</b> back, reach for <code>map</code>, <code>filter</code> or <code>reduce</code>. If you only want to <b>do something</b> with each item — print it, send it — use <code>forEach</code> or <code>for…of</code>.',
+         deep:'<code>forEach</code> cannot be stopped except by throwing, and it ignores returned promises — <code>arr.forEach(async x =&gt; await save(x))</code> fires everything at once and waits for none of it. Use <code>for…of</code> with <code>await</code> to go one at a time, or <code>await Promise.all(arr.map(save))</code> to go in parallel on purpose.' },
+
+    17: { plain:'Writing your own <code>map</code> takes away the magic. It is only a loop that builds a new array — and once you have written it yourself, you will never forget what <code>map</code> returns.',
+         deep:'The spec version is <code>Array.prototype.map</code>, called with <code>this</code> as the array, so a polyfill uses a regular <code>function</code>, not an arrow: <code>Array.prototype.myMap = function (fn, thisArg) { … }</code>. A faithful polyfill also skips holes with <code>if (i in this)</code>, and checks that <code>fn</code> is callable, throwing a <code>TypeError</code> if not.' },
+
+    18: { plain:'Without a starting value, reduce says "fine — I will start with the first item". <b>But with no items at all, there is nothing to start with</b>, so it gives up with an error.',
+         deep:'The spec checks the argument <b>count</b>, not the value, which is why <code>reduce(fn, undefined)</code> behaves differently from <code>reduce(fn)</code>. A faithful polyfill also skips holes in sparse arrays and throws a <code>TypeError</code> if the callback is not a function. <code>reduceRight</code> is the same walk from the last item to the first.' },
+
+    19: { plain:'An array is found <b>by position</b> — "the third one". An object is found <b>by name</b> — "the city". Use an array when order matters, an object when meaning does.',
+         deep:'Object keys are always strings (or Symbols): <code>obj[1]</code> and <code>obj["1"]</code> are the same slot. Integer-like keys are listed first in ascending order, then the rest in insertion order — so <code>Object.keys({ b: 1, 2: 1, a: 1 })</code> is <code>["2", "b", "a"]</code>. Do not rely on object key order for anything a user sees; use an array.' },
+
+    20: { plain:'An object is a drawer of labelled folders. <code>Object.entries</code> lays every folder out on the table as <b>[label, contents]</b> pairs — now you can sort them, filter them, change them — and <code>fromEntries</code> puts them back in a drawer.',
+         deep:'<code>for…in</code> walks inherited enumerable properties too, which is why linters flag it without a <code>hasOwn</code> check. <code>Object.hasOwn(obj, key)</code> (ES2022) replaces <code>obj.hasOwnProperty(key)</code>, which fails on null-prototype objects and on objects that shadow <code>hasOwnProperty</code>. And <code>"key" in obj</code> is true for inherited properties like <code>toString</code>.' },
+
+    21: { plain:'Destructuring is unpacking a lunch box: instead of saying "the roti from the box, the sabzi from the box", you take them out and give each its own name in one move.',
+         deep:'Defaults are evaluated lazily — only when needed — and can refer to earlier variables: <code>const { w = 100, h = w * 2 } = size</code>. In parameters, give the whole object a default too, or calling with no argument crashes: <code>function f({ a = 1 } = {})</code>. Deep destructuring of a missing branch throws, so pair it with defaults or optional chaining.' },
+
+    22: { plain:'Spread is <b>tipping a bag out onto the table</b>: <code>...frontend</code> puts every item from that bag into the new list. Rest is the opposite: <b>sweeping everything left over back into one bag</b>.',
+         deep:'Spread uses the iteration protocol for arrays (any iterable works — Sets, strings, Maps) but copies <b>own enumerable properties</b> for objects, so getters are called and their values copied, while prototypes and non-enumerable properties are left behind. <code>Object.assign(target, src)</code> writes into an existing object and triggers setters; spread always creates a new one.' },
+
+    23: { plain:'A variable holding an object does not hold the object itself — it holds <b>the address of where it lives</b>. Spread copies the top-level fields, but for a nested object it copies <b>the address</b>, not the house.',
+         deep:'<code>structuredClone</code> (available in browsers and in Node 17+) deep-copies Dates, Maps, Sets, typed arrays and even circular references, but throws a <code>DataCloneError</code> on functions and DOM nodes, and turns class instances into plain objects. The JSON round-trip is faster to type but drops <code>undefined</code>, functions and Symbols, and turns Dates into strings and <code>NaN</code> into <code>null</code>.' },
+
+    24: { plain:'Never write on the page someone else is reading. <b>Make a copy with your change on it and hand that over</b> — React compares the old page with the new one to decide what to redraw.',
+         deep:'React\'s <code>setState</code> with an unchanged reference bails out, so <code>list.push(x); setList(list)</code> never re-renders. Libraries like Immer let you write "mutating" code on a draft and produce the immutable result for you. For deep structures, copying every level on the path to the change — and sharing everything else — is called <b>structural sharing</b>, and it is why immutable updates stay cheap.' },
+
+    25: { plain:'<code>const</code> glues the <b>label to the box</b>. It does not lock the box. <code>Object.freeze</code> locks the lid — but only of the outer box; boxes inside it can still be opened.',
+         deep:'<code>Object.seal</code> sits between the two: no adding or removing fields, but existing ones can still change. A <b>deep freeze</b> is a short recursive function over <code>Object.values</code>. Freezing costs little, but engines optimise frozen objects differently, and in practice teams rely on immutable-update habits and TypeScript\'s <code>readonly</code> far more than on freeze at runtime.' },
+
+    26: { plain:'JSON is the <b>shipping format</b>. You pack your object into a text box to send it over the network, and the other side unpacks it back into an object. <b>Only plain data survives the journey.</b>',
+         deep:'<code>JSON.stringify(value, replacer, space)</code>: the replacer can be an array of allowed keys or a function; objects can define <code>toJSON()</code> to control their own output — which is how Dates become ISO strings. <code>JSON.parse(text, reviver)</code> can turn those strings back into Dates. Circular references throw <code>TypeError: Converting circular structure to JSON</code>.' },
+
+    27: { plain:'Every question a manager asks — "how many", "what is the average", "who is on top" — is one of three moves: <b>choose</b> some (filter), <b>change</b> how they look (map), or <b>add them up</b> (reduce).',
+         deep:'In production these questions often run in the database instead: a MongoDB aggregation pipeline has stages called <code>$match</code>, <code>$project</code>, <code>$group</code>, <code>$sort</code> and <code>$limit</code> — filter, map, reduce, sort and slice by other names. Learning the JavaScript version first makes that pipeline read naturally.' },
+
+    28: { plain:'Looking for a name in an unsorted register means reading from the top every time. <b>A <code>Set</code> is an index at the back of the book</b> — you go straight to the page.',
+         deep:'<code>Set.has</code> and <code>Map.get</code> are average O(1) hash lookups; <code>includes</code> is O(n). Building the Set is O(n) once. ES2025 adds set operations such as <code>union</code>, <code>intersection</code> and <code>difference</code> directly on <code>Set</code>; check browser support before relying on them in production. A <code>WeakMap</code> holds object keys without preventing them from being garbage-collected.' }
+  };
+
+
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+
+  function panel(kind, html) {
+    var d = document.createElement('div');
+    d.className = 'tier tier-' + kind;
+    d.innerHTML = '<span class="tl">' +
+      (kind === 'plain' ? 'Ground floor · if this is new to you' : 'Going deeper · if you already knew this') +
+      '</span>' + html;
+    return d;
+  }
+
+  Object.keys(TIERS).forEach(function (k) {
+    var s = slides[+k - 1]; if (!s) return;
+    var t = TIERS[k];
+    var anchor = s.querySelector('.grow');       // keep the spacer last on title slides
+    var frag = document.createDocumentFragment();
+    if (t.plain) frag.appendChild(panel('plain', t.plain));
+    if (t.deep)  frag.appendChild(panel('deep',  t.deep));
+    if (anchor) s.insertBefore(frag, anchor); else s.appendChild(frag);
+  });
+
+  var on = { plain:false, deep:false };
+  function apply() {
+    document.body.classList.toggle('show-plain', on.plain);
+    document.body.classList.toggle('show-deep',  on.deep);
+    var bp = document.getElementById('tPlain'), bd = document.getElementById('tDeep');
+    if (bp) bp.classList.toggle('on', on.plain);
+    if (bd) bd.classList.toggle('on', on.deep);
+  }
+  var bp = document.getElementById('tPlain'), bd = document.getElementById('tDeep');
+  if (bp) bp.addEventListener('click', function () { on.plain = !on.plain; apply(); });
+  if (bd) bd.addEventListener('click', function () { on.deep  = !on.deep;  apply(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === '1') { on.plain = !on.plain; apply(); }
+    if (e.key === '2') { on.deep  = !on.deep;  apply(); }
+  });
+  apply();
+})();
+</script>
+
+</body>
+</html>
